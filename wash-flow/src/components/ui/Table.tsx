@@ -2,7 +2,7 @@
 import { cn } from '@/lib/utils';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-interface Column<T> {
+export interface Column<T> {
   key: string;
   header: string;
   render?: (item: T) => React.ReactNode;

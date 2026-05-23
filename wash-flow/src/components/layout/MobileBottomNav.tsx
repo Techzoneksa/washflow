@@ -12,6 +12,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   ShoppingCart: Icons.ShoppingCart,
   ClipboardList: Icons.ClipboardList,
   BarChart3: Icons.BarChart3,
+  FileText: Icons.FileText,
   MoreHorizontal: Icons.MoreHorizontal,
 };
 

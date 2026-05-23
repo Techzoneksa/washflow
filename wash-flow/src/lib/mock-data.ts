@@ -61,6 +61,7 @@ export const navigationItems: NavItem[] = [
   { label: 'لوحة التحكم', icon: 'LayoutDashboard', href: '/dashboard', roles: ['owner', 'manager', 'accountant'] },
   { label: 'نقطة البيع', icon: 'ShoppingCart', href: '/pos', roles: ['owner', 'manager', 'cashier'] },
   { label: 'الطلبات', icon: 'ClipboardList', href: '/orders', roles: ['owner', 'manager', 'cashier'] },
+  { label: 'الفواتير', icon: 'FileText', href: '/invoices', roles: ['owner', 'manager', 'accountant'] },
   { label: 'الخدمات', icon: 'Wrench', href: '/services', roles: ['owner', 'manager'] },
   { label: 'المصاريف', icon: 'Wallet', href: '/expenses', roles: ['owner', 'manager', 'accountant'] },
   { label: 'الموردين', icon: 'Truck', href: '/suppliers', roles: ['owner', 'manager', 'accountant'] },
@@ -84,6 +85,6 @@ export const mobileNavItems = [
   { label: 'الرئيسية', icon: 'LayoutDashboard', href: '/dashboard' },
   { label: 'POS', icon: 'ShoppingCart', href: '/pos' },
   { label: 'الطلبات', icon: 'ClipboardList', href: '/orders' },
-  { label: 'التقارير', icon: 'BarChart3', href: '/reports' },
+  { label: 'الفواتير', icon: 'FileText', href: '/invoices' },
   { label: 'المزيد', icon: 'MoreHorizontal', href: '/more' },
 ];

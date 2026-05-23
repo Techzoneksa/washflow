@@ -24,6 +24,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   BarChart3: Icons.BarChart3,
   Settings: Icons.Settings,
   Receipt: Icons.Receipt,
+  FileText: Icons.FileText,
   LogOut: Icons.LogOut,
 };
 

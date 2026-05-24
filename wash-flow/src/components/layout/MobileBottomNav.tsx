@@ -1,5 +1,5 @@
 'use client';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { mobileNavItems } from '@/lib/mock-data';
 import * as Icons from 'lucide-react';
@@ -18,8 +18,6 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 };
 
 export default function MobileBottomNav({ activePath = '/' }: MobileBottomNavProps) {
-  const router = useRouter();
-
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 bg-bg-surface border-t border-border-default safe-area-bottom">
       <div className="flex items-center justify-around h-16">
@@ -28,9 +26,9 @@ export default function MobileBottomNav({ activePath = '/' }: MobileBottomNavPro
           const isActive = activePath === item.href;
 
           return (
-            <button
+            <Link
               key={item.href}
-              onClick={() => router.push(item.href)}
+              href={item.href}
               className={cn(
                 'flex flex-col items-center justify-center gap-0.5 px-3 py-1.5 min-w-[60px]',
                 isActive ? 'text-primary-500' : 'text-text-secondary'
@@ -40,7 +38,7 @@ export default function MobileBottomNav({ activePath = '/' }: MobileBottomNavPro
               <span className={cn('text-[10px] font-medium', isActive && 'font-semibold')}>
                 {item.label}
               </span>
-            </button>
+            </Link>
           );
         })}
       </div>

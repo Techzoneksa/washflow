@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { navigationItems } from '@/lib/mock-data';
@@ -34,11 +35,6 @@ export default function Sidebar({ userRole, activePath = '/', compact = false, o
   const router = useRouter();
   const filteredItems = navigationItems.filter((item) => item.roles.includes(userRole));
 
-  const handleNavigate = (href: string) => {
-    router.push(href);
-    onClose?.();
-  };
-
   const handleLogout = () => {
     clearSession();
     router.push('/login');
@@ -72,9 +68,10 @@ export default function Sidebar({ userRole, activePath = '/', compact = false, o
           const isActive = activePath === item.href;
 
           return (
-            <button
+            <Link
               key={item.href}
-              onClick={() => handleNavigate(item.href)}
+              href={item.href}
+              onClick={() => onClose?.()}
               className={cn(
                 'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all',
                 isActive
@@ -95,7 +92,7 @@ export default function Sidebar({ userRole, activePath = '/', compact = false, o
                   )}
                 </>
               )}
-            </button>
+            </Link>
           );
         })}
       </nav>

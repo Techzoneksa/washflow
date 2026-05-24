@@ -1,20 +1,12 @@
-import type { WashService, CartItem, PosOrder, TodayOrderSummary, PosCustomerInfo, PaymentMethod, MixedPayment } from '@/types/pos';
+import type { CartItem, PosOrder, TodayOrderSummary, PosCustomerInfo, PaymentMethod, MixedPayment } from '@/types/pos';
 import type { AuthSession } from '@/types/auth';
 import { getSession } from '@/lib/mock-auth';
 import { getCompanySetup } from '@/lib/mock-company-settings';
+import { getPOSWashServices, serviceCategories as svcCategories } from '@/lib/mock-services';
 
-export const washServices: WashService[] = [
-  { id: 'small-car', nameAr: 'سيارة صغيرة', price: 25, category: 'غسيل سيارات', duration: '15 دقيقة', icon: 'car', isActive: true },
-  { id: 'large-car', nameAr: 'سيارة كبيرة', price: 35, category: 'غسيل سيارات', duration: '20 دقيقة', icon: 'truck', isActive: true },
-  { id: 'dina', nameAr: 'دينا', price: 60, category: 'مركبات كبيرة', duration: '30 دقيقة', icon: 'truck', isActive: true },
-  { id: 'interior', nameAr: 'غسيل داخلي', price: 20, category: 'خدمات داخلية', duration: '15 دقيقة', icon: 'sparkles', isActive: true },
-  { id: 'exterior', nameAr: 'غسيل خارجي', price: 25, category: 'خدمات خارجية', duration: '15 دقيقة', icon: 'droplets', isActive: true },
-  { id: 'full-wash', nameAr: 'داخلي/خارجي', price: 45, category: 'باقات', duration: '25 دقيقة', icon: 'badge-check', isActive: true },
-  { id: 'tires-polish', nameAr: 'تلميع إطارات', price: 10, category: 'إضافات', duration: '5 دقائق', icon: 'circle', isActive: true },
-  { id: 'other', nameAr: 'أخرى', price: 0, category: 'أخرى', duration: 'حسب الخدمة', icon: 'plus', isActive: true },
-];
+export const washServices = getPOSWashServices();
 
-export const serviceCategories = ['الكل', 'غسيل سيارات', 'مركبات كبيرة', 'خدمات داخلية', 'خدمات خارجية', 'باقات', 'إضافات', 'أخرى'];
+export const serviceCategories = ['الكل', ...svcCategories];
 
 const usedOrderNumbers = new Set<number>();
 const usedInvoiceNumbers = new Set<number>();
@@ -94,7 +86,7 @@ export function createMockOrder(
   return order;
 }
 
-export function addToCart(cart: CartItem[], service: WashService): CartItem[] {
+export function addToCart(cart: CartItem[], service: { id: string; nameAr: string; price: number }): CartItem[] {
   const existing = cart.find(item => item.serviceId === service.id);
   if (existing) {
     return cart.map(item =>

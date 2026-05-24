@@ -1,6 +1,7 @@
 'use client';
 import { useState, useMemo } from 'react';
-import { washServices, serviceCategories } from '@/lib/mock-pos';
+import { serviceCategories } from '@/lib/mock-pos';
+import { getPOSWashServices } from '@/lib/mock-services';
 import type { WashService } from '@/types/pos';
 import ServiceCard from './ServiceCard';
 import { Search } from 'lucide-react';
@@ -16,7 +17,7 @@ export default function ServiceGrid({ cartServiceIds, onAddService, compact }: S
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredServices = useMemo(() => {
-    let result = washServices.filter(s => s.isActive);
+    let result = getPOSWashServices();
     if (activeCategory !== 'الكل') {
       result = result.filter(s => s.category === activeCategory);
     }

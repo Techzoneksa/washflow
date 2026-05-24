@@ -1,7 +1,6 @@
 'use client';
 import Image from 'next/image';
 import Modal from '@/components/ui/Modal';
-import Badge from '@/components/ui/Badge';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { getPaymentMethodLabel } from '@/lib/mock-pos';
 import { getCompanySetup } from '@/lib/mock-company-settings';
@@ -32,7 +31,6 @@ export default function InvoicePreviewModal({ open, onClose, order, onPrint }: I
               </div>
             )}
           </div>
-          <Badge variant="warning" size="sm">زاتكا غير مفعلة</Badge>
         </div>
 
         <div className="text-center">

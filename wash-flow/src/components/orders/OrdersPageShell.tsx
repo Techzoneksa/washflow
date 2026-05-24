@@ -19,7 +19,7 @@ import type { Column } from '@/components/ui/Table';
 import { ClipboardList, Eye, XCircle, RotateCcw } from 'lucide-react';
 
 interface OrdersPageShellProps {
-  userRole: UserRole;
+  userRole?: UserRole;
 }
 
 const PAGE_SIZE = 10;

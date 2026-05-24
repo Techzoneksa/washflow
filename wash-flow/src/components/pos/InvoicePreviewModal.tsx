@@ -1,4 +1,5 @@
 'use client';
+import Image from 'next/image';
 import Modal from '@/components/ui/Modal';
 import Badge from '@/components/ui/Badge';
 import { formatCurrency, formatDate } from '@/lib/utils';
@@ -24,7 +25,7 @@ export default function InvoicePreviewModal({ open, onClose, order, onPrint }: I
         <div className="flex items-center justify-between">
           <div>
             {setup?.company.logo ? (
-              <img src={setup.company.logo} alt="logo" className="h-10 w-10 rounded-lg object-cover" />
+              <Image src={setup.company.logo} alt="logo" width={40} height={40} className="h-10 w-10 rounded-lg object-cover" unoptimized />
             ) : (
               <div className="h-10 w-10 rounded-lg bg-primary-100 flex items-center justify-center text-primary-600 font-bold text-sm">
                 {setup?.company.nameAr?.charAt(0) || 'W'}

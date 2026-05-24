@@ -12,7 +12,7 @@ interface OrderDetailsDrawerProps {
   open: boolean;
   onClose: () => void;
   order: OrderHistoryItem | null;
-  userRole: UserRole;
+  userRole?: UserRole;
   onCancel: (order: OrderHistoryItem) => void;
   onRefund: (order: OrderHistoryItem) => void;
 }
@@ -27,7 +27,7 @@ function getStatusBadge(status: string) {
 }
 
 export default function OrderDetailsDrawer({
-  open, onClose, order, userRole, onCancel, onRefund,
+  open, onClose, order, userRole = 'manager', onCancel, onRefund,
 }: OrderDetailsDrawerProps) {
   if (!order) return null;
 

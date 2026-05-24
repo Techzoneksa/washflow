@@ -4,7 +4,6 @@ import { cn } from '@/lib/utils';
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
 import MobileBottomNav from './MobileBottomNav';
-import { getSession } from '@/lib/mock-auth';
 import type { UserRole } from '@/types';
 
 interface AppShellProps {
@@ -18,19 +17,14 @@ interface AppShellProps {
 export default function AppShell({
   children,
   title,
-  userRole: propRole,
+  userRole: propRole = 'manager',
   activePath = '/',
   showSearch = false,
 }: AppShellProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCompact, setSidebarCompact] = useState(false);
-  const [role] = useState<UserRole>(() => {
-    if (propRole) return propRole;
-    const session = getSession();
-    return session?.selectedRole || 'manager';
-  });
 
-  const userRole = propRole || role;
+  const userRole = propRole;
 
   return (
     <div className="h-screen flex overflow-hidden bg-bg-main">

@@ -1,4 +1,5 @@
 'use client';
+import Image from 'next/image';
 import Card from '@/components/ui/Card';
 import type { InvoiceSettings } from '@/types/company';
 
@@ -27,7 +28,7 @@ export default function InvoicePreview({
         <div className="p-3 border-b border-border-default">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              {settings.showLogo && logo && <img src={logo} alt="شعار" className="h-10 w-10 object-contain" />}
+              {settings.showLogo && logo && <Image src={logo} alt="شعار" width={40} height={40} className="h-10 w-10 object-contain" unoptimized />}
               {settings.showLogo && !logo && <div className="h-10 w-10 rounded-lg bg-primary-100 flex items-center justify-center text-primary-600 text-xs font-bold">WF</div>}
               <div>
                 <h4 className="text-sm font-bold text-text-primary">{companyName || 'اسم الشركة'}</h4>
@@ -35,7 +36,7 @@ export default function InvoicePreview({
               </div>
             </div>
             {settings.showQr && (
-              <img src={qrPlaceholder} alt="QR" className="h-14 w-14 opacity-50" />
+              <Image src={qrPlaceholder} alt="QR" width={56} height={56} className="h-14 w-14 opacity-50" unoptimized />
             )}
           </div>
         </div>

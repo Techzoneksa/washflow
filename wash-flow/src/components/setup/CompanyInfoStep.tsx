@@ -2,6 +2,7 @@
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Textarea from '@/components/ui/Textarea';
+import Image from 'next/image';
 import { Trash2, ImageUp } from 'lucide-react';
 import type { CompanyInfo } from '@/types/company';
 import { useState } from 'react';
@@ -62,7 +63,7 @@ export default function CompanyInfoStep({ data, onUpdate, onNext }: CompanyInfoS
         <p className="text-sm font-medium text-text-primary mb-2">شعار الشركة</p>
         {logoPreview ? (
           <div className="relative inline-block">
-            <img src={logoPreview} alt="شعار" className="h-24 w-24 object-contain rounded-lg border border-border-default" />
+            <Image src={logoPreview} alt="شعار" width={96} height={96} className="h-24 w-24 object-contain rounded-lg border border-border-default" unoptimized />
             <button onClick={removeLogo} className="absolute -top-2 -left-2 w-6 h-6 bg-danger-500 text-white rounded-full flex items-center justify-center">
               <Trash2 className="h-3 w-3" />
             </button>

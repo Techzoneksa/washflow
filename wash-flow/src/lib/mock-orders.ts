@@ -165,6 +165,7 @@ export function filterOrders(
         order.invoiceNumber.toLowerCase().includes(q) ||
         order.customer?.name?.toLowerCase().includes(q) ||
         order.customer?.plateNumber?.toLowerCase().includes(q) ||
+        order.customer?.phone?.toLowerCase().includes(q) ||
         order.cashierName.toLowerCase().includes(q);
       if (!matchSearch) return false;
     }

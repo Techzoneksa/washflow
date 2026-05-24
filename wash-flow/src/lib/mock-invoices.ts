@@ -35,7 +35,8 @@ export function filterInvoices(
         inv.invoiceNumber.toLowerCase().includes(q) ||
         inv.orderNumber.toLowerCase().includes(q) ||
         inv.customer?.name?.toLowerCase().includes(q) ||
-        inv.customer?.plateNumber?.toLowerCase().includes(q);
+        inv.customer?.plateNumber?.toLowerCase().includes(q) ||
+        inv.customer?.phone?.toLowerCase().includes(q);
       if (!matchSearch) return false;
     }
     if (filters.status !== 'all') {

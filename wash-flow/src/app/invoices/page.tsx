@@ -4,7 +4,7 @@ import InvoicesPageShell from '@/components/invoices/InvoicesPageShell';
 import { useAuthGuard } from '@/lib/route-guards';
 
 export default function InvoicesPage() {
-  const { authorized, checking } = useAuthGuard(['owner', 'manager', 'accountant']);
+  const { authorized, checking } = useAuthGuard(['owner', 'manager', 'accountant', 'cashier']);
 
   if (checking || !authorized) return null;
 

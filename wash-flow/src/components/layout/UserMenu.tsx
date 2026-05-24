@@ -1,5 +1,7 @@
 'use client';
+import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { clearSession } from '@/lib/mock-auth';
 import { User, ChevronDown, LogOut, Settings, UserCircle } from 'lucide-react';
 import { useState } from 'react';
 import type { UserRole } from '@/types';
@@ -25,7 +27,13 @@ const roleColors: Record<UserRole, string> = {
 };
 
 export default function UserMenu({ userName, userRole, compact = false }: UserMenuProps) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
+
+  const handleLogout = () => {
+    clearSession();
+    router.push('/login');
+  };
 
   return (
     <div className="relative">
@@ -70,7 +78,7 @@ export default function UserMenu({ userName, userRole, compact = false }: UserMe
             </button>
           </div>
           <div className="border-t border-border-default p-1">
-            <button className="flex items-center gap-2 w-full px-3 py-2 text-sm text-danger-600 hover:bg-danger-50 rounded-md">
+            <button onClick={handleLogout} className="flex items-center gap-2 w-full px-3 py-2 text-sm text-danger-600 hover:bg-danger-50 rounded-md">
               <LogOut className="h-4 w-4" />
               تسجيل الخروج
             </button>

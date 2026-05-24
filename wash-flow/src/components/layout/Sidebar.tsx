@@ -1,6 +1,8 @@
 'use client';
+import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { navigationItems } from '@/lib/mock-data';
+import { clearSession } from '@/lib/mock-auth';
 import type { UserRole } from '@/types';
 import * as Icons from 'lucide-react';
 
@@ -29,7 +31,18 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 };
 
 export default function Sidebar({ userRole, activePath = '/', compact = false, onClose }: SidebarProps) {
+  const router = useRouter();
   const filteredItems = navigationItems.filter((item) => item.roles.includes(userRole));
+
+  const handleNavigate = (href: string) => {
+    router.push(href);
+    onClose?.();
+  };
+
+  const handleLogout = () => {
+    clearSession();
+    router.push('/login');
+  };
 
   return (
     <aside
@@ -59,10 +72,9 @@ export default function Sidebar({ userRole, activePath = '/', compact = false, o
           const isActive = activePath === item.href;
 
           return (
-            <a
+            <button
               key={item.href}
-              href={item.href}
-              onClick={(e) => { e.preventDefault(); onClose?.(); }}
+              onClick={() => handleNavigate(item.href)}
               className={cn(
                 'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all',
                 isActive
@@ -83,7 +95,7 @@ export default function Sidebar({ userRole, activePath = '/', compact = false, o
                   )}
                 </>
               )}
-            </a>
+            </button>
           );
         })}
       </nav>
@@ -91,7 +103,7 @@ export default function Sidebar({ userRole, activePath = '/', compact = false, o
       {/* Logout */}
       <div className="p-2 border-t border-white/10">
         <button
-          onClick={() => {}}
+          onClick={handleLogout}
           className={cn(
             'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-white/50 hover:text-white hover:bg-white/10 transition-all w-full',
             compact && 'justify-center px-2'

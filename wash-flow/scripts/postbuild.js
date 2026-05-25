@@ -12,5 +12,6 @@ if (fs.existsSync(outDir)) {
   fs.renameSync(outDir, nextDir);
   console.log('Moved out/ -> .next/');
 } else {
-  console.log('No out/ directory found, skipping move');
+  console.error('ERROR: out/ directory not found. Static export failed.');
+  process.exit(1);
 }

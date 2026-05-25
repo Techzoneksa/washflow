@@ -2,8 +2,8 @@ const fs = require('fs');
 const path = require('path');
 
 const root = path.resolve(__dirname, '..');
-const outDir = path.join(root, 'out');
 const nextDir = path.join(root, '.next');
+const outDir = path.join(root, 'out');
 
 if (fs.existsSync(outDir)) {
   if (fs.existsSync(nextDir)) {

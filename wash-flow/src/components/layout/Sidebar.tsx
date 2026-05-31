@@ -22,6 +22,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Wallet: Icons.Wallet,
   Truck: Icons.Truck,
   Package: Icons.Package,
+  Boxes: Icons.Boxes,
   Users: Icons.Users,
   Banknote: Icons.Banknote,
   BarChart3: Icons.BarChart3,

@@ -1,6 +1,5 @@
 'use client';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { navigationItems } from '@/lib/mock-data';
 import { clearSession } from '@/lib/mock-auth';
@@ -33,12 +32,11 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 };
 
 export default function Sidebar({ userRole, activePath = '/', compact = false, onClose }: SidebarProps) {
-  const router = useRouter();
   const filteredItems = navigationItems.filter((item) => item.roles.includes(userRole));
 
   const handleLogout = () => {
     clearSession();
-    router.push('/login');
+    window.location.href = '/login';
   };
 
   return (

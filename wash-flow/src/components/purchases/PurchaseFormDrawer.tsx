@@ -6,8 +6,9 @@ import Select from '@/components/ui/Select';
 import Textarea from '@/components/ui/Textarea';
 import Button from '@/components/ui/Button';
 import { getSuppliers } from '@/lib/mock-suppliers';
+import { getInventoryItems, addStockMovement } from '@/lib/mock-inventory';
 import { formatCurrency } from '@/lib/utils';
-import { Plus, Trash2, Save } from 'lucide-react';
+import { Plus, Trash2, Save, Boxes } from 'lucide-react';
 
 interface PurchaseItemForm {
   id: string;
@@ -16,6 +17,8 @@ interface PurchaseItemForm {
   unit: string;
   unitPrice: number;
   total: number;
+  isInventoryItem: boolean;
+  inventoryItemId: string;
 }
 
 export interface PurchaseFormData {
@@ -66,12 +69,16 @@ function createEmptyItem(): PurchaseItemForm {
     unit: 'حبة',
     unitPrice: 0,
     total: 0,
+    isInventoryItem: false,
+    inventoryItemId: '',
   };
 }
 
 export default function PurchaseFormDrawer({ open, onClose, onSave, preselectedSupplierId }: PurchaseFormDrawerProps) {
   const suppliers = getSuppliers();
   const supplierOptions = suppliers.map((s) => ({ label: s.name, value: s.id }));
+  const inventoryItems = getInventoryItems();
+  const inventoryItemOptions = inventoryItems.map((item) => ({ label: `${item.name} (متوفر: ${item.currentQuantity} ${item.unit})`, value: item.id }));
 
   const [supplierId, setSupplierId] = useState(preselectedSupplierId || '');
   const [supplierInvoiceNumber, setSupplierInvoiceNumber] = useState('');
@@ -142,12 +149,32 @@ export default function PurchaseFormDrawer({ open, onClose, onSave, preselectedS
 
   const handleSave = () => {
     if (!validate()) return;
+
+    items.forEach((item) => {
+      if (item.isInventoryItem && item.inventoryItemId) {
+        const inventoryItem = inventoryItems.find(inv => inv.id === item.inventoryItemId);
+        if (inventoryItem) {
+          addStockMovement({
+            itemId: inventoryItem.id,
+            itemName: inventoryItem.name,
+            type: 'purchase',
+            quantity: item.quantity,
+            unit: item.unit,
+            reason: `شراء من ${supplierName} - فاتورة رقم ${supplierInvoiceNumber || 'غير محدد'}`,
+            referenceType: 'purchase',
+            referenceId: '',
+            createdBy: 'مالك النظام',
+          });
+        }
+      }
+    });
+
     onSave({
       supplierId,
       supplierName,
       supplierInvoiceNumber: supplierInvoiceNumber || undefined,
       date,
-      items: items.map(({ id, name, quantity, unit, unitPrice, total }) => ({ id, name, quantity, unit, unitPrice, total })),
+      items: items.map(({ id, name, quantity, unit, unitPrice, total, isInventoryItem, inventoryItemId }) => ({ id, name, quantity, unit, unitPrice, total, isInventoryItem, inventoryItemId })),
       subtotal,
       vatAmount,
       total,
@@ -247,6 +274,42 @@ export default function PurchaseFormDrawer({ open, onClose, onSave, preselectedS
               <div className="text-left text-sm">
                 <span className="text-text-secondary">الإجمالي: </span>
                 <span className="font-semibold tabular-nums">{formatCurrency(item.total)}</span>
+              </div>
+
+              <div className="border-t border-border-subtle pt-2 mt-2">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={item.isInventoryItem}
+                    onChange={(e) => {
+                      updateItem(item.id, 'isInventoryItem', e.target.checked);
+                      if (!e.target.checked) {
+                        updateItem(item.id, 'inventoryItemId', '');
+                      }
+                    }}
+                    className="w-4 h-4 rounded border-border-default text-primary-500 focus:ring-primary-500"
+                  />
+                  <Boxes className="h-4 w-4 text-primary-500" />
+                  <span className="text-sm text-text-primary">إضافة إلى المخزون</span>
+                </label>
+                {item.isInventoryItem && (
+                  <div className="mt-2">
+                    <Select
+                      label="اختر المادة من المخزون"
+                      options={[{ label: 'اختر مادة...', value: '' }, ...inventoryItemOptions]}
+                      value={item.inventoryItemId}
+                      onChange={(e) => {
+                        updateItem(item.id, 'inventoryItemId', e.target.value);
+                        const selectedItem = inventoryItems.find(inv => inv.id === e.target.value);
+                        if (selectedItem) {
+                          updateItem(item.id, 'name', selectedItem.name);
+                          updateItem(item.id, 'unit', selectedItem.unit);
+                        }
+                      }}
+                      fullWidth
+                    />
+                  </div>
+                )}
               </div>
             </div>
           ))}

@@ -9,10 +9,16 @@ import { Search, X } from 'lucide-react';
 interface ServiceGridProps {
   cartServiceIds: Set<string>;
   onAddService: (service: WashService) => void;
-  compact?: boolean;
+  breakpoint?: 'mobile' | 'tablet' | 'desktop';
 }
 
-export default function ServiceGrid({ cartServiceIds, onAddService, compact }: ServiceGridProps) {
+const columnClasses = {
+  mobile: 'grid-cols-2',
+  tablet: 'grid-cols-3 xl:grid-cols-4',
+  desktop: 'grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5',
+};
+
+export default function ServiceGrid({ cartServiceIds, onAddService, breakpoint = 'desktop' }: ServiceGridProps) {
   const [activeCategory, setActiveCategory] = useState('الكل');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -73,10 +79,7 @@ export default function ServiceGrid({ cartServiceIds, onAddService, compact }: S
             <p className="text-sm text-text-secondary">لا توجد خدمات مطابقة</p>
           </div>
         ) : (
-          <div className={cn(
-            'grid gap-2',
-            compact ? 'grid-cols-3 sm:grid-cols-4' : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5',
-          )}>
+          <div className={`grid ${columnClasses[breakpoint]} gap-2`}>
             {filteredServices.map((service) => (
               <ServiceCard
                 key={service.id}
@@ -90,8 +93,4 @@ export default function ServiceGrid({ cartServiceIds, onAddService, compact }: S
       </div>
     </div>
   );
-}
-
-function cn(...inputs: (string | undefined | null | false)[]): string {
-  return inputs.filter(Boolean).join(' ');
 }

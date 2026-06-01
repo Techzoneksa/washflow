@@ -21,19 +21,16 @@ import { ShoppingCart } from 'lucide-react';
 export default function PosShell() {
   const { toast } = useToast();
 
-  // Cart state
   const [cartItems, setCartItems] = useState<CartItemType[]>([]);
   const [customerInfo, setCustomerInfo] = useState<PosCustomerInfo>({});
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null);
   const [mixedPayment, setMixedPayment] = useState<MixedPayment>({ cash: 0, card: 0, transfer: 0 });
 
-  // Order flow state
   const [submitting, setSubmitting] = useState(false);
   const [completedOrder, setCompletedOrder] = useState<PosOrder | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showInvoice, setShowInvoice] = useState(false);
 
-  // Mobile cart sheet
   const [showCartSheet, setShowCartSheet] = useState(false);
 
   const cartServiceIds = new Set(cartItems.map(i => i.serviceId));
@@ -41,7 +38,6 @@ export default function PosShell() {
 
   const handleAddService = useCallback((service: WashService) => {
     setCartItems(prev => addToCart(prev, service));
-    setPaymentMethod(prev => prev);
   }, []);
 
   const handleUpdateQuantity = useCallback((serviceId: string, quantity: number) => {
@@ -69,7 +65,6 @@ export default function PosShell() {
 
     setSubmitting(true);
 
-    // Simulate order creation
     setTimeout(() => {
       const order = createMockOrder(cartItems, paymentMethod, customerInfo, mixedPayment);
       setCompletedOrder(order);
@@ -97,7 +92,6 @@ export default function PosShell() {
     setShowInvoice(true);
   }, []);
 
-  // Shared cart panel props
   const cartPanelProps = {
     items: cartItems,
     customerInfo,
@@ -115,34 +109,15 @@ export default function PosShell() {
 
   return (
     <>
-      {/* ===== Tablet / Desktop Layout ===== */}
-      <div className="hidden md:flex h-full gap-4 lg:gap-6">
-        {/* Services Area */}
-        <div className="flex-1 min-w-0">
-          <ServiceGrid cartServiceIds={cartServiceIds} onAddService={handleAddService} />
-        </div>
-
-        {/* Cart Panel */}
-        <div className="w-[340px] lg:w-[380px] shrink-0 flex flex-col bg-bg-surface border border-border-default rounded-xl">
-          <CartPanel {...cartPanelProps} />
-        </div>
-
-        {/* Today Orders (Desktop only) */}
-        <div className="hidden xl:block w-[260px] shrink-0">
-          <TodayOrdersPanel />
-        </div>
-      </div>
-
-      {/* ===== Mobile Layout ===== */}
+      {/* ===== Mobile Layout (< 768px) ===== */}
       <div className="md:hidden flex flex-col h-full">
-        <ServiceGrid cartServiceIds={cartServiceIds} onAddService={handleAddService} compact />
+        <div className="flex-1 min-h-0">
+          <ServiceGrid cartServiceIds={cartServiceIds} onAddService={handleAddService} breakpoint="mobile" />
+        </div>
 
-        {/* Cart FAB */}
         {cartItems.length > 0 && (
           <>
-            <div className={`fixed bottom-0 left-0 right-0 z-40 p-4 bg-gradient-to-t from-bg-main via-bg-main/95 to-transparent pointer-events-none ${
-              showCartSheet ? 'hidden' : ''
-            }`}>
+            <div className={`fixed bottom-0 left-0 right-0 z-40 p-4 bg-gradient-to-t from-bg-main via-bg-main/95 to-transparent pointer-events-none ${showCartSheet ? 'hidden' : ''}`}>
               <div className="pointer-events-auto">
                 <button
                   onClick={() => setShowCartSheet(true)}
@@ -165,10 +140,45 @@ export default function PosShell() {
           </>
         )}
 
-        {/* Cart Bottom Sheet */}
         <BottomSheet open={showCartSheet} onClose={() => setShowCartSheet(false)} height="full" title="سلة الطلب">
           <CartPanel {...cartPanelProps} />
         </BottomSheet>
+      </div>
+
+      {/* ===== Tablet Layout (768px - 1023px) ===== */}
+      <div className="hidden md:flex lg:hidden h-full gap-3">
+        {/* Services Area - 65% */}
+        <div className="flex-[15] min-w-0 flex flex-col">
+          <ServiceGrid cartServiceIds={cartServiceIds} onAddService={handleAddService} breakpoint="tablet" />
+        </div>
+
+        {/* Cart Panel - 35% */}
+        <div className="w-[320px] xl:w-[360px] shrink-0 flex flex-col bg-bg-surface border border-border-default rounded-xl">
+          <CartPanel {...cartPanelProps} />
+        </div>
+      </div>
+
+      {/* ===== Desktop Layout (1024px+) ===== */}
+      <div className="hidden lg:flex h-full gap-4 xl:gap-5">
+        {/* Services Area */}
+        <div className="flex-1 min-w-0 flex flex-col">
+          <ServiceGrid cartServiceIds={cartServiceIds} onAddService={handleAddService} breakpoint="desktop" />
+        </div>
+
+        {/* Cart Panel */}
+        <div className="w-[340px] xl:w-[380px] shrink-0 flex flex-col bg-bg-surface border border-border-default rounded-xl">
+          <CartPanel {...cartPanelProps} />
+        </div>
+
+        {/* Today Orders (collapsible) */}
+        <div className="hidden xl:flex w-[260px] shrink-0 flex-col">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-semibold text-text-primary">آخر الطلبات</h3>
+          </div>
+          <div className="flex-1 overflow-y-auto">
+            <TodayOrdersPanel />
+          </div>
+        </div>
       </div>
 
       {/* ===== Modals ===== */}

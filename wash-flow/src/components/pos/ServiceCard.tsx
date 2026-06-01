@@ -23,15 +23,15 @@ export default function ServiceCard({ service, onAdd, added }: ServiceCardProps)
           : 'border-border-default bg-bg-surface hover:shadow-sm',
       )}
     >
-      <span className="text-2xl leading-none">{getServiceIcon(service.icon)}</span>
-      <span className="text-xs font-semibold text-text-primary leading-tight px-1">{service.nameAr}</span>
+      <span className="text-2xl sm:text-3xl leading-none">{getServiceIcon(service.icon)}</span>
+      <span className="text-xs sm:text-sm font-semibold text-text-primary leading-tight px-1">{service.nameAr}</span>
       {service.price > 0 ? (
-        <span className="text-sm font-bold text-primary-600">{formatCurrency(service.price)}</span>
+        <span className="text-sm sm:text-base font-bold text-primary-600">{formatCurrency(service.price)}</span>
       ) : (
         <span className="text-[10px] text-text-secondary">متغير</span>
       )}
-      <span className="flex items-center gap-0.5 text-[10px] text-text-disabled">
-        <Clock className="h-2.5 w-2.5" />
+      <span className="flex items-center gap-0.5 text-[10px] sm:text-xs text-text-disabled">
+        <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
         {service.duration}
       </span>
       {added && (

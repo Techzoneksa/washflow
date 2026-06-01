@@ -1,33 +1,77 @@
 const fs = require('fs');
 const path = require('path');
 
-const root = path.resolve(__dirname, '..');
+const root = process.cwd();
 const nextDir = path.join(root, '.next');
 const outDir = path.join(root, 'out');
 
 console.log('=== HOSTINGER DEPLOYMENT SCRIPT ===');
-console.log('Checking static export output: out/');
+console.log('Current working directory:', root);
+console.log('');
+
+// Debug: list root directory contents
+console.log('Directory listing (root):');
+try {
+  const items = fs.readdirSync(root);
+  items.forEach(item => {
+    const itemPath = path.join(root, item);
+    const stat = fs.statSync(itemPath);
+    console.log(`  ${stat.isDirectory() ? '[DIR]' : '[FILE]'} ${item}`);
+  });
+} catch (e) {
+  console.log('  Error reading root:', e.message);
+}
+
+console.log('');
+console.log('Checking for out/ directory...');
+console.log('outDir path:', outDir);
+console.log('outDir exists:', fs.existsSync(outDir));
+
+console.log('');
+console.log('Checking for .next/ directory...');
+console.log('nextDir path:', nextDir);
+console.log('nextDir exists:', fs.existsSync(nextDir));
+
+// Check various possible locations
+console.log('');
+console.log('Searching for index.html in common locations:');
+const possibleIndexPaths = [
+  path.join(root, 'out', 'index.html'),
+  path.join(root, '.next', 'index.html'),
+  path.join(root, 'index.html'),
+  path.join(root, '.next', 'server', 'app', 'index.html'),
+];
+possibleIndexPaths.forEach(p => {
+  console.log(`  ${p} -> ${fs.existsSync(p) ? 'EXISTS' : 'NOT FOUND'}`);
+});
 
 if (!fs.existsSync(outDir)) {
-  console.error('ERROR: out/ directory not found. Static export failed.');
-  console.error('Make sure output: "export" is set in next.config.ts');
+  console.log('');
+  console.log('ERROR: out/ directory not found.');
+  console.log('Static export may have failed or output to different location.');
+  console.log('');
+  console.log('Checking if .next/server/app exists (non-static build):');
+  const serverAppIndex = path.join(root, '.next', 'server', 'app', 'index.html');
+  if (fs.existsSync(serverAppIndex)) {
+    console.log('WARNING: Found .next/server/app/index.html - this is a dynamic build, not static export!');
+    console.log('This means output: "export" may not be working correctly in Hostinger environment.');
+  }
   process.exit(1);
 }
 
+console.log('');
 console.log('Found out/ directory');
 
-// Remove old .next if exists
 if (fs.existsSync(nextDir)) {
   console.log('Removing old .next/ directory...');
   fs.rmSync(nextDir, { recursive: true, force: true });
 }
 
-// Move out/ to .next/
 console.log('Moving out/ to .next/...');
 fs.renameSync(outDir, nextDir);
 console.log('Moved out/ -> .next/');
 
-// Verification checks
+console.log('');
 console.log('=== VERIFICATION ===');
 
 const indexPath = path.join(nextDir, 'index.html');
@@ -52,11 +96,11 @@ if (!fs.existsSync(staticDir)) {
 }
 console.log('.next/_next/static verified');
 
-// List all pages
 const pages = ['dashboard', 'pos', 'orders', 'invoices', 'services', 'suppliers',
                 'purchases', 'expenses', 'utility-bills', 'employees', 'reports',
                 'inventory', 'stock-movements', 'stock-adjustments', 'waste'];
 
+console.log('');
 console.log('Checking page directories...');
 for (const page of pages) {
   const pagePath = path.join(nextDir, page, 'index.html');

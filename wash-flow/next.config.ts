@@ -3,7 +3,8 @@ import type { NextConfig } from "next";
 console.log('NEXT CONFIG LOADED - STATIC EXPORT ENABLED');
 
 const nextConfig: NextConfig = {
-  output: 'export',
+  output: "export",
+  distDir: "out",
   images: {
     unoptimized: true,
   },

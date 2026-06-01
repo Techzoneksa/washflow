@@ -4,7 +4,6 @@ console.log('NEXT CONFIG LOADED - STATIC EXPORT ENABLED');
 
 const nextConfig: NextConfig = {
   output: "export",
-  distDir: ".next",
   images: {
     unoptimized: true,
   },

@@ -1,103 +1,41 @@
-const fs = require('fs');
 const path = require('path');
+const fs = require('fs');
 
 const root = process.cwd();
-const nextDir = path.join(root, '.next');
 const outDir = path.join(root, 'out');
+const nextDir = path.join(root, '.next');
+const nextServerApp = path.join(root, '.next', 'server', 'app');
 
 console.log('=== HOSTINGER DEPLOYMENT SCRIPT ===');
 console.log('Current working directory:', root);
 console.log('');
 
-// Debug: list root directory contents
-console.log('Directory listing (root):');
-try {
-  const items = fs.readdirSync(root);
-  items.forEach(item => {
-    const itemPath = path.join(root, item);
-    const stat = fs.statSync(itemPath);
-    console.log(`  ${stat.isDirectory() ? '[DIR]' : '[FILE]'} ${item}`);
-  });
-} catch (e) {
-  console.log('  Error reading root:', e.message);
-}
-
-console.log('');
 console.log('Checking for out/ directory...');
-console.log('outDir path:', outDir);
 console.log('outDir exists:', fs.existsSync(outDir));
-
-console.log('');
-console.log('Checking for .next/ directory...');
-console.log('nextDir path:', nextDir);
-console.log('nextDir exists:', fs.existsSync(nextDir));
-
-// Check various possible locations
-console.log('');
-console.log('Searching for index.html in common locations:');
-const possibleIndexPaths = [
-  path.join(root, 'out', 'index.html'),
-  path.join(root, '.next', 'index.html'),
-  path.join(root, 'index.html'),
-  path.join(root, '.next', 'server', 'app', 'index.html'),
-];
-possibleIndexPaths.forEach(p => {
-  console.log(`  ${p} -> ${fs.existsSync(p) ? 'EXISTS' : 'NOT FOUND'}`);
-});
 
 if (!fs.existsSync(outDir)) {
   console.log('');
-  console.log('ERROR: out/ directory not found.');
-  console.log('Static export may have failed or output to different location.');
-  console.log('');
-  console.log('Checking if .next/server/app exists (non-static build):');
-  const serverAppIndex = path.join(root, '.next', 'server', 'app', 'index.html');
-  if (fs.existsSync(serverAppIndex)) {
-    console.log('WARNING: Found .next/server/app/index.html - this is a dynamic build, not static export!');
-    console.log('This means output: "export" may not be working correctly in Hostinger environment.');
+  console.log('out/ NOT found. Checking for .next/server/app...');
+  if (fs.existsSync(nextServerApp)) {
+    console.log('Found .next/server/app — copying to out/');
+    fs.mkdirSync(outDir, { recursive: true });
+    copyDirRecursive(nextServerApp, outDir);
+    console.log('Done: out/ directory created from .next/server/app');
+  } else {
+    console.error('ERROR: Neither out/ nor .next/server/app found.');
+    process.exit(1);
   }
-  process.exit(1);
+} else {
+  console.log('Found out/ directory — proceeding normally.');
 }
 
 console.log('');
-console.log('Found out/ directory');
-console.log('out/ contents:');
-try {
-  const outItems = fs.readdirSync(outDir);
-  outItems.forEach(item => {
-    const itemPath = path.join(outDir, item);
-    const stat = fs.statSync(itemPath);
-    console.log(`  ${stat.isDirectory() ? '[DIR]' : '[FILE]'} ${item}`);
-  });
-} catch (e) {
-  console.log('  Error reading out/:', e.message);
+console.log('Verifying out/index.html...');
+if (!fs.existsSync(path.join(outDir, 'index.html'))) {
+  console.error('ERROR: out/index.html still not found after copy!');
+  process.exit(1);
 }
-console.log('');
-console.log('Checking out/index.html...');
-const outIndexHtml = path.join(outDir, 'index.html');
-console.log(`out/index.html exists: ${fs.existsSync(outIndexHtml)}`);
-if (fs.existsSync(outIndexHtml)) {
-  console.log('out/index.html FOUND');
-} else {
-  console.log('out/index.html NOT FOUND');
-  console.log('Checking for any index.html in out/ subdirectories...');
-  function findIndexHtml(dir, depth = 0) {
-    if (depth > 3) return;
-    try {
-      const items = fs.readdirSync(dir);
-      for (const item of items) {
-        const itemPath = path.join(dir, item);
-        const stat = fs.statSync(itemPath);
-        if (stat.isFile() && item === 'index.html') {
-          console.log(`  FOUND: ${itemPath}`);
-        } else if (stat.isDirectory()) {
-          findIndexHtml(itemPath, depth + 1);
-        }
-      }
-    } catch (e) {}
-  }
-  findIndexHtml(outDir);
-}
+console.log('out/index.html verified');
 
 if (fs.existsSync(nextDir)) {
   console.log('Removing old .next/ directory...');
@@ -105,66 +43,8 @@ if (fs.existsSync(nextDir)) {
 }
 
 console.log('Moving out/ to .next/...');
-try {
-  fs.renameSync(outDir, nextDir);
-  console.log('Moved out/ -> .next/');
-} catch (e) {
-  console.error('Rename failed:', e.message);
-  console.error('Trying copy+delete instead...');
-  copyDirRecursive(outDir, nextDir);
-  fs.rmSync(outDir, { recursive: true, force: true });
-  console.log('Copied out/ -> .next/ (and deleted original)');
-}
-
-function copyDirRecursive(src, dest) {
-  fs.mkdirSync(dest, { recursive: true });
-  const items = fs.readdirSync(src);
-  for (const item of items) {
-    const srcPath = path.join(src, item);
-    const destPath = path.join(dest, item);
-    const stat = fs.statSync(srcPath);
-    if (stat.isDirectory()) {
-      copyDirRecursive(srcPath, destPath);
-    } else {
-      fs.copyFileSync(srcPath, destPath);
-    }
-  }
-}
-
-console.log('');
-console.log('=== AFTER MOVE: .next/ contents ===');
-try {
-  const nextItems = fs.readdirSync(nextDir);
-  nextItems.forEach(item => {
-    const itemPath = path.join(nextDir, item);
-    const stat = fs.statSync(itemPath);
-    console.log(`  ${stat.isDirectory() ? '[DIR]' : '[FILE]'} ${item}`);
-  });
-} catch (e) {
-  console.log('  Error reading .next/:', e.message);
-}
-console.log('');
-console.log('Checking .next/_next/...');
-const nextNextDir = path.join(nextDir, '_next');
-if (fs.existsSync(nextNextDir)) {
-  console.log('.next/_next/ exists');
-  try {
-    const nextNextItems = fs.readdirSync(nextNextDir);
-    nextNextItems.forEach(item => {
-      const itemPath = path.join(nextNextDir, item);
-      const stat = fs.statSync(itemPath);
-      console.log(`  ${stat.isDirectory() ? '[DIR]' : '[FILE]'} ${item}`);
-    });
-  } catch (e) {
-    console.log('  Error reading .next/_next/:', e.message);
-  }
-} else {
-  console.log('.next/_next/ NOT FOUND');
-}
-console.log('');
-console.log('Checking .next/index.html...');
-const nextIndexHtml = path.join(nextDir, 'index.html');
-console.log(`.next/index.html exists: ${fs.existsSync(nextIndexHtml)}`);
+fs.renameSync(outDir, nextDir);
+console.log('Moved out/ -> .next/');
 
 console.log('');
 console.log('=== VERIFICATION ===');
@@ -211,3 +91,18 @@ console.log('=== STATIC EXPORT READY FOR HOSTINGER ===');
 console.log('Static export completed successfully!');
 console.log('Output directory: .next/');
 console.log('All static files are ready for deployment.');
+
+function copyDirRecursive(src, dest) {
+  fs.mkdirSync(dest, { recursive: true });
+  const items = fs.readdirSync(src);
+  for (const item of items) {
+    const srcPath = path.join(src, item);
+    const destPath = path.join(dest, item);
+    const stat = fs.statSync(srcPath);
+    if (stat.isDirectory()) {
+      copyDirRecursive(srcPath, destPath);
+    } else {
+      fs.copyFileSync(srcPath, destPath);
+    }
+  }
+}

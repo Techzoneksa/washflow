@@ -46,24 +46,25 @@ export default function BottomSheet({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center sm:justify-center">
       <div
         className="absolute inset-0 bg-overlay animate-fade-in"
         onClick={onClose}
       />
       <div
         className={cn(
-          'relative w-full bg-bg-surface rounded-t-2xl shadow-modal animate-slide-up flex flex-col',
+          'relative w-full sm:w-auto sm:max-w-2xl bg-bg-surface rounded-t-2xl sm:rounded-xl shadow-modal animate-slide-up flex flex-col',
+          'sm:mx-4',
           heightStyles[height]
         )}
       >
-        {/* Handle Bar */}
-        <div className="flex justify-center pt-2 pb-1">
+        {/* Handle Bar - hidden on sm+ */}
+        <div className="flex justify-center pt-2 pb-1 sm:hidden">
           <div className="w-10 h-1 rounded-full bg-neutral-300" />
         </div>
 
         {(title) && (
-          <div className="flex items-center justify-between px-4 py-2 border-b border-border-default">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-border-default">
             <h2 className="text-base font-semibold text-text-primary">{title}</h2>
             <button
               onClick={onClose}

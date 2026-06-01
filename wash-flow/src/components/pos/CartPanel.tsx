@@ -58,7 +58,7 @@ export default function CartPanel({
         )}
       </div>
 
-      <div className="flex-1 overflow-y-auto space-y-2 py-2">
+      <div className="flex-1 overflow-y-auto space-y-1.5 py-2">
         {isEmpty ? (
           <div className="flex flex-col items-center justify-center py-8 text-center">
             <ShoppingCart className="h-10 w-10 text-text-disabled mb-2" />
@@ -81,7 +81,7 @@ export default function CartPanel({
       </div>
 
       {!isEmpty && (
-        <div className="shrink-0 space-y-3 pt-2 border-t border-border-default">
+        <div className="shrink-0 space-y-2.5 pt-2 border-t border-border-default">
           <CustomerInfoForm value={customerInfo} onChange={onCustomerInfoChange} />
           <PaymentMethodSelector value={paymentMethod} onChange={onPaymentMethodChange} />
           {paymentMethod === 'mixed' && (
@@ -90,7 +90,7 @@ export default function CartPanel({
           <OrderSummary tax={tax} />
 
           {!isMixedValid && (
-            <div className="flex items-center gap-2 p-2.5 rounded-lg bg-danger-50 text-danger-700 text-xs">
+            <div className="flex items-center gap-2 p-2 rounded-lg bg-danger-50 text-danger-700 text-xs">
               <AlertTriangle className="h-4 w-4 shrink-0" />
               المبالغ لا تساوي الإجمالي
             </div>
@@ -103,7 +103,7 @@ export default function CartPanel({
             disabled={!canSubmit || !isMixedValid}
             onClick={onCompleteOrder}
           >
-                            إتمام الطلب — {formatCurrency(tax.total)}
+            إتمام الطلب — {formatCurrency(tax.total)}
           </Button>
         </div>
       )}

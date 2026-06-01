@@ -4,7 +4,7 @@ import { serviceCategories } from '@/lib/mock-pos';
 import { getPOSWashServices } from '@/lib/mock-services';
 import type { WashService } from '@/types/pos';
 import ServiceCard from './ServiceCard';
-import { Search } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 
 interface ServiceGridProps {
   cartServiceIds: Set<string>;
@@ -30,18 +30,26 @@ export default function ServiceGrid({ cartServiceIds, onAddService, compact }: S
 
   return (
     <div className="flex flex-col h-full">
-      <div className="shrink-0 space-y-2 mb-3">
+      <div className="shrink-0 space-y-2 mb-2">
         <div className="relative">
-          <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-disabled pointer-events-none" />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute left-2 top-1/2 -translate-y-1/2 p-1 text-text-disabled hover:text-text-secondary"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
           <input
             type="text"
             placeholder="بحث عن خدمة..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pr-9 pl-3 py-2 text-sm rounded-lg border border-border-default bg-bg-surface text-text-primary placeholder:text-text-disabled focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            className="w-full pl-8 pr-9 py-2 text-sm rounded-lg border border-border-default bg-bg-surface text-text-primary placeholder:text-text-disabled focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           />
+          <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-disabled pointer-events-none" />
         </div>
-        <div className="flex gap-1.5 overflow-x-auto scrollbar-none pb-1">
+        <div className="flex gap-1.5 overflow-x-auto scrollbar-none -mx-1 px-1">
           {serviceCategories.map((cat) => (
             <button
               key={cat}
@@ -66,17 +74,16 @@ export default function ServiceGrid({ cartServiceIds, onAddService, compact }: S
           </div>
         ) : (
           <div className={cn(
-            'grid gap-2 sm:gap-3',
-            compact ? 'grid-cols-2 sm:grid-cols-3' : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4',
+            'grid gap-2',
+            compact ? 'grid-cols-3 sm:grid-cols-4' : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5',
           )}>
             {filteredServices.map((service) => (
-              <div key={service.id} className="relative">
-                <ServiceCard
-                  service={service}
-                  onAdd={() => onAddService(service)}
-                  added={cartServiceIds.has(service.id)}
-                />
-              </div>
+              <ServiceCard
+                key={service.id}
+                service={service}
+                onAdd={() => onAddService(service)}
+                added={cartServiceIds.has(service.id)}
+              />
             ))}
           </div>
         )}

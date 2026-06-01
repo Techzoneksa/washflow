@@ -20,7 +20,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 export default function MobileBottomNav({ activePath = '/' }: MobileBottomNavProps) {
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 bg-bg-surface border-t border-border-default safe-area-bottom">
-      <div className="flex items-center justify-around h-16">
+      <div className="grid grid-cols-5 h-16">
         {mobileNavItems.map((item) => {
           const IconComp = iconMap[item.icon] || Icons.Circle;
           const isActive = activePath === item.href;
@@ -30,8 +30,8 @@ export default function MobileBottomNav({ activePath = '/' }: MobileBottomNavPro
               key={item.href}
               href={item.href}
               className={cn(
-                'flex flex-col items-center justify-center gap-0.5 px-3 py-1.5 min-w-[60px]',
-                isActive ? 'text-primary-500' : 'text-text-secondary'
+                'flex flex-col items-center justify-center gap-0.5 transition-colors',
+                isActive ? 'text-primary-500' : 'text-text-secondary hover:text-text-primary'
               )}
             >
               <IconComp className={cn('h-5 w-5', isActive && 'fill-primary-500/20')} />

@@ -44,24 +44,24 @@ export default function Sidebar({ userRole, activePath = '/', compact = false, o
       dir="rtl"
       className={cn(
         'h-full bg-bg-sidebar text-white flex flex-col overflow-hidden transition-all duration-300',
-        compact ? 'w-16' : 'w-64'
+        compact ? 'w-16' : 'w-60'
       )}
     >
       {/* Logo */}
-      <div className={cn('flex items-center gap-2 px-4 h-16 border-b border-white/10 shrink-0', compact && 'justify-center px-2')}>
-        <div className="w-8 h-8 rounded-lg bg-primary-500 flex items-center justify-center shrink-0">
+      <div className={cn('flex items-center gap-2.5 px-4 h-16 border-b border-white/10 shrink-0', compact && 'justify-center px-0')}>
+        <div className="w-9 h-9 rounded-lg bg-primary-500 flex items-center justify-center shrink-0">
           <Icons.Droplets className="h-5 w-5 text-white" />
         </div>
         {!compact && (
           <div>
             <h1 className="text-sm font-bold text-white leading-tight">Wash Flow</h1>
-            <p className="text-[10px] text-white/60">ادارة غسيل السيارات</p>
+            <p className="text-[10px] text-white/60">إدارة غسيل السيارات</p>
           </div>
         )}
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-1">
+      <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-0.5">
         {filteredItems.map((item) => {
           const IconComp = iconMap[item.icon] || Icons.Circle;
           const isActive = activePath === item.href;
@@ -74,9 +74,9 @@ export default function Sidebar({ userRole, activePath = '/', compact = false, o
               className={cn(
                 'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all',
                 isActive
-                  ? 'bg-primary-500/20 text-primary-300 font-medium'
-                  : 'text-white/70 hover:text-white hover:bg-white/10',
-                compact && 'justify-center px-2'
+                  ? 'bg-primary-500/15 text-primary-300 font-medium border-r-2 border-primary-400'
+                  : 'text-white/60 hover:text-white hover:bg-white/5',
+                compact && 'justify-center px-0'
               )}
               title={compact ? item.label : undefined}
             >
@@ -101,8 +101,8 @@ export default function Sidebar({ userRole, activePath = '/', compact = false, o
         <button
           onClick={handleLogout}
           className={cn(
-            'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-white/50 hover:text-white hover:bg-white/10 transition-all w-full',
-            compact && 'justify-center px-2'
+            'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-white/40 hover:text-white hover:bg-white/5 transition-all w-full',
+            compact && 'justify-center px-0'
           )}
         >
           <Icons.LogOut className="h-5 w-5 shrink-0" />

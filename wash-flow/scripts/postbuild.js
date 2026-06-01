@@ -61,6 +61,43 @@ if (!fs.existsSync(outDir)) {
 
 console.log('');
 console.log('Found out/ directory');
+console.log('out/ contents:');
+try {
+  const outItems = fs.readdirSync(outDir);
+  outItems.forEach(item => {
+    const itemPath = path.join(outDir, item);
+    const stat = fs.statSync(itemPath);
+    console.log(`  ${stat.isDirectory() ? '[DIR]' : '[FILE]'} ${item}`);
+  });
+} catch (e) {
+  console.log('  Error reading out/:', e.message);
+}
+console.log('');
+console.log('Checking out/index.html...');
+const outIndexHtml = path.join(outDir, 'index.html');
+console.log(`out/index.html exists: ${fs.existsSync(outIndexHtml)}`);
+if (fs.existsSync(outIndexHtml)) {
+  console.log('out/index.html FOUND');
+} else {
+  console.log('out/index.html NOT FOUND');
+  console.log('Checking for any index.html in out/ subdirectories...');
+  function findIndexHtml(dir, depth = 0) {
+    if (depth > 3) return;
+    try {
+      const items = fs.readdirSync(dir);
+      for (const item of items) {
+        const itemPath = path.join(dir, item);
+        const stat = fs.statSync(itemPath);
+        if (stat.isFile() && item === 'index.html') {
+          console.log(`  FOUND: ${itemPath}`);
+        } else if (stat.isDirectory()) {
+          findIndexHtml(itemPath, depth + 1);
+        }
+      }
+    } catch (e) {}
+  }
+  findIndexHtml(outDir);
+}
 
 if (fs.existsSync(nextDir)) {
   console.log('Removing old .next/ directory...');
@@ -68,8 +105,66 @@ if (fs.existsSync(nextDir)) {
 }
 
 console.log('Moving out/ to .next/...');
-fs.renameSync(outDir, nextDir);
-console.log('Moved out/ -> .next/');
+try {
+  fs.renameSync(outDir, nextDir);
+  console.log('Moved out/ -> .next/');
+} catch (e) {
+  console.error('Rename failed:', e.message);
+  console.error('Trying copy+delete instead...');
+  copyDirRecursive(outDir, nextDir);
+  fs.rmSync(outDir, { recursive: true, force: true });
+  console.log('Copied out/ -> .next/ (and deleted original)');
+}
+
+function copyDirRecursive(src, dest) {
+  fs.mkdirSync(dest, { recursive: true });
+  const items = fs.readdirSync(src);
+  for (const item of items) {
+    const srcPath = path.join(src, item);
+    const destPath = path.join(dest, item);
+    const stat = fs.statSync(srcPath);
+    if (stat.isDirectory()) {
+      copyDirRecursive(srcPath, destPath);
+    } else {
+      fs.copyFileSync(srcPath, destPath);
+    }
+  }
+}
+
+console.log('');
+console.log('=== AFTER MOVE: .next/ contents ===');
+try {
+  const nextItems = fs.readdirSync(nextDir);
+  nextItems.forEach(item => {
+    const itemPath = path.join(nextDir, item);
+    const stat = fs.statSync(itemPath);
+    console.log(`  ${stat.isDirectory() ? '[DIR]' : '[FILE]'} ${item}`);
+  });
+} catch (e) {
+  console.log('  Error reading .next/:', e.message);
+}
+console.log('');
+console.log('Checking .next/_next/...');
+const nextNextDir = path.join(nextDir, '_next');
+if (fs.existsSync(nextNextDir)) {
+  console.log('.next/_next/ exists');
+  try {
+    const nextNextItems = fs.readdirSync(nextNextDir);
+    nextNextItems.forEach(item => {
+      const itemPath = path.join(nextNextDir, item);
+      const stat = fs.statSync(itemPath);
+      console.log(`  ${stat.isDirectory() ? '[DIR]' : '[FILE]'} ${item}`);
+    });
+  } catch (e) {
+    console.log('  Error reading .next/_next/:', e.message);
+  }
+} else {
+  console.log('.next/_next/ NOT FOUND');
+}
+console.log('');
+console.log('Checking .next/index.html...');
+const nextIndexHtml = path.join(nextDir, 'index.html');
+console.log(`.next/index.html exists: ${fs.existsSync(nextIndexHtml)}`);
 
 console.log('');
 console.log('=== VERIFICATION ===');

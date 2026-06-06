@@ -65,12 +65,6 @@ export default function ServicesTable({ services, page, totalPages, onPageChange
       render: (s) => s.showInPOS ? <Badge variant="success" size="sm">ظاهر</Badge> : <Badge variant="neutral" size="sm">مخفي</Badge>,
     },
     {
-      key: 'isTaxable',
-      header: 'الضريبة',
-      hideOnMobile: true,
-      render: (s) => s.isTaxable ? <Badge variant="primary" size="sm">نعم</Badge> : <Badge variant="neutral" size="sm">لا</Badge>,
-    },
-    {
       key: 'actions',
       header: 'الإجراءات',
       className: 'text-left',

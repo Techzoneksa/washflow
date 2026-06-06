@@ -99,13 +99,6 @@ export default function InvoicesPageShell() {
       className: 'text-left',
     },
     {
-      key: 'vatAmount',
-      header: 'ضريبة',
-      hideOnMobile: true,
-      render: (inv) => <span className="text-text-secondary tabular-nums">{formatCurrency(inv.vatAmount)}</span>,
-      className: 'text-left',
-    },
-    {
       key: 'status',
       header: 'الحالة',
       render: (inv) => getStatusBadge(inv.status),

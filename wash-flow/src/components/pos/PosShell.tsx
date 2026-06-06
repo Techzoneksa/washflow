@@ -304,10 +304,7 @@ export default function PosShell() {
                       <span>المجموع</span>
                       <span className="tabular-nums">{formatCurrency(cartTotals.subtotal)}</span>
                     </div>
-                    <div className="flex justify-between text-sm text-[#6B7280]">
-                      <span>ضريبة 15%</span>
-                      <span className="tabular-nums">{formatCurrency(cartTotals.vatAmount)}</span>
-                    </div>
+                    
                     <div className="border-t border-[#E5E7EB] pt-2 flex justify-between">
                       <span className="text-base font-semibold text-[#111827]">الإجمالي</span>
                       <span className="text-lg font-bold text-[#111827] tabular-nums">{formatCurrency(cartTotals.total)}</span>
@@ -503,11 +500,7 @@ export default function PosShell() {
                     <span>المجموع</span>
                     <span className="tabular-nums">{formatCurrency(cartTotals.subtotal)}</span>
                   </div>
-                  <div className="flex justify-between text-sm text-[#6B7280]">
-                    <span>ضريبة 15%</span>
-                    <span className="tabular-nums">{formatCurrency(cartTotals.vatAmount)}</span>
-                  </div>
-                  <div className="border-t border-[#E5E7EB] pt-2 flex justify-between">
+<div className="border-t border-[#E5E7EB] pt-2 flex justify-between">
                     <span className="text-base font-semibold text-[#111827]">الإجمالي</span>
                     <span className="text-lg font-bold text-[#111827] tabular-nums">{formatCurrency(cartTotals.total)}</span>
                   </div>

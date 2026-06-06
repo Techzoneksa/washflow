@@ -4,7 +4,7 @@ import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import type { UtilityBill, UtilityBillType, UtilityBillStatus } from '@/types/utility-bills';
-import { CalendarDays, History, FileText, Building2, Phone, DollarSign, Receipt, CheckCircle2, Clock, Paperclip, Pencil, CreditCard } from 'lucide-react';
+import { CalendarDays, History, FileText, Building2, Phone, DollarSign, CheckCircle2, Clock, Paperclip, Pencil, CreditCard } from 'lucide-react';
 
 const billTypeLabels: Record<UtilityBillType, string> = {
   electricity: 'كهرباء',
@@ -102,13 +102,6 @@ export default function UtilityBillDetailsDrawer({ open, onClose, bill, onEdit, 
               <div className="flex items-center gap-1 font-semibold tabular-nums">
                 <DollarSign className="h-4 w-4 text-text-secondary" />
                 {formatCurrency(bill.amount)}
-              </div>
-            </div>
-            <div>
-              <p className="text-xs text-text-secondary">الضريبة</p>
-              <div className="flex items-center gap-1 font-semibold tabular-nums text-warning-600">
-                <Receipt className="h-4 w-4" />
-                {formatCurrency(bill.vatAmount)}
               </div>
             </div>
             <div>

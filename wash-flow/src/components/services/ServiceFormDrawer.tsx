@@ -166,13 +166,6 @@ export default function ServiceFormDrawer({ open, onClose, onSave, service }: Se
           onChange={(e) => update('showInPOS', e.target.value === 'true')}
           fullWidth
         />
-        <Select
-          label="خاضع للضريبة"
-          options={[{ label: 'نعم', value: 'true' }, { label: 'لا', value: 'false' }]}
-          value={form.isTaxable ? 'true' : 'false'}
-          onChange={(e) => update('isTaxable', e.target.value === 'true')}
-          fullWidth
-        />
         <Input
           label="ترتيب الظهور"
           type="number"

@@ -3,7 +3,7 @@ import Drawer from '@/components/ui/Drawer';
 import Badge from '@/components/ui/Badge';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import type { ServiceItem } from '@/types/services';
-import { Package, Clock, Eye, EyeOff, BadgePercent, Hash, CalendarDays, History } from 'lucide-react';
+import { Package, Clock, Eye, EyeOff, Hash, CalendarDays, History } from 'lucide-react';
 
 interface ServiceDetailsDrawerProps {
   open: boolean;
@@ -74,13 +74,6 @@ export default function ServiceDetailsDrawer({ open, onClose, service, usageCoun
                 <span>الظهور في POS</span>
               </div>
               <span className={service.showInPOS ? 'text-success-600 font-semibold' : 'text-text-disabled'}>{service.showInPOS ? 'نعم' : 'لا'}</span>
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <div className="flex items-center gap-2">
-                <BadgePercent className="h-4 w-4 text-info-500" />
-                <span>خاضع للضريبة</span>
-              </div>
-              <span className={service.isTaxable ? 'text-info-600 font-semibold' : 'text-text-disabled'}>{service.isTaxable ? 'نعم' : 'لا'}</span>
             </div>
             <div className="flex items-center justify-between text-sm">
               <div className="flex items-center gap-2">

@@ -24,7 +24,6 @@ export default function ServicesPageShell() {
   const [status, setStatus] = useState('all');
   const [posVisibility, setPosVisibility] = useState('all');
   const [category, setCategory] = useState('all');
-  const [taxable, setTaxable] = useState('all');
   const [page, setPage] = useState(1);
 
   // Drawer / Modal state
@@ -55,11 +54,9 @@ export default function ServicesPageShell() {
       if (posVisibility === 'visible' && !s.showInPOS) return false;
       if (posVisibility === 'hidden' && s.showInPOS) return false;
       if (category !== 'all' && s.category !== category) return false;
-      if (taxable === 'taxable' && !s.isTaxable) return false;
-      if (taxable === 'non-taxable' && s.isTaxable) return false;
       return true;
     });
-  }, [services, search, status, posVisibility, category, taxable]);
+  }, [services, search, status, posVisibility, category]);
 
   const paginated = useMemo(() => {
     const start = (page - 1) * PAGE_SIZE;
@@ -153,12 +150,10 @@ export default function ServicesPageShell() {
             status={status}
             posVisibility={posVisibility}
             category={category}
-            taxable={taxable}
             onSearchChange={(v) => { setSearch(v); setPage(1); }}
             onStatusChange={(v) => { setStatus(v); setPage(1); }}
             onPosVisibilityChange={(v) => { setPosVisibility(v); setPage(1); }}
             onCategoryChange={(v) => { setCategory(v); setPage(1); }}
-            onTaxableChange={(v) => { setTaxable(v); setPage(1); }}
           />
         </div>
 

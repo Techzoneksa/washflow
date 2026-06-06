@@ -99,22 +99,10 @@ export default function UtilityBillFormDrawer({ open, onClose, onSave, bill }: U
   };
 
   const handleAmountChange = (value: number) => {
-    const vat = form.hasVat ? value * 0.15 : 0;
     setForm((prev) => ({
       ...prev,
       amount: value,
-      vatAmount: vat,
-      total: value + vat,
-    }));
-  };
-
-  const handleVatToggle = (hasVat: boolean) => {
-    const vat = hasVat ? form.amount * 0.15 : 0;
-    setForm((prev) => ({
-      ...prev,
-      hasVat,
-      vatAmount: vat,
-      total: prev.amount + vat,
+      total: value,
     }));
   };
 
@@ -193,31 +181,6 @@ export default function UtilityBillFormDrawer({ open, onClose, onSave, bill }: U
           error={errors.amount}
           fullWidth
         />
-        <div className="flex items-center gap-3">
-          <label className="text-sm font-medium text-text-primary whitespace-nowrap">هل توجد ضريبة؟</label>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => handleVatToggle(true)}
-              className={`px-3 py-1.5 rounded-lg border text-sm font-medium transition-colors ${form.hasVat ? 'bg-primary-50 border-primary-300 text-primary-600' : 'border-border-default text-text-secondary'}`}
-            >
-              نعم
-            </button>
-            <button
-              type="button"
-              onClick={() => handleVatToggle(false)}
-              className={`px-3 py-1.5 rounded-lg border text-sm font-medium transition-colors ${!form.hasVat ? 'bg-primary-50 border-primary-300 text-primary-600' : 'border-border-default text-text-secondary'}`}
-            >
-              لا
-            </button>
-          </div>
-        </div>
-        {form.hasVat && (
-          <div className="grid grid-cols-2 gap-3">
-            <Input label="الضريبة (15%)" value={form.vatAmount.toFixed(2)} disabled fullWidth />
-            <Input label="الإجمالي مع الضريبة" value={form.total.toFixed(2)} disabled fullWidth />
-          </div>
-        )}
         <Select
           label="الحالة"
           options={[

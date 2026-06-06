@@ -119,7 +119,7 @@ export default function PurchasesPageShell() {
       date: data.date,
       items: data.items,
       subtotal: data.subtotal,
-      vatAmount: data.vatAmount,
+      vatAmount: 0,
       total: data.total,
       paymentStatus: data.paymentStatus,
       paymentMethod: data.paymentMethod,

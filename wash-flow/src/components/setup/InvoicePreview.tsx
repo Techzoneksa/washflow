@@ -17,8 +17,7 @@ export default function InvoicePreview({
   settings, companyName, logo, showTax, taxNumber, taxRate, priceIncludesTax = false,
 }: InvoicePreviewProps) {
   const subtotal = 45;
-  const taxAmount = priceIncludesTax ? 0 : subtotal * (taxRate / 100);
-  const total = priceIncludesTax ? subtotal : subtotal + taxAmount;
+  const total = subtotal;
   const qrPlaceholder = 'https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=washflow';
 
   return (
@@ -90,16 +89,6 @@ export default function InvoicePreview({
 
         {/* Totals */}
         <div className="p-3 border-b border-border-default text-[11px] space-y-0.5">
-          <div className="flex justify-between">
-            <span className="text-text-secondary">المجموع:</span>
-            <span className="text-text-primary">{subtotal.toFixed(2)} ر.س</span>
-          </div>
-          {!priceIncludesTax && (
-            <div className="flex justify-between">
-              <span className="text-text-secondary">الضريبة ({taxRate}%):</span>
-              <span className="text-text-primary">{taxAmount.toFixed(2)} ر.س</span>
-            </div>
-          )}
           <div className="flex justify-between text-sm font-bold pt-1 border-t border-border-default">
             <span className="text-text-primary">الإجمالي:</span>
             <span className="text-primary-600">{total.toFixed(2)} ر.س</span>

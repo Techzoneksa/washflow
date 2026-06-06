@@ -94,8 +94,7 @@ export default function PurchaseFormDrawer({ open, onClose, onSave, preselectedS
   const supplierName = selectedSupplier?.name || '';
 
   const subtotal = items.reduce((sum, item) => sum + item.total, 0);
-  const vatAmount = Math.round(subtotal * 0.15 * 100) / 100;
-  const total = subtotal + vatAmount;
+  const total = subtotal;
   const remainingAmount = Math.max(0, total - paidAmount);
 
   const updateItem = (id: string, field: keyof PurchaseItemForm, value: unknown) => {
@@ -176,7 +175,7 @@ export default function PurchaseFormDrawer({ open, onClose, onSave, preselectedS
       date,
       items: items.map(({ id, name, quantity, unit, unitPrice, total, isInventoryItem, inventoryItemId }) => ({ id, name, quantity, unit, unitPrice, total, isInventoryItem, inventoryItemId })),
       subtotal,
-      vatAmount,
+      vatAmount: 0,
       total,
       paymentStatus,
       paymentMethod: paymentStatus === 'unpaid' ? undefined : paymentMethod,
@@ -316,20 +315,10 @@ export default function PurchaseFormDrawer({ open, onClose, onSave, preselectedS
         </div>
 
         <div className="space-y-2 bg-neutral-50 rounded-xl p-3">
-          <h4 className="text-sm font-semibold text-text-primary">الضريبة والإجمالي</h4>
-          <div className="space-y-1 text-sm">
-            <div className="flex justify-between text-text-secondary">
-              <span>الإجمالي قبل الضريبة</span>
-              <span className="tabular-nums">{formatCurrency(subtotal)}</span>
-            </div>
-            <div className="flex justify-between text-text-secondary">
-              <span>ضريبة القيمة المضافة (15%)</span>
-              <span className="tabular-nums">{formatCurrency(vatAmount)}</span>
-            </div>
-            <div className="flex justify-between text-base font-bold text-text-primary pt-1 border-t border-border-default">
-              <span>الإجمالي النهائي</span>
-              <span className="tabular-nums">{formatCurrency(total)}</span>
-            </div>
+          <h4 className="text-sm font-semibold text-text-primary">الإجمالي</h4>
+          <div className="flex justify-between text-base font-bold text-text-primary">
+            <span>الإجمالي</span>
+            <span className="tabular-nums">{formatCurrency(total)}</span>
           </div>
         </div>
 

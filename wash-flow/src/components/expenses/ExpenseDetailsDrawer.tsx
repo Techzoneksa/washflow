@@ -4,7 +4,7 @@ import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import type { Expense, ExpenseType } from '@/types/expenses';
-import { CalendarDays, History, Tag, FileText, DollarSign, Receipt, Building2, Paperclip, Pencil } from 'lucide-react';
+import { CalendarDays, History, Tag, FileText, DollarSign, Building2, Paperclip, Pencil } from 'lucide-react';
 
 const expenseTypeLabels: Record<ExpenseType, string> = {
   electricity: 'كهرباء',
@@ -81,13 +81,6 @@ export default function ExpenseDetailsDrawer({ open, onClose, expense, onEdit }:
               <div className="flex items-center gap-1 font-semibold tabular-nums">
                 <DollarSign className="h-4 w-4 text-text-secondary" />
                 {formatCurrency(expense.amount)}
-              </div>
-            </div>
-            <div>
-              <p className="text-xs text-text-secondary">الضريبة</p>
-              <div className="flex items-center gap-1 font-semibold tabular-nums text-warning-600">
-                <Receipt className="h-4 w-4" />
-                {formatCurrency(expense.vatAmount)}
               </div>
             </div>
             <div>

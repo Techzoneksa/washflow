@@ -85,16 +85,8 @@ export default function PurchaseDetailsDrawer({ open, onClose, purchase, onRecor
         )}
 
         <div className="space-y-1 text-sm border-t border-border-default pt-3">
-          <div className="flex justify-between text-text-secondary">
-            <span>المجموع الفرعي</span>
-            <span className="tabular-nums">{formatCurrency(purchase.subtotal)}</span>
-          </div>
-          <div className="flex justify-between text-text-secondary">
-            <span>ضريبة القيمة المضافة (15%)</span>
-            <span className="tabular-nums">{formatCurrency(purchase.vatAmount)}</span>
-          </div>
-          <div className="flex justify-between text-base font-bold text-text-primary pt-1">
-            <span>الإجمالي النهائي</span>
+          <div className="flex justify-between text-base font-bold text-text-primary">
+            <span>الإجمالي</span>
             <span className="tabular-nums">{formatCurrency(purchase.total)}</span>
           </div>
         </div>

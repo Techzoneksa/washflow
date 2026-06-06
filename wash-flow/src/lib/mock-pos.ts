@@ -36,19 +36,13 @@ export interface TaxCalculation {
 }
 
 export function calculateTax(subtotal: number): TaxCalculation {
-  const setup = getCompanySetup();
-  const vatRate = setup?.tax.taxRate ?? 15;
-  const priceIncludesTax = setup?.tax.priceIncludesTax ?? true;
-
-  if (priceIncludesTax) {
-    const total = subtotal;
-    const vatAmount = total - (total / (1 + vatRate / 100));
-    return { subtotal: total - vatAmount, vatAmount, vatRate, total, priceIncludesTax };
-  } else {
-    const vatAmount = subtotal * (vatRate / 100);
-    const total = subtotal + vatAmount;
-    return { subtotal, vatAmount, vatRate, total, priceIncludesTax };
-  }
+  return {
+    subtotal,
+    vatAmount: 0,
+    vatRate: 0,
+    total: subtotal,
+    priceIncludesTax: false,
+  };
 }
 
 export function calculateCartTotals(items: CartItem[]): TaxCalculation {

@@ -12,12 +12,10 @@ interface ServicesFiltersProps {
   status: string;
   posVisibility: string;
   category: string;
-  taxable: string;
   onSearchChange: (v: string) => void;
   onStatusChange: (v: string) => void;
   onPosVisibilityChange: (v: string) => void;
   onCategoryChange: (v: string) => void;
-  onTaxableChange: (v: string) => void;
 }
 
 const statusOptions = [
@@ -32,22 +30,15 @@ const posOptions = [
   { label: 'مخفي من POS', value: 'hidden' },
 ];
 
-const taxableOptions = [
-  { label: 'الكل', value: 'all' },
-  { label: 'خاضع للضريبة', value: 'taxable' },
-  { label: 'غير خاضع للضريبة', value: 'non-taxable' },
-];
-
 export default function ServicesFilters(props: ServicesFiltersProps) {
   const [sheetOpen, setSheetOpen] = useState(false);
 
-  const filtersApplied = props.status !== 'all' || props.posVisibility !== 'all' || props.category !== 'all' || props.taxable !== 'all';
+  const filtersApplied = props.status !== 'all' || props.posVisibility !== 'all' || props.category !== 'all';
 
   const clearFilters = () => {
     props.onStatusChange('all');
     props.onPosVisibilityChange('all');
     props.onCategoryChange('all');
-    props.onTaxableChange('all');
   };
 
   const filterContent = (
@@ -55,7 +46,6 @@ export default function ServicesFilters(props: ServicesFiltersProps) {
       <Select label="الحالة" options={statusOptions} value={props.status} onChange={(e) => props.onStatusChange(e.target.value)} fullWidth />
       <Select label="الظهور في POS" options={posOptions} value={props.posVisibility} onChange={(e) => props.onPosVisibilityChange(e.target.value)} fullWidth />
       <Select label="التصنيف" options={categoryLabels} value={props.category} onChange={(e) => props.onCategoryChange(e.target.value)} fullWidth />
-      <Select label="الضريبة" options={taxableOptions} value={props.taxable} onChange={(e) => props.onTaxableChange(e.target.value)} fullWidth />
       <Button variant="ghost" fullWidth onClick={clearFilters}>مسح الكل</Button>
     </div>
   );
@@ -81,9 +71,6 @@ export default function ServicesFilters(props: ServicesFiltersProps) {
         </div>
         <div className="w-40">
           <Select options={categoryLabels} value={props.category} onChange={(e) => props.onCategoryChange(e.target.value)} />
-        </div>
-        <div className="w-40">
-          <Select options={taxableOptions} value={props.taxable} onChange={(e) => props.onTaxableChange(e.target.value)} />
         </div>
         {filtersApplied && (
           <button onClick={clearFilters} className="p-2 text-text-secondary hover:text-danger-500 transition-colors" title="مسح الفلاتر">

@@ -1,14 +1,13 @@
 'use client';
 import Card, { CardTitle } from '@/components/ui/Card';
 import { formatCurrency } from '@/lib/utils';
-import { Wallet, CalendarDays, Receipt, TrendingUp, Calculator } from 'lucide-react';
+import { Wallet, CalendarDays, Receipt, TrendingUp } from 'lucide-react';
 
 interface ExpensesSummaryData {
   todayTotal: number;
   monthTotal: number;
   count: number;
   topType: string;
-  totalVat: number;
 }
 
 export default function ExpensesSummaryCards({ data }: { data: ExpensesSummaryData }) {
@@ -33,13 +32,6 @@ export default function ExpensesSummaryCards({ data }: { data: ExpensesSummaryDa
       icon: Receipt,
       color: 'text-info-500',
       bg: 'bg-info-50',
-    },
-    {
-      label: 'إجمالي الضريبة',
-      value: formatCurrency(data.totalVat),
-      icon: Calculator,
-      color: 'text-danger-500',
-      bg: 'bg-danger-50',
     },
   ];
 

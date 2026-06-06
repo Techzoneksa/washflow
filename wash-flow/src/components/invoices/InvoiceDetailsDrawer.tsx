@@ -89,15 +89,7 @@ export default function InvoiceDetailsDrawer({ open, onClose, invoice }: Invoice
           </div>
 
           <div className="space-y-1 text-sm border-t border-border-default pt-3">
-            <div className="flex justify-between text-text-secondary">
-              <span>المجموع الفرعي</span>
-              <span className="tabular-nums">{formatCurrency(invoice.subtotal)}</span>
-            </div>
-            <div className="flex justify-between text-text-secondary">
-              <span>ضريبة القيمة المضافة ({invoice.vatRate}%)</span>
-              <span className="tabular-nums">{formatCurrency(invoice.vatAmount)}</span>
-            </div>
-            <div className="flex justify-between text-base font-bold text-text-primary pt-1">
+            <div className="flex justify-between text-base font-bold text-text-primary">
               <span>الإجمالي</span>
               <span className="tabular-nums">{formatCurrency(invoice.total)}</span>
             </div>

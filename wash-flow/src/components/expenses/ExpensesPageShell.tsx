@@ -102,7 +102,6 @@ export default function ExpensesPageShell() {
         return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
       })
       .reduce((sum, e) => sum + e.total, 0);
-    const totalVat = expenses.reduce((sum, e) => sum + e.vatAmount, 0);
 
     const typeCounts: Record<string, number> = {};
     expenses.forEach((e) => {
@@ -116,7 +115,7 @@ export default function ExpensesPageShell() {
         topType = expenseTypeLabels[t as ExpenseType] || t;
       }
     }
-    return { todayTotal, monthTotal, count: expenses.length, topType, totalVat };
+    return { todayTotal, monthTotal, count: expenses.length, topType };
   }, [expenses]);
 
   const handleView = useCallback((e: Expense) => {

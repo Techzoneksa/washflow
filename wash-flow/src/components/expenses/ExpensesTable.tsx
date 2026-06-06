@@ -68,13 +68,6 @@ export default function ExpensesTable({ expenses, page, totalPages, onPageChange
       className: 'text-left',
     },
     {
-      key: 'vatAmount',
-      header: 'الضريبة',
-      hideOnMobile: true,
-      render: (e) => <span className="tabular-nums text-text-secondary">{formatCurrency(e.vatAmount)}</span>,
-      className: 'text-left',
-    },
-    {
       key: 'total',
       header: 'الإجمالي',
       render: (e) => <span className="font-semibold tabular-nums">{formatCurrency(e.total)}</span>,

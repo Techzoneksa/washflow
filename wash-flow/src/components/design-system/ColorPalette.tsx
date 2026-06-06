@@ -34,16 +34,16 @@ function ColorGroup({ title, colors }: { title: string; colors: { label: string;
 
 export default function ColorPalette() {
   const primaryColors = [
-    { label: '50', class: 'bg-primary-50', hex: '#eff8ff' },
-    { label: '100', class: 'bg-primary-100', hex: '#dbeffe' },
-    { label: '200', class: 'bg-primary-200', hex: '#bfe3fe' },
-    { label: '300', class: 'bg-primary-300', hex: '#93d2fd' },
-    { label: '400', class: 'bg-primary-400', hex: '#5fb8fa' },
-    { label: '500', class: 'bg-primary-500', hex: '#3b9df5' },
-    { label: '600', class: 'bg-primary-600', hex: '#2580e8' },
-    { label: '700', class: 'bg-primary-700', hex: '#1d69d5' },
-    { label: '800', class: 'bg-primary-800', hex: '#1d55ad' },
-    { label: '900', class: 'bg-primary-900', hex: '#1d498b' },
+    { label: '50', class: 'bg-primary-50', hex: '#FFFBEB' },
+    { label: '100', class: 'bg-primary-100', hex: '#FEF3C7' },
+    { label: '200', class: 'bg-primary-200', hex: '#FDE68A' },
+    { label: '300', class: 'bg-primary-300', hex: '#FCD34D' },
+    { label: '400', class: 'bg-primary-400', hex: '#FBBF24' },
+    { label: '500', class: 'bg-primary-500', hex: '#F59E0B' },
+    { label: '600', class: 'bg-primary-600', hex: '#D97706' },
+    { label: '700', class: 'bg-primary-700', hex: '#B45309' },
+    { label: '800', class: 'bg-primary-800', hex: '#92400E' },
+    { label: '900', class: 'bg-primary-900', hex: '#78350F' },
   ];
 
   const neutralColors = [
@@ -63,13 +63,13 @@ export default function ColorPalette() {
     { label: 'Success', class: 'bg-success-500', hex: '#22c55e', usage: 'نجاح العملية' },
     { label: 'Warning', class: 'bg-warning-500', hex: '#f97316', usage: 'تنبيه' },
     { label: 'Danger', class: 'bg-danger-500', hex: '#ef4444', usage: 'خطأ / حذف' },
-    { label: 'Info', class: 'bg-info-500', hex: '#3b82f6', usage: 'معلومات' },
+    { label: 'Info', class: 'bg-info-500', hex: '#6B7280', usage: 'معلومات' },
   ];
 
   const surfaceColors = [
-    { label: 'Background', class: 'bg-bg-main border border-border-default', hex: '#f8f9fa', usage: 'خلفية الصفحة' },
+    { label: 'Background', class: 'bg-bg-main border border-border-default', hex: '#F5F5F4', usage: 'خلفية الصفحة' },
     { label: 'Surface', class: 'bg-bg-surface border border-border-default', hex: '#ffffff', usage: 'سطح البطاقات' },
-    { label: 'Sidebar', class: 'bg-bg-sidebar', hex: '#1a1d29', usage: 'الشريط الجانبي' },
+    { label: 'Sidebar', class: 'bg-bg-sidebar', hex: '#111827', usage: 'الشريط الجانبي' },
     { label: 'Border', class: 'bg-border-default', hex: '#e2e4e8', usage: 'الحدود' },
     { label: 'Overlay', class: 'bg-overlay', hex: 'rgba(0,0,0,0.5)', usage: 'خلفية النوافذ' },
   ];
@@ -78,7 +78,7 @@ export default function ColorPalette() {
     <div>
       <h2 className="text-xl font-bold text-text-primary mb-6">نظام الألوان</h2>
 
-      <ColorGroup title="Primary - أزرق مائي" colors={primaryColors} />
+      <ColorGroup title="Primary - أصفر عنبري" colors={primaryColors} />
       <ColorGroup title="Neutral - رمادي محايد" colors={neutralColors} />
       <ColorGroup title="ألوان دلالية" colors={semanticColors} />
 

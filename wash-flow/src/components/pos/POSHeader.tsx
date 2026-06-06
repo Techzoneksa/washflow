@@ -43,7 +43,7 @@ export default function POSHeader() {
 
   return (
     <>
-      <header className="h-14 shrink-0 bg-[#1A1A2E] text-white flex items-center px-4 gap-3 z-40">
+      <header className="h-14 shrink-0 bg-gray-900 text-white flex items-center px-4 gap-3 z-40">
         <h1 className="text-base font-bold whitespace-nowrap">نقطة البيع</h1>
 
         <div className="hidden md:flex items-center gap-2 mr-3">

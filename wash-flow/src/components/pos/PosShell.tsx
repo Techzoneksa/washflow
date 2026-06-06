@@ -151,7 +151,7 @@ export default function PosShell() {
   return (
     <>
       {/* ===== MOBILE LAYOUT (< 640px): Full width services + FAB + Bottom Sheet ===== */}
-      <div className="sm:hidden flex flex-col h-full bg-[#F8F9FA]">
+      <div className="sm:hidden flex flex-col h-full bg-bg-main">
 
         {/* Category Tabs */}
         <div className="shrink-0 px-4 pt-4 pb-2">
@@ -162,7 +162,7 @@ export default function PosShell() {
                 onClick={() => setActiveCategory(cat)}
                 className={`shrink-0 px-4 py-2 rounded-full text-sm font-medium border transition-all whitespace-nowrap ${
                   activeCategory === cat
-                    ? 'bg-[#1A1A2E] text-white border-[#1A1A2E]'
+                    ? 'bg-[#111827] text-white border-[#111827]'
                     : 'bg-white text-[#6B7280] border-[#E5E7EB]'
                 }`}
               >
@@ -201,7 +201,7 @@ export default function PosShell() {
                   key={service.id}
                   onClick={() => handleAddService(service)}
                   className={`relative flex flex-col items-center justify-center gap-1 p-4 rounded-xl border bg-white transition-all active:scale-95 ${
-                    isAdded ? 'border-[#1A1A2E] shadow-md' : 'border-[#EEEEEE]'
+                    isAdded ? 'border-[#111827] shadow-md' : 'border-[#EEEEEE]'
                   }`}
                 >
                   <span className="text-3xl">{getServiceIcon(service.icon)}</span>
@@ -212,7 +212,7 @@ export default function PosShell() {
                     {service.duration}
                   </span>
                   {isAdded && (
-                    <div className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-[#2563EB] text-white flex items-center justify-center">
+                    <div className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-primary-500 text-white flex items-center justify-center">
                       <Check className="h-3 w-3" />
                     </div>
                   )}
@@ -226,12 +226,12 @@ export default function PosShell() {
         {cartItems.length > 0 && (
           <button
             onClick={() => setShowCartSheet(true)}
-            className="fixed bottom-20 left-4 right-4 z-40 h-14 bg-[#2563EB] text-white rounded-xl shadow-lg flex items-center justify-between px-5"
+            className="fixed bottom-20 left-4 right-4 z-40 h-14 bg-primary-500 text-white rounded-xl shadow-lg flex items-center justify-between px-5"
           >
             <div className="flex items-center gap-2">
               <div className="relative">
                 <ShoppingCart className="h-5 w-5" />
-                <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-white text-[#2563EB] text-xs font-bold flex items-center justify-center">
+                <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-white text-primary-500 text-xs font-bold flex items-center justify-center">
                   {cartItems.length}
                 </span>
               </div>
@@ -271,7 +271,7 @@ export default function PosShell() {
                     placeholder="رقم جوال العميل (اختياري)"
                     value={customerSearchPhone}
                     onChange={(e) => handleSearchCustomer(e.target.value)}
-                    className="w-full pl-9 pr-4 py-2 rounded-lg border border-[#EEEEEE] bg-[#F9FAFB] text-sm text-[#111827] placeholder:text-[#6B7280] focus:outline-none focus:border-[#2563EB]"
+                    className="w-full pl-9 pr-4 py-2 rounded-lg border border-[#EEEEEE] bg-[#F9FAFB] text-sm text-[#111827] placeholder:text-[#6B7280] focus:outline-none focus:border-primary-500"
                   />
                 </div>
               )}
@@ -322,7 +322,7 @@ export default function PosShell() {
                             key={method}
                             onClick={() => setPaymentMethod(method)}
                             className={`flex-1 py-2.5 rounded-lg text-sm font-medium border transition-all ${
-                              paymentMethod === method ? 'bg-[#2563EB] text-white border-[#2563EB]' : 'bg-white text-[#6B7280] border-[#E5E7EB]'
+                              paymentMethod === method ? 'bg-primary-500 text-white border-primary-500' : 'bg-white text-[#6B7280] border-[#E5E7EB]'
                             }`}
                           >
                             {labels[method]}
@@ -354,7 +354,7 @@ export default function PosShell() {
                   onClick={handleCompleteOrder}
                   disabled={cartItems.length === 0 || !paymentMethod || submitting}
                   className={`w-full h-[52px] rounded-xl text-base font-bold ${
-                    cartItems.length > 0 && paymentMethod && !submitting ? 'bg-[#2563EB] text-white' : 'bg-[#D1D5DB] text-[#9CA3AF] cursor-not-allowed'
+                    cartItems.length > 0 && paymentMethod && !submitting ? 'bg-primary-500 text-white' : 'bg-[#D1D5DB] text-[#9CA3AF] cursor-not-allowed'
                   }`}
                 >
                   {submitting ? 'جاري...' : 'إتمام الطلب'}
@@ -366,7 +366,7 @@ export default function PosShell() {
       </div>
 
       {/* ===== TABLET+ LAYOUT (>= 640px): Split view ===== */}
-      <div className="hidden sm:flex h-full bg-[#F8F9FA]">
+      <div className="hidden sm:flex h-full bg-bg-main">
 
         {/* LEFT: Services */}
         <div className="flex flex-col h-full flex-1 min-w-0 lg:flex-[13]">
@@ -377,7 +377,7 @@ export default function PosShell() {
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
                   className={`shrink-0 px-4 py-2 rounded-full text-sm font-medium border transition-all whitespace-nowrap ${
-                    activeCategory === cat ? 'bg-[#1A1A2E] text-white border-[#1A1A2E]' : 'bg-white text-[#6B7280] border-[#E5E7EB] hover:border-[#1A1A2E]'
+                    activeCategory === cat ? 'bg-[#111827] text-white border-[#111827]' : 'bg-white text-[#6B7280] border-[#E5E7EB] hover:border-[#111827]'
                   }`}
                 >
                   {cat}
@@ -411,7 +411,7 @@ export default function PosShell() {
                     key={service.id}
                     onClick={() => handleAddService(service)}
                     className={`relative flex flex-col items-center justify-center gap-2 p-4 rounded-xl border bg-white transition-all active:scale-95 ${
-                      isAdded ? 'border-[#1A1A2E] shadow-md' : 'border-[#EEEEEE] hover:border-[#1A1A2E] hover:scale-[1.02]'
+                      isAdded ? 'border-[#111827] shadow-md' : 'border-[#EEEEEE] hover:border-[#111827] hover:scale-[1.02]'
                     }`}
                   >
                     <span className="text-4xl">{getServiceIcon(service.icon)}</span>
@@ -422,7 +422,7 @@ export default function PosShell() {
                       {service.duration}
                     </span>
                     {isAdded && (
-                      <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-[#2563EB] text-white flex items-center justify-center shadow">
+                      <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-primary-500 text-white flex items-center justify-center shadow">
                         <Check className="h-4 w-4" />
                       </div>
                     )}
@@ -438,7 +438,7 @@ export default function PosShell() {
           <div className="h-full min-h-0 flex flex-col overflow-hidden rounded-2xl border border-border-default bg-bg-surface">
           <div className="shrink-0 flex items-center justify-between px-5 py-4 border-b border-[#E5E7EB]">
             <div className="flex items-center gap-2">
-              <ShoppingCart className="h-5 w-5 text-[#2563EB]" />
+              <ShoppingCart className="h-5 w-5 text-primary-500" />
               <span className="text-base font-semibold text-[#111827]">سلة الطلب</span>
               <span className="text-xs text-[#6B7280] bg-[#F3F4F6] px-2 py-0.5 rounded-full">{cartItems.length}</span>
             </div>
@@ -473,7 +473,7 @@ export default function PosShell() {
                   placeholder="رقم جوال العميل (اختياري)"
                   value={customerSearchPhone}
                   onChange={(e) => handleSearchCustomer(e.target.value)}
-                  className="w-full pl-9 pr-4 py-2 rounded-lg border border-[#EEEEEE] bg-[#F9FAFB] text-sm text-[#111827] placeholder:text-[#6B7280] focus:outline-none focus:border-[#2563EB]"
+                  className="w-full pl-9 pr-4 py-2 rounded-lg border border-[#EEEEEE] bg-[#F9FAFB] text-sm text-[#111827] placeholder:text-[#6B7280] focus:outline-none focus:border-primary-500"
                 />
               </div>
             )}
@@ -489,11 +489,11 @@ export default function PosShell() {
               <div className="space-y-3">
                 {cartItems.map((item) => (
                   <div key={item.serviceId} className="flex items-center gap-3 p-3 bg-[#F9FAFB] rounded-xl">
-                    <button onClick={() => handleUpdateQuantity(item.serviceId, item.quantity - 1)} className="w-7 h-7 rounded-full border border-[#E5E7EB] flex items-center justify-center text-[#6B7280] hover:border-[#1A1A2E] transition-colors shrink-0">
+                    <button onClick={() => handleUpdateQuantity(item.serviceId, item.quantity - 1)} className="w-7 h-7 rounded-full border border-[#E5E7EB] flex items-center justify-center text-[#6B7280] hover:border-[#111827] transition-colors shrink-0">
                       <Minus className="h-3 w-3" />
                     </button>
                     <span className="text-sm font-semibold text-[#111827] w-6 text-center tabular-nums">{item.quantity}</span>
-                    <button onClick={() => handleUpdateQuantity(item.serviceId, item.quantity + 1)} className="w-7 h-7 rounded-full border border-[#E5E7EB] flex items-center justify-center text-[#6B7280] hover:border-[#1A1A2E] transition-colors shrink-0">
+                    <button onClick={() => handleUpdateQuantity(item.serviceId, item.quantity + 1)} className="w-7 h-7 rounded-full border border-[#E5E7EB] flex items-center justify-center text-[#6B7280] hover:border-[#111827] transition-colors shrink-0">
                       <Plus className="h-3 w-3" />
                     </button>
                     <div className="flex-1 min-w-0 text-right">
@@ -533,7 +533,7 @@ export default function PosShell() {
                           key={method}
                           onClick={() => setPaymentMethod(method)}
                           className={`flex-1 py-2.5 rounded-lg text-sm font-medium border transition-all ${
-                            paymentMethod === method ? 'bg-[#2563EB] text-white border-[#2563EB]' : 'bg-white text-[#6B7280] border-[#E5E7EB] hover:border-[#1A1A2E]'
+                            paymentMethod === method ? 'bg-primary-500 text-white border-primary-500' : 'bg-white text-[#6B7280] border-[#E5E7EB] hover:border-[#111827]'
                           }`}
                         >
                           {labels[method]}
@@ -556,7 +556,7 @@ export default function PosShell() {
                 onClick={handleCompleteOrder}
                 disabled={cartItems.length === 0 || !paymentMethod || submitting}
                 className={`w-full h-[52px] rounded-xl text-base font-bold transition-all ${
-                  cartItems.length > 0 && paymentMethod && !submitting ? 'bg-[#2563EB] text-white hover:bg-[#1D4ED8] active:scale-[0.98]' : 'bg-[#D1D5DB] text-[#9CA3AF] cursor-not-allowed'
+                  cartItems.length > 0 && paymentMethod && !submitting ? 'bg-primary-500 text-white hover:bg-primary-600 active:scale-[0.98]' : 'bg-[#D1D5DB] text-[#9CA3AF] cursor-not-allowed'
                 }`}
               >
                 {submitting ? 'جاري...' : 'إتمام الطلب'}

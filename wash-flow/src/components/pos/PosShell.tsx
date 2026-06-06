@@ -240,7 +240,7 @@ export default function PosShell() {
 
         {/* Bottom Sheet */}
         <BottomSheet open={showCartSheet} onClose={() => setShowCartSheet(false)} height="full" title="سلة الطلب">
-          <div className="flex flex-col h-full min-h-0">
+          <div className="flex max-h-[85dvh] min-h-0 flex-col overflow-hidden">
             <div className="shrink-0 px-4 py-3 border-b border-[#E5E7EB]">
               {selectedCustomer ? (
                 <div className="flex items-center gap-2 p-2 bg-success-50 rounded-lg">
@@ -273,7 +273,7 @@ export default function PosShell() {
                 </div>
               )}
             </div>
-            <div className="flex-1 min-h-0 overflow-y-auto px-4 py-3 space-y-3">
+            <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 py-3 space-y-3">
               {cartItems.map((item) => (
                 <div key={item.serviceId} className="flex items-center gap-3 p-3 bg-[#F9FAFB] rounded-xl">
                   <button onClick={() => handleUpdateQuantity(item.serviceId, item.quantity - 1)} className="w-8 h-8 rounded-full border border-[#E5E7EB] flex items-center justify-center text-[#6B7280] shrink-0">
@@ -418,7 +418,8 @@ export default function PosShell() {
         </div>
 
         {/* RIGHT: Order Panel */}
-        <div className="h-full w-[340px] lg:w-[380px] xl:w-[420px] shrink-0 bg-white border-r border-[#E5E7EB] flex flex-col min-h-0">
+        <div className="h-[calc(100dvh-96px)] min-h-0 w-[340px] lg:w-[380px] xl:w-[420px] shrink-0 overflow-hidden">
+          <div className="h-full min-h-0 flex flex-col overflow-hidden rounded-2xl border border-border-default bg-bg-surface">
           <div className="shrink-0 flex items-center justify-between px-5 py-4 border-b border-[#E5E7EB]">
             <div className="flex items-center gap-2">
               <ShoppingCart className="h-5 w-5 text-[#2563EB]" />
@@ -461,7 +462,7 @@ export default function PosShell() {
               </div>
             )}
           </div>
-          <div className="flex-1 min-h-0 overflow-y-auto px-5 py-3">
+          <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-5 py-3">
             {cartItems.length === 0 ? (
               <div className="flex flex-col items-center justify-center text-center py-12">
                 <ShoppingCart className="h-12 w-12 text-[#D1D5DB] mb-3" />
@@ -543,6 +544,7 @@ export default function PosShell() {
               </button>
             </div>
           </div>
+        </div>
         </div>
       </div>
 

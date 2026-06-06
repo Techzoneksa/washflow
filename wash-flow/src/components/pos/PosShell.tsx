@@ -13,9 +13,8 @@ import {
 import { getPOSWashServices } from '@/lib/mock-services';
 import { formatCurrency } from '@/lib/utils';
 import {
-  getCustomerByPhone,
-  updateCustomerStats,
-} from '@/lib/mock-customers';
+  getCustomerByPhone as getCustomerByPhoneReal,
+} from '@/lib/data/customers';
 import type { Customer } from '@/types/customers';
 import type {
   WashService, CartItem as CartItemType,
@@ -102,10 +101,6 @@ export default function PosShell() {
       const order = createMockOrder(cartItems, paymentMethod, orderCustomerInfo, mixedPayment);
       setCompletedOrder(order);
 
-      if (selectedCustomer) {
-        updateCustomerStats(selectedCustomer.id, cartTotals.total);
-      }
-
       setSubmitting(false);
       setShowSuccess(true);
       setShowCartSheet(false);
@@ -138,8 +133,9 @@ export default function PosShell() {
       setSelectedCustomer(null);
       return;
     }
-    const found = getCustomerByPhone(phone);
-    setSelectedCustomer(found || null);
+    getCustomerByPhoneReal(phone).then((found) => {
+      setSelectedCustomer(found || null);
+    });
   }, []);
 
   const handleClearCustomer = useCallback(() => {
@@ -244,7 +240,7 @@ export default function PosShell() {
 
         {/* Bottom Sheet */}
         <BottomSheet open={showCartSheet} onClose={() => setShowCartSheet(false)} height="full" title="سلة الطلب">
-          <div className="flex flex-col h-full min-h-0 -mx-4 -mb-4">
+          <div className="flex flex-col h-full min-h-0">
             <div className="shrink-0 px-4 py-3 border-b border-[#E5E7EB]">
               {selectedCustomer ? (
                 <div className="flex items-center gap-2 p-2 bg-success-50 rounded-lg">
@@ -467,7 +463,7 @@ export default function PosShell() {
           </div>
           <div className="flex-1 min-h-0 overflow-y-auto px-5 py-3">
             {cartItems.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-full text-center py-12">
+              <div className="flex flex-col items-center justify-center text-center py-12">
                 <ShoppingCart className="h-12 w-12 text-[#D1D5DB] mb-3" />
                 <p className="text-sm text-[#6B7280]">السلة فارغة</p>
                 <p className="text-xs text-[#9CA3AF] mt-1">أضف خدمة للبدء</p>

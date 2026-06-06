@@ -1,8 +1,9 @@
 'use client';
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import PageHeader from '@/components/layout/PageHeader';
 import Button from '@/components/ui/Button';
 import EmptyState from '@/components/ui/EmptyState';
+import LoadingState from '@/components/ui/LoadingState';
 import { useToast } from '@/components/ui/Toast';
 import CustomersSummaryCards from './CustomersSummaryCards';
 import CustomersFilters from './CustomersFilters';
@@ -14,18 +15,20 @@ import {
   getCustomers,
   getCustomersSummary,
   filterCustomers,
-  addCustomer,
+  createCustomer,
   updateCustomer,
-} from '@/lib/mock-customers';
+  isPhoneExists,
+} from '@/lib/data/customers';
 import type { Customer, CustomerFormData } from '@/types/customers';
-import type { CustomerFilter } from '@/lib/mock-customers';
+import type { CustomerFilter } from '@/lib/data/customers';
 import { Plus, Users } from 'lucide-react';
 
 const PAGE_SIZE = 10;
 
 export default function CustomersPageShell() {
   const { toast } = useToast();
-  const [customers, setCustomers] = useState<Customer[]>(getCustomers());
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<CustomerFilter>({
     search: '',
     status: 'all',
@@ -38,23 +41,55 @@ export default function CustomersPageShell() {
   const [formOpen, setFormOpen] = useState(false);
   const [editCustomer, setEditCustomer] = useState<Customer | null>(null);
 
-  const refreshCustomers = useCallback(() => {
-    setCustomers([...getCustomers()]);
-  }, []);
+  const loadCustomers = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await getCustomers();
+      setCustomers(data);
+    } catch {
+      toast('error', 'فشل في تحميل العملاء');
+      setCustomers([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [toast]);
 
-  const summary = useMemo(() => getCustomersSummary(customers), [customers]);
+  const loadFilteredCustomers = useCallback(async (f: CustomerFilter) => {
+    setLoading(true);
+    try {
+      const data = await filterCustomers(f);
+      setCustomers(data);
+    } catch {
+      toast('error', 'فشل في البحث');
+      setCustomers([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [toast]);
 
-  const filtered = useMemo(() => {
-    return filterCustomers(customers, filters);
-  }, [customers, filters]);
+  useEffect(() => {
+    if (filters.search || filters.status !== 'all' || filters.hasOrders !== 'all') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      loadFilteredCustomers(filters);
+    } else {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      loadCustomers();
+    }
+  }, [filters, loadCustomers, loadFilteredCustomers]);
 
-  const paginated = useMemo(() => {
-    const start = (page - 1) * PAGE_SIZE;
-    return {
-      items: filtered.slice(start, start + PAGE_SIZE),
-      totalPages: Math.ceil(filtered.length / PAGE_SIZE),
-    };
-  }, [filtered, page]);
+  const [summaryData, setSummaryData] = useState<Awaited<ReturnType<typeof getCustomersSummary>> | null>(null);
+
+  useEffect(() => {
+    getCustomersSummary().then(setSummaryData);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+  }, [customers.length]);
+
+  const filtered = customers;
+
+  const paginated = {
+    items: filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+    totalPages: Math.ceil(filtered.length / PAGE_SIZE) || 1,
+  };
 
   const handleView = useCallback((customer: Customer) => {
     setSelectedCustomer(customer);
@@ -71,33 +106,68 @@ export default function CustomersPageShell() {
     setFormOpen(true);
   }, []);
 
-  const handleSave = useCallback((data: CustomerFormData) => {
-    if (editCustomer) {
-      const updated = updateCustomer(editCustomer.id, data);
-      if (updated) {
-        refreshCustomers();
-        setFormOpen(false);
-        setEditCustomer(null);
-        toast('success', 'تم تحديث بيانات العميل بنجاح');
+  const handleSave = useCallback(async (data: CustomerFormData) => {
+    try {
+      if (editCustomer) {
+        const updated = await updateCustomer(editCustomer.id, data);
+        if (updated) {
+          await loadCustomers();
+          await getCustomersSummary().then(setSummaryData);
+          setFormOpen(false);
+          setEditCustomer(null);
+          toast('success', 'تم تحديث بيانات العميل بنجاح');
+        } else {
+          toast('error', 'فشل في تحديث العميل');
+        }
+      } else {
+        if (!data.name?.trim() && !data.phone?.trim() && !data.carPlate?.trim()) {
+          toast('error', 'أدخل رقم جوال أو اسم أو رقم لوحة على الأقل');
+          return;
+        }
+        if (data.phone?.trim()) {
+          const exists = await isPhoneExists(data.phone);
+          if (exists) {
+            toast('error', 'رقم الجوال مستخدم مسبقاً');
+            return;
+          }
+        }
+        const created = await createCustomer(data);
+        if (created) {
+          await loadCustomers();
+          await getCustomersSummary().then(setSummaryData);
+          setFormOpen(false);
+          toast('success', 'تم إضافة العميل بنجاح');
+        } else {
+          toast('error', 'فشل في إضافة العميل');
+        }
       }
-    } else {
-      if (!data.name?.trim() && !data.phone?.trim() && !data.carPlate?.trim()) {
-        toast('error', 'أدخل رقم جوال أو اسم أو رقم لوحة على الأقل');
-        return;
-      }
-      const created = addCustomer(data);
-      if (created) {
-        refreshCustomers();
-        setFormOpen(false);
-        toast('success', 'تم إضافة العميل بنجاح');
-      }
+    } catch {
+      toast('error', 'حدث خطأ أثناء الحفظ');
     }
-  }, [editCustomer, refreshCustomers, toast]);
+  }, [editCustomer, loadCustomers, toast]);
 
   const handleCloseForm = useCallback(() => {
     setFormOpen(false);
     setEditCustomer(null);
   }, []);
+
+  const handleFiltersChange = useCallback((f: CustomerFilter) => {
+    setFilters(f);
+    setPage(1);
+    if (f.search || f.status !== 'all' || f.hasOrders !== 'all') {
+      loadFilteredCustomers(f);
+    } else {
+      loadCustomers();
+    }
+  }, [loadCustomers, loadFilteredCustomers]);
+
+  const summaryValue = summaryData || {
+    totalCustomers: 0,
+    todayCustomers: 0,
+    activeCustomers: 0,
+    totalOrdersLinked: 0,
+    topCustomer: null,
+  };
 
   return (
     <>
@@ -111,21 +181,25 @@ export default function CustomersPageShell() {
         }
       />
 
-      <CustomersSummaryCards data={summary} />
+      <CustomersSummaryCards data={summaryValue} />
 
       <div className="bg-bg-surface border border-border-default rounded-card">
         <div className="p-4 pb-0">
           <CustomersFilters
             filters={filters}
-            onFiltersChange={(f) => { setFilters(f); setPage(1); }}
+            onFiltersChange={handleFiltersChange}
           />
         </div>
 
-        {filtered.length === 0 ? (
+        {loading ? (
+          <LoadingState />
+        ) : filtered.length === 0 ? (
           <EmptyState
             icon={<Users className="h-16 w-16" />}
             title="لا يوجد عملاء"
-            description="لا توجد عملاء مطابقين لمعايير البحث"
+            description={filters.search || filters.status !== 'all' || filters.hasOrders !== 'all'
+              ? 'لا توجد عملاء مطابقين لمعايير البحث'
+              : 'ابدأ بإضافة أول عميل لربطه بالطلبات'}
           />
         ) : (
           <>

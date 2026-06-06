@@ -1,5 +1,5 @@
 'use client';
-import type { CustomerSummary } from '@/lib/mock-customers';
+import type { CustomerSummary } from '@/lib/data/customers';
 import { formatCurrency } from '@/lib/utils';
 import { Users, UserCheck, UserPlus, ShoppingBag } from 'lucide-react';
 

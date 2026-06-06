@@ -1,5 +1,5 @@
 'use client';
-import type { CustomerFilter } from '@/lib/mock-customers';
+import type { CustomerFilter } from '@/lib/data/customers';
 import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
 

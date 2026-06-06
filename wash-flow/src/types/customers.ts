@@ -2,9 +2,6 @@ export interface Customer {
   id: string;
   name?: string;
   phone?: string;
-  carPlate?: string;
-  carType?: string;
-  notes?: string;
   ordersCount: number;
   totalSpent: number;
   lastVisitAt?: string;
@@ -16,8 +13,5 @@ export interface Customer {
 export interface CustomerFormData {
   name?: string;
   phone?: string;
-  carPlate?: string;
-  carType?: string;
-  notes?: string;
   status: 'active' | 'inactive';
 }

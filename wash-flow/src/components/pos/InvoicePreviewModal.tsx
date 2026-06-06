@@ -57,13 +57,6 @@ export default function InvoicePreviewModal({ open, onClose, order, onPrint }: I
           </div>
         </div>
 
-        {order.customer?.plateNumber && (
-          <div className="flex items-center gap-2 text-xs bg-info-50 text-info-700 p-2.5 rounded-lg">
-            <span>رقم اللوحة:</span>
-            <span className="font-bold">{order.customer.plateNumber}</span>
-          </div>
-        )}
-
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border-default text-text-secondary text-xs">

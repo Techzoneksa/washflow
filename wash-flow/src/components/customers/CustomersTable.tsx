@@ -23,8 +23,6 @@ export default function CustomersTable({ customers, page, totalPages, onPageChan
             <tr className="border-b border-border-default">
               <th className="text-right py-3 px-4 font-medium text-text-secondary">الاسم</th>
               <th className="text-right py-3 px-4 font-medium text-text-secondary">رقم الجوال</th>
-              <th className="text-right py-3 px-4 font-medium text-text-secondary">اللوحة</th>
-              <th className="text-right py-3 px-4 font-medium text-text-secondary">نوع السيارة</th>
               <th className="text-right py-3 px-4 font-medium text-text-secondary">الطلبات</th>
               <th className="text-right py-3 px-4 font-medium text-text-secondary">إجمالي المشتريات</th>
               <th className="text-right py-3 px-4 font-medium text-text-secondary">آخر زيارة</th>
@@ -36,11 +34,9 @@ export default function CustomersTable({ customers, page, totalPages, onPageChan
             {customers.map((customer) => (
               <tr key={customer.id} className="border-b border-border-subtle hover:bg-bg-hover transition-colors">
                 <td className="py-3 px-4">
-                  <span className="font-medium text-text-primary">{customer.name || '—'}</span>
+                  <span className="font-medium text-text-primary">{customer.name || 'بدون اسم'}</span>
                 </td>
-                <td className="py-3 px-4 text-text-secondary">{customer.phone || '—'}</td>
-                <td className="py-3 px-4 text-text-secondary">{customer.carPlate || '—'}</td>
-                <td className="py-3 px-4 text-text-secondary">{customer.carType || '—'}</td>
+                <td className="py-3 px-4 text-text-secondary">{customer.phone || 'لا يوجد رقم'}</td>
                 <td className="py-3 px-4 text-center">
                   <span className="font-semibold text-text-primary tabular-nums">{customer.ordersCount}</span>
                 </td>

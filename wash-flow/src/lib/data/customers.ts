@@ -93,16 +93,13 @@ export async function createCustomer(data: CustomerFormData): Promise<Customer |
     .insert({
       name: data.name || null,
       phone: data.phone || null,
-      car_plate: data.carPlate || null,
-      car_type: data.carType || null,
-      notes: data.notes || null,
       status: data.status || 'active',
     })
     .select()
     .single();
 
   if (error) {
-    console.error('[Customers] Create error:', error);
+    console.error('[Customers] Create error:', error.message);
     return null;
   }
 
@@ -119,9 +116,6 @@ export async function updateCustomer(id: string, data: Partial<CustomerFormData>
   const updateData: Record<string, unknown> = {};
   if (data.name !== undefined) updateData.name = data.name || null;
   if (data.phone !== undefined) updateData.phone = data.phone || null;
-  if (data.carPlate !== undefined) updateData.car_plate = data.carPlate || null;
-  if (data.carType !== undefined) updateData.car_type = data.carType || null;
-  if (data.notes !== undefined) updateData.notes = data.notes || null;
   if (data.status !== undefined) updateData.status = data.status;
 
   const { data: result, error } = await client
@@ -146,12 +140,13 @@ export async function isPhoneExists(phone: string, excludeId?: string): Promise<
   const client = getSupabase();
   if (!client) return false;
 
-  normalizePhone(phone);
+  const normalized = normalizePhone(phone);
 
   let query = client
     .from('customers')
     .select('id', { count: 'exact', head: true })
-    .not('phone', 'is', null);
+    .not('phone', 'is', null)
+    .or(`phone.ilike.%${normalized.slice(-9)}%,phone.eq.${normalized}`);
 
   if (excludeId) {
     query = query.neq('id', excludeId);
@@ -160,7 +155,7 @@ export async function isPhoneExists(phone: string, excludeId?: string): Promise<
   const { count, error } = await query;
 
   if (error) {
-    console.error('[Customers] Phone check error:', error);
+    console.error('[Customers] Phone check error:', error.message);
     return false;
   }
 
@@ -171,8 +166,7 @@ export function normalizePhone(phone: string): string {
   let p = phone.replace(/[\s\-\(\)]/g, '');
   if (p.startsWith('+966')) p = p.slice(4);
   if (p.startsWith('966')) p = p.slice(3);
-  if (p.startsWith('05')) p = '5' + p.slice(2);
-  if (p.startsWith('5')) p = '5' + p.slice(1);
+  if (p.startsWith('05')) p = p.slice(1);
   return p;
 }
 
@@ -244,7 +238,7 @@ export async function filterCustomers(filters: CustomerFilter): Promise<Customer
 
   if (filters.search.trim()) {
     const q = filters.search.trim();
-    query = query.or(`name.ilike.%${q}%,phone.ilike.%${q}%,car_plate.ilike.%${q}%,car_type.ilike.%${q}%`);
+    query = query.or(`name.ilike.%${q}%,phone.ilike.%${q}%`);
   }
 
   if (filters.status !== 'all') {

@@ -1,8 +1,7 @@
 'use client';
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, User, Phone, Car } from 'lucide-react';
+import { ChevronDown, ChevronUp, User, Phone } from 'lucide-react';
 import Input from '@/components/ui/Input';
-import Textarea from '@/components/ui/Textarea';
 import type { PosCustomerInfo } from '@/types/pos';
 
 interface CustomerInfoFormProps {
@@ -40,20 +39,6 @@ export default function CustomerInfoForm({ value, onChange }: CustomerInfoFormPr
             icon={<Phone className="h-4 w-4" />}
             inputSize="sm"
             fullWidth
-          />
-          <Input
-            placeholder="رقم لوحة السيارة"
-            value={value.plateNumber || ''}
-            onChange={(e) => onChange({ ...value, plateNumber: e.target.value })}
-            icon={<Car className="h-4 w-4" />}
-            inputSize="sm"
-            fullWidth
-          />
-          <Textarea
-            placeholder="ملاحظات"
-            value={value.notes || ''}
-            onChange={(e) => onChange({ ...value, notes: e.target.value })}
-            className="min-h-[60px] text-sm"
           />
         </div>
       )}

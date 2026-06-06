@@ -5,7 +5,7 @@ import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import { Money } from '@/lib/format';
 import { formatPhoneForDisplay } from '@/lib/mock-customers';
-import { Phone, Car, ShoppingBag, CalendarDays, Edit } from 'lucide-react';
+import { Phone, ShoppingBag, CalendarDays, Edit } from 'lucide-react';
 
 interface Props {
   open: boolean;
@@ -22,7 +22,7 @@ export default function CustomerDetailsDrawer({ open, onClose, customer, onEdit 
       <div className="space-y-5">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold text-text-primary">
-            {customer.name || 'عميل بدون اسم'}
+            {customer.name || 'بدون اسم'}
           </h3>
           <Badge variant={customer.status === 'active' ? 'success' : 'neutral'}>
             {customer.status === 'active' ? 'نشط' : 'غير نشط'}
@@ -37,26 +37,6 @@ export default function CustomerDetailsDrawer({ open, onClose, customer, onEdit 
                 <span className="text-xs text-text-disabled">رقم الجوال</span>
               </div>
               <p className="text-sm font-medium text-text-primary">{formatPhoneForDisplay(customer.phone)}</p>
-            </div>
-          )}
-
-          {customer.carPlate && (
-            <div className="bg-bg-hover rounded-lg p-3">
-              <div className="flex items-center gap-2 mb-1">
-                <Car className="h-4 w-4 text-text-disabled" />
-                <span className="text-xs text-text-disabled">رقم اللوحة</span>
-              </div>
-              <p className="text-sm font-medium text-text-primary">{customer.carPlate}</p>
-            </div>
-          )}
-
-          {customer.carType && (
-            <div className="bg-bg-hover rounded-lg p-3">
-              <div className="flex items-center gap-2 mb-1">
-                <Car className="h-4 w-4 text-text-disabled" />
-                <span className="text-xs text-text-disabled">نوع السيارة</span>
-              </div>
-              <p className="text-sm font-medium text-text-primary">{customer.carType}</p>
             </div>
           )}
 
@@ -85,13 +65,6 @@ export default function CustomerDetailsDrawer({ open, onClose, customer, onEdit 
             </div>
           )}
         </div>
-
-        {customer.notes && (
-          <div>
-            <p className="text-xs text-text-disabled mb-1">ملاحظات</p>
-            <p className="text-sm text-text-secondary bg-bg-hover rounded-lg p-3">{customer.notes}</p>
-          </div>
-        )}
 
         {customer.ordersCount > 0 && (
           <div>

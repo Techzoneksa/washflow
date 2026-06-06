@@ -15,8 +15,6 @@ export const mockCustomers: Customer[] = [
     id: 'cust-002',
     name: 'عبدالله السعيد',
     phone: '0552345678',
-    carPlate: '1234 أ ب',
-    carType: 'Toyota Camry 2022',
     ordersCount: 8,
     totalSpent: 640,
     lastVisitAt: '2026-06-04',
@@ -28,8 +26,6 @@ export const mockCustomers: Customer[] = [
     id: 'cust-003',
     name: 'فهد المحمد',
     phone: '0553456789',
-    carPlate: '5678 ج د',
-    carType: 'Nissan Altima 2023',
     ordersCount: 22,
     totalSpent: 1980,
     lastVisitAt: '2026-06-05',
@@ -40,7 +36,6 @@ export const mockCustomers: Customer[] = [
   {
     id: 'cust-004',
     phone: '0554567890',
-    carPlate: '9012 هـ و',
     ordersCount: 3,
     totalSpent: 135,
     lastVisitAt: '2026-05-28',
@@ -52,8 +47,6 @@ export const mockCustomers: Customer[] = [
     id: 'cust-005',
     name: 'خالد الدوسري',
     phone: '0555678901',
-    carPlate: '3456 ز ح',
-    carType: 'Hyundai Sonata 2021',
     ordersCount: 12,
     totalSpent: 960,
     lastVisitAt: '2026-06-01',
@@ -75,8 +68,6 @@ export const mockCustomers: Customer[] = [
   {
     id: 'cust-007',
     phone: '0557890123',
-    carPlate: '7890 ط ي',
-    carType: 'Kia K5 2023',
     ordersCount: 6,
     totalSpent: 420,
     lastVisitAt: '2026-05-20',
@@ -88,8 +79,6 @@ export const mockCustomers: Customer[] = [
     id: 'cust-008',
     name: 'ماجد الحربي',
     phone: '0558901234',
-    carPlate: '2345 ك ل',
-    carType: 'Honda Accord 2022',
     ordersCount: 18,
     totalSpent: 1620,
     lastVisitAt: '2026-06-03',
@@ -110,8 +99,6 @@ export const mockCustomers: Customer[] = [
     id: 'cust-010',
     name: 'ناصر العتيبي',
     phone: '0560123456',
-    carPlate: '6789 م ن',
-    carType: 'Toyota Corolla 2020',
     ordersCount: 25,
     totalSpent: 2250,
     lastVisitAt: '2026-06-05',
@@ -123,8 +110,6 @@ export const mockCustomers: Customer[] = [
     id: 'cust-011',
     name: 'تركي الشمري',
     phone: '0561234567',
-    carPlate: '0123 س ع',
-    carType: 'Ford Mustang 2023',
     ordersCount: 4,
     totalSpent: 320,
     lastVisitAt: '2026-05-25',
@@ -135,7 +120,6 @@ export const mockCustomers: Customer[] = [
   {
     id: 'cust-012',
     phone: '0562345678',
-    carPlate: '4567 ف ص',
     ordersCount: 7,
     totalSpent: 490,
     lastVisitAt: '2026-06-02',
@@ -147,8 +131,6 @@ export const mockCustomers: Customer[] = [
     id: 'cust-013',
     name: 'أحمد الزهراني',
     phone: '0563456789',
-    carPlate: '8901 ق ر',
-    carType: 'BMW 320i 2022',
     ordersCount: 9,
     totalSpent: 810,
     lastVisitAt: '2026-05-30',
@@ -188,8 +170,7 @@ export function normalizePhone(phone: string): string {
   let p = phone.replace(/[\s\-\(\)]/g, '');
   if (p.startsWith('+966')) p = p.slice(4);
   if (p.startsWith('966')) p = p.slice(3);
-  if (p.startsWith('05')) p = '5' + p.slice(2);
-  if (p.startsWith('5')) p = '5' + p.slice(1);
+  if (p.startsWith('05')) p = p.slice(1);
   return p;
 }
 
@@ -241,9 +222,7 @@ export function filterCustomers(customers: Customer[], filters: CustomerFilter):
     result = result.filter(
       (c) =>
         (c.name && c.name.toLowerCase().includes(q)) ||
-        (c.phone && c.phone.includes(q)) ||
-        (c.carPlate && c.carPlate.toLowerCase().includes(q)) ||
-        (c.carType && c.carType.toLowerCase().includes(q))
+        (c.phone && c.phone.includes(q))
     );
   }
 

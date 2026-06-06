@@ -13,7 +13,7 @@ export default function CustomersFilters({ filters, onFiltersChange }: Props) {
     <div className="flex flex-wrap gap-3">
       <div className="flex-1 min-w-[200px]">
         <Input
-          placeholder="بحث بالاسم أو رقم الجوال أو اللوحة..."
+          placeholder="بحث بالاسم أو رقم الجوال..."
           value={filters.search}
           onChange={(e) => onFiltersChange({ ...filters, search: e.target.value })}
         />

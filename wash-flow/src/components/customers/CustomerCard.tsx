@@ -16,7 +16,7 @@ export default function CustomerCard({ customer, onView, onEdit }: Props) {
       <div className="flex items-start justify-between gap-3 mb-3">
         <div className="flex-1 min-w-0">
           <p className="text-base font-semibold text-text-primary truncate">
-            {customer.name || 'عميل بدون اسم'}
+            {customer.name || 'بدون اسم'}
           </p>
           {customer.phone && (
             <div className="flex items-center gap-1.5 mt-1">
@@ -24,18 +24,14 @@ export default function CustomerCard({ customer, onView, onEdit }: Props) {
               <span className="text-sm text-text-secondary">{customer.phone}</span>
             </div>
           )}
+          {!customer.phone && (
+            <p className="text-sm text-text-secondary mt-1">لا يوجد رقم</p>
+          )}
         </div>
         <Badge variant={customer.status === 'active' ? 'success' : 'neutral'}>
           {customer.status === 'active' ? 'نشط' : 'غير نشط'}
         </Badge>
       </div>
-
-      {(customer.carPlate || customer.carType) && (
-        <div className="mb-3 text-sm text-text-secondary">
-          {customer.carPlate && <p>اللوحة: {customer.carPlate}</p>}
-          {customer.carType && <p>السيارة: {customer.carType}</p>}
-        </div>
-      )}
 
       <div className="flex items-center justify-between pt-3 border-t border-border-subtle">
         <div className="flex gap-4">

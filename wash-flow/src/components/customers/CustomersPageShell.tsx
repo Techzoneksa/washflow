@@ -120,14 +120,14 @@ export default function CustomersPageShell() {
           toast('error', 'فشل في تحديث العميل');
         }
       } else {
-        if (!data.name?.trim() && !data.phone?.trim() && !data.carPlate?.trim()) {
-          toast('error', 'أدخل رقم جوال أو اسم أو رقم لوحة على الأقل');
+        if (!data.name?.trim() && !data.phone?.trim()) {
+          toast('error', 'أدخل الاسم أو رقم الجوال على الأقل');
           return;
         }
         if (data.phone?.trim()) {
           const exists = await isPhoneExists(data.phone);
           if (exists) {
-            toast('error', 'رقم الجوال مستخدم مسبقاً');
+            toast('error', 'رقم الجوال موجود مسبقًا');
             return;
           }
         }
@@ -138,7 +138,7 @@ export default function CustomersPageShell() {
           setFormOpen(false);
           toast('success', 'تم إضافة العميل بنجاح');
         } else {
-          toast('error', 'فشل في إضافة العميل');
+          toast('error', 'تعذر حفظ العميل، تحقق من البيانات أو الاتصال');
         }
       }
     } catch {

@@ -97,6 +97,18 @@ export default function InvoiceDetailsDrawer({ open, onClose, invoice }: Invoice
               <span>طريقة الدفع</span>
               <span>{getPaymentMethodLabel(invoice.paymentMethod)}</span>
             </div>
+            {invoice.paymentMethod === 'mixed' && invoice.mixedPayment && (
+              <>
+                <div className="flex justify-between text-xs text-text-secondary pl-4">
+                  <span>كاش</span>
+                  <span className="tabular-nums">{formatCurrency(invoice.mixedPayment.cash || 0)}</span>
+                </div>
+                <div className="flex justify-between text-xs text-text-secondary pl-4">
+                  <span>شبكة</span>
+                  <span className="tabular-nums">{formatCurrency(invoice.mixedPayment.network || 0)}</span>
+                </div>
+              </>
+            )}
           </div>
 
           <div className="flex flex-col gap-2 pt-2">

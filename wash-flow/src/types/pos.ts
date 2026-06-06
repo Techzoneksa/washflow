@@ -28,6 +28,7 @@ export interface PosCustomerInfo {
 
 export interface MixedPayment {
   cash: number;
+  network: number;
   card: number;
   transfer: number;
 }

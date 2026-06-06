@@ -111,6 +111,18 @@ export default function OrderDetailsDrawer({
             <span>طريقة الدفع</span>
             <span>{getPaymentMethodLabel(order.paymentMethod)}</span>
           </div>
+          {order.paymentMethod === 'mixed' && order.mixedPayment && (
+            <>
+              <div className="flex justify-between text-xs text-text-secondary pl-4">
+                <span>كاش</span>
+                <span className="tabular-nums">{formatCurrency(order.mixedPayment.cash || 0)}</span>
+              </div>
+              <div className="flex justify-between text-xs text-text-secondary pl-4">
+                <span>شبكة</span>
+                <span className="tabular-nums">{formatCurrency(order.mixedPayment.network || 0)}</span>
+              </div>
+            </>
+          )}
         </div>
 
         <div className="text-sm">

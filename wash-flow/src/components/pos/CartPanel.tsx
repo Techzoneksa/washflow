@@ -35,7 +35,7 @@ export default function CartPanel({
   const isEmpty = items.length === 0;
   const canSubmit = !isEmpty && !!paymentMethod && (!submitting);
   const isMixedValid = paymentMethod !== 'mixed' ||
-    Math.abs((mixedPayment.cash || 0) + (mixedPayment.card || 0) + (mixedPayment.transfer || 0) - tax.total) < 0.01;
+    Math.abs((mixedPayment.cash || 0) + (mixedPayment.network || 0) - tax.total) < 0.01;
 
   return (
     <div className="flex flex-col h-full">

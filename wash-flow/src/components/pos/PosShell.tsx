@@ -31,7 +31,7 @@ export default function PosShell() {
   const [cartItems, setCartItems] = useState<CartItemType[]>([]);
   const [customerInfo, setCustomerInfo] = useState<PosCustomerInfo>({});
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null);
-  const [mixedPayment, setMixedPayment] = useState<MixedPayment>({ cash: 0, card: 0, transfer: 0 });
+  const [mixedPayment, setMixedPayment] = useState<MixedPayment>({ cash: 0, network: 0, card: 0, transfer: 0 });
 
   const [submitting, setSubmitting] = useState(false);
   const [completedOrder, setCompletedOrder] = useState<PosOrder | null>(null);
@@ -47,6 +47,8 @@ export default function PosShell() {
 
   const cartServiceIds = new Set(cartItems.map(i => i.serviceId));
   const cartTotals = calculateCartTotals(cartItems);
+  const isMixedValid = paymentMethod !== 'mixed' ||
+    Math.abs((mixedPayment.cash || 0) + (mixedPayment.network || 0) - cartTotals.total) < 0.01;
 
   const filteredServices = useMemo(() => {
     let result = getPOSWashServices();
@@ -76,7 +78,7 @@ export default function PosShell() {
     setCartItems([]);
     setCustomerInfo({});
     setPaymentMethod(null);
-    setMixedPayment({ cash: 0, card: 0, transfer: 0 });
+    setMixedPayment({ cash: 0, network: 0, card: 0, transfer: 0 });
     setSelectedCustomer(null);
     setCustomerSearchPhone('');
   }, []);
@@ -86,7 +88,7 @@ export default function PosShell() {
     if (!paymentMethod) return;
 
     const isMixedValid = paymentMethod !== 'mixed' ||
-      Math.abs((mixedPayment.cash || 0) + (mixedPayment.card || 0) + (mixedPayment.transfer || 0) - cartTotals.total) < 0.01;
+      Math.abs((mixedPayment.cash || 0) + (mixedPayment.network || 0) - cartTotals.total) < 0.01;
     if (!isMixedValid) return;
 
     setSubmitting(true);
@@ -114,7 +116,7 @@ export default function PosShell() {
     setCartItems([]);
     setCustomerInfo({});
     setPaymentMethod(null);
-    setMixedPayment({ cash: 0, card: 0, transfer: 0 });
+    setMixedPayment({ cash: 0, network: 0, card: 0, transfer: 0 });
     setSelectedCustomer(null);
     setCustomerSearchPhone('');
   }, []);
@@ -312,8 +314,8 @@ export default function PosShell() {
                   </div>
                   <div className="px-4 pb-3">
                     <div className="flex gap-2">
-                      {(['cash', 'card', 'transfer'] as const).map((method) => {
-                        const labels = { cash: 'نقداً', card: 'بطاقة', transfer: 'STC Pay' };
+                      {(['cash', 'card', 'mixed'] as const).map((method) => {
+                        const labels = { cash: 'كاش', card: 'شبكة', mixed: 'تخصيص' };
                         return (
                           <button
                             key={method}
@@ -328,6 +330,13 @@ export default function PosShell() {
                       })}
                     </div>
                   </div>
+                  {paymentMethod === 'mixed' && !isMixedValid && (
+                    <div className="px-4 pb-2">
+                      <p className="text-xs text-danger-600 text-center">
+                        مجموع الكاش والشبكة يجب أن يساوي إجمالي الطلب
+                      </p>
+                    </div>
+                  )}
                 </>
               )}
               <div className="px-4 pb-4">
@@ -507,8 +516,8 @@ export default function PosShell() {
                 </div>
                 <div className="px-5 pb-3">
                   <div className="flex gap-2">
-                    {(['cash', 'card', 'transfer'] as const).map((method) => {
-                      const labels = { cash: 'نقداً', card: 'بطاقة', transfer: 'STC Pay' };
+                    {(['cash', 'card', 'mixed'] as const).map((method) => {
+                      const labels = { cash: 'كاش', card: 'شبكة', mixed: 'تخصيص' };
                       return (
                         <button
                           key={method}
@@ -523,6 +532,13 @@ export default function PosShell() {
                     })}
                   </div>
                 </div>
+                {paymentMethod === 'mixed' && !isMixedValid && (
+                  <div className="px-5 pb-2">
+                    <p className="text-xs text-danger-600 text-center">
+                      مجموع الكاش والشبكة يجب أن يساوي إجمالي الطلب
+                    </p>
+                  </div>
+                )}
               </>
             )}
             <div className="px-5 pb-5">

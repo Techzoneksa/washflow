@@ -107,7 +107,7 @@ export function removeFromCart(cart: CartItem[], serviceId: string): CartItem[] 
 
 function getPaymentMethodLabel(method: PaymentMethod): string {
   const labels: Record<PaymentMethod, string> = {
-    cash: 'نقدي', mada: 'شبكة / مدى', card: 'بطاقة', transfer: 'تحويل', mixed: 'دفع مختلط',
+    cash: 'كاش', mada: 'شبكة', card: 'شبكة', transfer: 'شبكة', mixed: 'تخصيص',
   };
   return labels[method];
 }

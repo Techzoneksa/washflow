@@ -35,9 +35,6 @@ export default function InvoicePreviewModal({ open, onClose, order, onPrint }: I
 
         <div className="text-center">
           <h3 className="text-lg font-bold text-text-primary">{setup?.company.nameAr || 'شركة غسيل سيارات'}</h3>
-          {setup?.tax.taxNumber && (
-            <p className="text-xs text-text-secondary mt-0.5">الرقم الضريبي: {setup.tax.taxNumber}</p>
-          )}
         </div>
 
         <div className="grid grid-cols-2 gap-3 text-xs bg-neutral-50 rounded-xl p-4">
@@ -96,6 +93,18 @@ export default function InvoicePreviewModal({ open, onClose, order, onPrint }: I
             <span>طريقة الدفع</span>
             <span>{getPaymentMethodLabel(order.paymentMethod)}</span>
           </div>
+          {order.paymentMethod === 'mixed' && order.mixedPayment && (
+            <div className="flex justify-between text-xs text-text-secondary pl-4">
+              <span>كاش</span>
+              <span className="tabular-nums">{formatCurrency(order.mixedPayment.cash || 0)}</span>
+            </div>
+          )}
+          {order.paymentMethod === 'mixed' && order.mixedPayment && (
+            <div className="flex justify-between text-xs text-text-secondary pl-4">
+              <span>شبكة</span>
+              <span className="tabular-nums">{formatCurrency(order.mixedPayment.network || 0)}</span>
+            </div>
+          )}
         </div>
 
         {setup?.invoice.showQr && (

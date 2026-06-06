@@ -4,7 +4,7 @@ import Card from '@/components/ui/Card';
 import { getSession } from '@/lib/mock-auth';
 import { useAuthGuard } from '@/lib/route-guards';
 import { mockStats, mockOrders, mockServices } from '@/lib/mock-data';
-import { formatCurrency } from '@/lib/utils';
+import { Money, formatMoneyAmount } from '@/lib/format';
 import {
   TrendingUp, ClipboardList, ShoppingCart, DollarSign,
   AlertTriangle, Clock, ArrowLeft, Package,
@@ -79,7 +79,7 @@ function RecentOrdersWidget() {
               <span className="text-xs text-text-secondary truncate">{order.services.join('، ')}</span>
             </div>
             <div className="flex flex-col items-end gap-0.5 shrink-0">
-              <span className="text-sm font-semibold text-text-primary">{formatCurrency(order.total)}</span>
+              <Money value={order.total} className="font-semibold tabular-nums" />
               <span className="text-[10px] text-text-disabled">{order.paymentMethod || '—'}</span>
             </div>
           </div>
@@ -197,7 +197,7 @@ function SalesOverviewWidget() {
         </div>
         <div className="flex items-center justify-between mt-3 pt-3 border-t border-border-default">
           <span className="text-xs text-text-secondary">المجموع الأسبوعي</span>
-          <span className="text-sm font-bold text-text-primary">{formatCurrency(values.reduce((a, b) => a + b, 0))}</span>
+          <Money value={values.reduce((a, b) => a + b, 0)} className="tabular-nums" />
         </div>
       </div>
     </Card>
@@ -223,7 +223,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
         <StatCard
           label="مبيعات اليوم"
-          value={formatCurrency(mockStats.todaySales)}
+          value={formatMoneyAmount(mockStats.todaySales)}
           icon={<TrendingUp className="h-4 w-4" />}
           colorClass="bg-primary-50"
           trend="+12%"
@@ -236,13 +236,13 @@ export default function DashboardPage() {
         />
         <StatCard
           label="المصاريف"
-          value={formatCurrency(mockStats.expenses)}
+          value={formatMoneyAmount(mockStats.expenses)}
           icon={<Wallet className="h-4 w-4" />}
           colorClass="bg-warning-50"
         />
         <StatCard
           label="صافي اليوم"
-          value={formatCurrency(mockStats.netToday)}
+          value={formatMoneyAmount(mockStats.netToday)}
           icon={<DollarSign className="h-4 w-4" />}
           colorClass="bg-success-50"
         />

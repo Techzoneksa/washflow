@@ -3,7 +3,8 @@ import { useMemo } from 'react';
 import Drawer from '@/components/ui/Drawer';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
-import { formatCurrency, formatDate } from '@/lib/utils';
+import { formatDate } from '@/lib/utils';
+import { Money } from '@/lib/format';
 import { getPurchasesBySupplier } from '@/lib/mock-purchases';
 import type { Supplier } from '@/types/suppliers';
 import { Phone, User, FileDigit, Building2, Mail, MapPin, ShoppingCart, Banknote, FileText, CalendarDays, History, Pencil, Plus } from 'lucide-react';
@@ -97,21 +98,21 @@ export default function SupplierDetailsDrawer({ open, onClose, supplier, onEdit,
             <div>
               <p className="text-xs text-text-secondary">الرصيد الحالي</p>
               <p className={`font-bold text-lg tabular-nums ${supplier.balance > 0 ? 'text-danger-600' : 'text-success-600'}`}>
-                {formatCurrency(supplier.balance)}
+                <Money value={supplier.balance} />
               </p>
             </div>
             <div>
               <p className="text-xs text-text-secondary">إجمالي المشتريات</p>
               <div className="flex items-center gap-1 font-bold tabular-nums">
                 <ShoppingCart className="h-4 w-4 text-text-secondary" />
-                {formatCurrency(supplier.totalPurchases)}
+                <Money value={supplier.totalPurchases} />
               </div>
             </div>
             <div>
               <p className="text-xs text-text-secondary">إجمالي المدفوع</p>
               <div className="flex items-center gap-1 font-semibold tabular-nums text-success-600">
                 <Banknote className="h-4 w-4" />
-                {formatCurrency(supplier.totalPaid)}
+                <Money value={supplier.totalPaid} />
               </div>
             </div>
             <div>
@@ -135,7 +136,7 @@ export default function SupplierDetailsDrawer({ open, onClose, supplier, onEdit,
                     <p className="text-xs text-text-secondary">{formatDate(p.date)}</p>
                   </div>
                   <div className="text-left">
-                    <p className="font-semibold tabular-nums">{formatCurrency(p.total)}</p>
+                    <p className="font-semibold tabular-nums"><Money value={p.total} className="font-semibold tabular-nums" /></p>
                     <Badge variant={p.paymentStatus === 'paid' ? 'success' : p.paymentStatus === 'partial' ? 'warning' : 'danger'} size="sm">
                       {p.paymentStatus === 'paid' ? 'مدفوعة' : p.paymentStatus === 'partial' ? 'جزئية' : 'غير مدفوعة'}
                     </Badge>

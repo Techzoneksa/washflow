@@ -2,7 +2,7 @@
 import Card, { CardTitle } from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import { TrendingUp, ShoppingCart, DollarSign, Wallet, Settings, FileText } from 'lucide-react';
-import { formatCurrency } from '@/lib/utils';
+import { Money } from '@/lib/format';
 
 export default function CardsPreview() {
   return (
@@ -20,7 +20,7 @@ export default function CardsPreview() {
                 <TrendingUp className="h-5 w-5 text-primary-500" />
               </div>
             </div>
-            <p className="text-2xl font-bold text-text-primary">{formatCurrency(1250)}</p>
+            <p className="text-2xl font-bold text-text-primary"><Money value={1250} /></p>
             <div className="flex items-center gap-1 mt-1">
               <span className="text-xs text-success-600 font-medium">+12%</span>
               <span className="text-xs text-text-secondary">من أمس</span>
@@ -35,7 +35,7 @@ export default function CardsPreview() {
               </div>
             </div>
             <p className="text-2xl font-bold text-text-primary">38</p>
-            <p className="text-xs text-text-secondary mt-1">٣ طلبات جديدة</p>
+            <p className="text-xs text-text-secondary mt-1">3 طلبات جديدة</p>
           </Card>
 
           <Card variant="elevated">
@@ -45,7 +45,7 @@ export default function CardsPreview() {
                 <Wallet className="h-5 w-5 text-warning-500" />
               </div>
             </div>
-            <p className="text-2xl font-bold text-text-primary">{formatCurrency(320)}</p>
+            <p className="text-2xl font-bold text-text-primary"><Money value={320} /></p>
             <p className="text-xs text-text-secondary mt-1">مصاريف اليوم</p>
           </Card>
 
@@ -56,10 +56,10 @@ export default function CardsPreview() {
                 <DollarSign className="h-5 w-5 text-success-500" />
               </div>
             </div>
-            <p className="text-2xl font-bold text-success-600">{formatCurrency(930)}</p>
+            <p className="text-2xl font-bold text-success-600"><Money value={930} /></p>
             <div className="flex items-center gap-3 mt-1">
-              <span className="text-xs text-text-secondary">نقد {formatCurrency(750)}</span>
-              <span className="text-xs text-text-secondary">شبكة {formatCurrency(500)}</span>
+              <span className="text-xs text-text-secondary">نقد <Money value={750} iconClassName="h-3 w-3" /></span>
+              <span className="text-xs text-text-secondary">شبكة <Money value={500} iconClassName="h-3 w-3" /></span>
             </div>
           </Card>
         </div>
@@ -80,7 +80,7 @@ export default function CardsPreview() {
                 <Badge variant="primary" size="sm" className="mb-2">الأكثر طلبًا</Badge>
               )}
               <p className="text-sm font-medium text-text-primary mb-1">{svc.name}</p>
-              <p className="text-lg font-bold text-primary-600">{formatCurrency(svc.price)}</p>
+              <p className="text-lg font-bold text-primary-600"><Money value={svc.price} /></p>
             </Card>
           ))}
         </div>

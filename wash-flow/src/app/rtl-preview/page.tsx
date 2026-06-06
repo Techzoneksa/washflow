@@ -6,7 +6,8 @@ import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
 import Table from '@/components/ui/Table';
-import { formatCurrency, getStatusLabel } from '@/lib/utils';
+import { Money } from '@/lib/format';
+import { getStatusLabel } from '@/lib/utils';
 import { mockOrders, mockServices } from '@/lib/mock-data';
 import { Plus, Search, Filter, Download } from 'lucide-react';
 import type { Order } from '@/types';
@@ -23,7 +24,7 @@ export default function RTLPreviewPage() {
   const columns = [
     { key: 'id', header: 'رقم الطلب' },
     { key: 'services', header: 'الخدمات', render: (item: Order) => item.services.join('، ') },
-    { key: 'total', header: 'المجموع', render: (item: Order) => <span className="font-semibold">{formatCurrency(item.total)}</span> },
+    { key: 'total', header: 'المجموع', render: (item: Order) => <span className="font-semibold"><Money value={item.total} /></span> },
     { key: 'status', header: 'الحالة', render: (item: Order) => <Badge variant={statusVariant[item.status] || 'neutral'} size="sm">{getStatusLabel(item.status)}</Badge> },
     { key: 'paymentStatus', header: 'الدفع', render: (item: Order) => <Badge variant={item.paymentStatus === 'paid' ? 'success' : item.paymentStatus === 'unpaid' ? 'danger' : 'warning'} size="sm">{getStatusLabel(item.paymentStatus)}</Badge> },
   ];
@@ -56,18 +57,18 @@ export default function RTLPreviewPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-bg-main rounded-lg p-4">
               <p className="text-xs text-text-secondary mb-1">مبيعات اليوم</p>
-              <p className="text-2xl font-bold text-text-primary">{formatCurrency(1250)}</p>
-              <p className="text-xs text-success-600">زيادة ١٢٪ عن أمس</p>
+              <p className="text-2xl font-bold text-text-primary"><Money value={1250} /></p>
+              <p className="text-xs text-success-600">زيادة 12% عن أمس</p>
             </div>
             <div className="bg-bg-main rounded-lg p-4">
               <p className="text-xs text-text-secondary mb-1">إجمالي الطلبات</p>
-              <p className="text-2xl font-bold text-text-primary">٣٨ طلب</p>
-              <p className="text-xs text-info-600">٥ طلبات جديدة</p>
+              <p className="text-2xl font-bold text-text-primary">38 طلب</p>
+              <p className="text-xs text-info-600">5 طلبات جديدة</p>
             </div>
             <div className="bg-bg-main rounded-lg p-4">
               <p className="text-xs text-text-secondary mb-1">صافي الأرباح</p>
-              <p className="text-2xl font-bold text-success-600">{formatCurrency(930)}</p>
-              <p className="text-xs text-text-secondary">نقداً: {formatCurrency(750)} | شبكة: {formatCurrency(500)}</p>
+              <p className="text-2xl font-bold text-success-600"><Money value={930} /></p>
+              <p className="text-xs text-text-secondary">نقداً: <Money value={750} iconClassName="h-3 w-3" /> | شبكة: <Money value={500} iconClassName="h-3 w-3" /></p>
             </div>
           </div>
         </Card>
@@ -79,12 +80,12 @@ export default function RTLPreviewPage() {
           </CardHeader>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input label="اسم العميل" placeholder="أدخل اسم العميل" icon={<Search className="h-4 w-4" />} />
-            <Input label="رقم الجوال" placeholder="٠٥٠٠٠٠٠٠٠٠" type="tel" />
+            <Input label="رقم الجوال" placeholder="0500000000" type="tel" />
             <Select
               label="اختر الخدمة"
               options={mockServices.map((s) => ({ label: s.name, value: s.id }))}
             />
-            <Input label="المبلغ" placeholder="٠٫٠٠" icon={<span className="text-xs font-medium">ر.س</span>} />
+            <Input label="المبلغ" placeholder="0.00" />
           </div>
           <div className="flex flex-wrap gap-2 mt-4">
             <Button icon={<Plus className="h-4 w-4" />}>إضافة طلب</Button>

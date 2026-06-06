@@ -1,7 +1,7 @@
 'use client';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
-import { formatCurrency } from '@/lib/utils';
+import { Money } from '@/lib/format';
 import type { Employee } from '@/types/employees';
 import { getOpenAdvancesByEmployeeId } from '@/lib/mock-employees';
 import { Phone } from 'lucide-react';
@@ -31,12 +31,12 @@ export default function EmployeeCard({ employee, onView, onEdit }: EmployeeCardP
       <div className="flex items-center justify-between text-sm">
         <div>
           <span className="text-text-tertiary">الراتب:</span>
-          <span className="font-semibold mr-1">{formatCurrency(employee.monthlySalary)}</span>
+          <Money value={employee.monthlySalary} className="font-semibold" />
         </div>
         {openAdvancesTotal > 0 && (
           <div>
             <span className="text-text-tertiary">السلف:</span>
-            <span className="font-semibold text-warning-500 mr-1">{formatCurrency(openAdvancesTotal)}</span>
+            <Money value={openAdvancesTotal} className="font-semibold text-warning-500" />
           </div>
         )}
       </div>

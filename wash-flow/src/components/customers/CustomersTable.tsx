@@ -2,7 +2,7 @@
 import type { Customer } from '@/types/customers';
 import Pagination from '@/components/ui/Pagination';
 import Badge from '@/components/ui/Badge';
-import { formatCurrency } from '@/lib/utils';
+import { Money } from '@/lib/format';
 import { Eye, Edit } from 'lucide-react';
 
 interface Props {
@@ -45,7 +45,7 @@ export default function CustomersTable({ customers, page, totalPages, onPageChan
                   <span className="font-semibold text-text-primary tabular-nums">{customer.ordersCount}</span>
                 </td>
                 <td className="py-3 px-4">
-                  <span className="font-semibold text-primary-600 tabular-nums">{formatCurrency(customer.totalSpent)}</span>
+                  <Money value={customer.totalSpent} className="font-semibold text-primary-600 tabular-nums" />
                 </td>
                 <td className="py-3 px-4 text-text-secondary">{customer.lastVisitAt || '—'}</td>
                 <td className="py-3 px-4">

@@ -1,6 +1,6 @@
 'use client';
 import Button from '@/components/ui/Button';
-import { formatCurrency } from '@/lib/utils';
+import { Money } from '@/lib/format';
 import type { Employee } from '@/types/employees';
 import { getOpenAdvancesByEmployeeId } from '@/lib/mock-employees';
 import EmployeeBadge from './EmployeeBadge';
@@ -52,10 +52,10 @@ export default function EmployeesTable({
                   <td className="px-4 py-3 text-text-secondary">{emp.nationalId}</td>
                   <td className="px-4 py-3 text-text-secondary">{emp.nationality}</td>
                   <td className="px-4 py-3 text-text-secondary">{emp.jobTitle}</td>
-                  <td className="px-4 py-3 text-text-secondary">{formatCurrency(emp.monthlySalary)}</td>
+                  <td className="px-4 py-3 text-text-secondary"><Money value={emp.monthlySalary} /></td>
                   <td className="px-4 py-3">
                     {openAdvancesTotal > 0 ? (
-                      <span className="font-semibold text-warning-500">{formatCurrency(openAdvancesTotal)}</span>
+                      <Money value={openAdvancesTotal} className="font-semibold text-warning-500" />
                     ) : (
                       <span className="text-text-tertiary">-</span>
                     )}

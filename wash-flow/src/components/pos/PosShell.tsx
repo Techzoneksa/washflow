@@ -2,6 +2,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import OrderSuccessModal from './OrderSuccessModal';
 import InvoicePreviewModal from './InvoicePreviewModal';
+import MixedPaymentForm from './MixedPaymentForm';
 import BottomSheet from '@/components/ui/BottomSheet';
 import { useToast } from '@/components/ui/Toast';
 import {
@@ -11,7 +12,7 @@ import {
   getServiceIcon,
 } from '@/lib/mock-pos';
 import { getPOSWashServices } from '@/lib/mock-services';
-import { formatCurrency } from '@/lib/utils';
+import { Money } from '@/lib/format';
 import {
   getCustomerByPhone as getCustomerByPhoneReal,
 } from '@/lib/data/customers';
@@ -205,7 +206,7 @@ export default function PosShell() {
                 >
                   <span className="text-3xl">{getServiceIcon(service.icon)}</span>
                   <span className="text-xs font-medium text-[#111827] text-center leading-tight">{service.nameAr}</span>
-                  <span className="text-sm font-bold text-[#111827]">{formatCurrency(service.price)}</span>
+                  <span className="text-sm font-bold text-[#111827]"><Money value={service.price} /></span>
                   <span className="flex items-center gap-1 text-xs text-[#6B7280]">
                     <Clock className="h-3 w-3" />
                     {service.duration}
@@ -236,7 +237,7 @@ export default function PosShell() {
               </div>
               <span className="font-semibold text-sm">عرض السلة</span>
             </div>
-            <span className="font-bold tabular-nums">{formatCurrency(cartTotals.total)}</span>
+            <span className="font-bold tabular-nums"><Money value={cartTotals.total} /></span>
           </button>
         )}
 
@@ -287,10 +288,10 @@ export default function PosShell() {
                   </button>
                   <div className="flex-1 min-w-0 text-right">
                     <p className="text-sm font-medium text-[#111827] truncate">{item.nameAr}</p>
-                    <p className="text-xs text-[#6B7280]">{formatCurrency(item.price)}</p>
+                    <p className="text-xs text-[#6B7280]"><Money value={item.price} /></p>
                   </div>
                   <div className="text-left shrink-0">
-                    <p className="text-sm font-bold text-[#111827] tabular-nums">{formatCurrency(item.total)}</p>
+                    <p className="text-sm font-bold text-[#111827] tabular-nums"><Money value={item.total} /></p>
                   </div>
                   <button onClick={() => handleRemoveItem(item.serviceId)} className="w-8 h-8 rounded-full flex items-center justify-center text-[#EF4444] shrink-0">
                     <Trash2 className="h-4 w-4" />
@@ -304,12 +305,12 @@ export default function PosShell() {
                   <div className="px-4 py-4 space-y-2">
                     <div className="flex justify-between text-sm text-[#6B7280]">
                       <span>المجموع</span>
-                      <span className="tabular-nums">{formatCurrency(cartTotals.subtotal)}</span>
+<span className="tabular-nums"><Money value={cartTotals.subtotal} /></span>
                     </div>
                     
                     <div className="border-t border-[#E5E7EB] pt-2 flex justify-between">
                       <span className="text-base font-semibold text-[#111827]">الإجمالي</span>
-                      <span className="text-lg font-bold text-[#111827] tabular-nums">{formatCurrency(cartTotals.total)}</span>
+<span className="text-lg font-bold text-[#111827] tabular-nums"><Money value={cartTotals.total} /></span>
                     </div>
                   </div>
                   <div className="px-4 pb-3">
@@ -330,6 +331,15 @@ export default function PosShell() {
                       })}
                     </div>
                   </div>
+                  {paymentMethod === 'mixed' && (
+                    <div className="px-4 pb-2">
+                      <MixedPaymentForm
+                        total={cartTotals.total}
+                        value={mixedPayment}
+                        onChange={setMixedPayment}
+                      />
+                    </div>
+                  )}
                   {paymentMethod === 'mixed' && !isMixedValid && (
                     <div className="px-4 pb-2">
                       <p className="text-xs text-danger-600 text-center">
@@ -406,7 +416,7 @@ export default function PosShell() {
                   >
                     <span className="text-4xl">{getServiceIcon(service.icon)}</span>
                     <span className="text-sm font-medium text-[#111827] text-center leading-tight">{service.nameAr}</span>
-                    <span className="text-base font-bold text-[#111827]">{formatCurrency(service.price)}</span>
+                    <span className="text-base font-bold text-[#111827]"><Money value={service.price} /></span>
                     <span className="flex items-center gap-1 text-xs text-[#6B7280]">
                       <Clock className="h-3 w-3" />
                       {service.duration}
@@ -488,10 +498,10 @@ export default function PosShell() {
                     </button>
                     <div className="flex-1 min-w-0 text-right">
                       <p className="text-sm font-medium text-[#111827] truncate">{item.nameAr}</p>
-                      <p className="text-xs text-[#6B7280]">{formatCurrency(item.price)}</p>
+<p className="text-xs text-[#6B7280]"><Money value={item.price} /></p>
                     </div>
                     <div className="text-left shrink-0">
-                      <p className="text-sm font-bold text-[#111827] tabular-nums">{formatCurrency(item.total)}</p>
+<p className="text-sm font-bold text-[#111827] tabular-nums"><Money value={item.total} /></p>
                     </div>
                     <button onClick={() => handleRemoveItem(item.serviceId)} className="w-7 h-7 rounded-full flex items-center justify-center text-[#EF4444] hover:bg-[#FEF2F2] transition-colors shrink-0">
                       <Trash2 className="h-4 w-4" />
@@ -507,11 +517,11 @@ export default function PosShell() {
                 <div className="px-5 py-4 space-y-2">
                   <div className="flex justify-between text-sm text-[#6B7280]">
                     <span>المجموع</span>
-                    <span className="tabular-nums">{formatCurrency(cartTotals.subtotal)}</span>
+                    <span className="tabular-nums"><Money value={cartTotals.subtotal} /></span>
                   </div>
 <div className="border-t border-[#E5E7EB] pt-2 flex justify-between">
                     <span className="text-base font-semibold text-[#111827]">الإجمالي</span>
-                    <span className="text-lg font-bold text-[#111827] tabular-nums">{formatCurrency(cartTotals.total)}</span>
+                    <span className="text-lg font-bold text-[#111827] tabular-nums"><Money value={cartTotals.total} /></span>
                   </div>
                 </div>
                 <div className="px-5 pb-3">

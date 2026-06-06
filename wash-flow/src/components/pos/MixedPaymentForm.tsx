@@ -1,6 +1,6 @@
 'use client';
 import type { MixedPayment } from '@/types/pos';
-import { formatCurrency } from '@/lib/utils';
+import { formatMoneyAmount } from '@/lib/format';
 import { Banknote, CreditCard, AlertCircle, CheckCircle2 } from 'lucide-react';
 
 interface MixedPaymentFormProps {
@@ -36,7 +36,6 @@ export default function MixedPaymentForm({ total, value, onChange }: MixedPaymen
             placeholder="0"
             className="flex-1 px-3 py-1.5 text-sm rounded-lg border border-border-default bg-bg-surface text-text-primary placeholder:text-text-disabled focus:outline-none focus:ring-2 focus:ring-primary-500 tabular-nums"
           />
-          <span className="text-xs text-text-secondary">ر.س</span>
         </div>
 
         <div className="flex items-center gap-2">
@@ -51,7 +50,6 @@ export default function MixedPaymentForm({ total, value, onChange }: MixedPaymen
             placeholder="0"
             className="flex-1 px-3 py-1.5 text-sm rounded-lg border border-border-default bg-bg-surface text-text-primary placeholder:text-text-disabled focus:outline-none focus:ring-2 focus:ring-primary-500 tabular-nums"
           />
-          <span className="text-xs text-text-secondary">ر.س</span>
         </div>
       </div>
 
@@ -66,7 +64,7 @@ export default function MixedPaymentForm({ total, value, onChange }: MixedPaymen
         <span className="text-xs">
           {isMatching
             ? `المبلغ مدفوع بالكامل`
-            : `المتبقي: ${formatCurrency(remaining)}`}
+            : `المتبقي: ${formatMoneyAmount(remaining)}`}
         </span>
       </div>
 

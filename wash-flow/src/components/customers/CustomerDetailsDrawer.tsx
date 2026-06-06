@@ -3,7 +3,7 @@ import type { Customer } from '@/types/customers';
 import Drawer from '@/components/ui/Drawer';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
-import { formatCurrency } from '@/lib/utils';
+import { Money } from '@/lib/format';
 import { formatPhoneForDisplay } from '@/lib/mock-customers';
 import { Phone, Car, ShoppingBag, CalendarDays, Edit } from 'lucide-react';
 
@@ -72,7 +72,7 @@ export default function CustomerDetailsDrawer({ open, onClose, customer, onEdit 
             <div className="flex items-center gap-2 mb-1">
               <span className="text-xs text-text-disabled">إجمالي المشتريات</span>
             </div>
-            <p className="text-sm font-bold text-primary-600">{formatCurrency(customer.totalSpent)}</p>
+            <p className="text-sm font-bold text-primary-600"><Money value={customer.totalSpent} /></p>
           </div>
 
           {customer.lastVisitAt && (
@@ -100,12 +100,12 @@ export default function CustomerDetailsDrawer({ open, onClose, customer, onEdit 
               <div className="flex items-center justify-between py-2 px-3 bg-bg-hover rounded-lg">
                 <span className="text-sm text-text-secondary">ORD-001</span>
                 <span className="text-sm text-text-secondary">2026-06-05</span>
-                <span className="text-sm font-semibold text-text-primary">{formatCurrency(120)}</span>
+                <span className="text-sm font-semibold text-text-primary"><Money value={120} /></span>
               </div>
               <div className="flex items-center justify-between py-2 px-3 bg-bg-hover rounded-lg">
                 <span className="text-sm text-text-secondary">ORD-015</span>
                 <span className="text-sm text-text-secondary">2026-05-28</span>
-                <span className="text-sm font-semibold text-text-primary">{formatCurrency(85)}</span>
+                <span className="text-sm font-semibold text-text-primary"><Money value={85} /></span>
               </div>
             </div>
           </div>

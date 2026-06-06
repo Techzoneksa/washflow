@@ -1,7 +1,8 @@
 'use client';
 import Table, { Pagination } from '@/components/ui/Table';
 import Badge from '@/components/ui/Badge';
-import { formatCurrency, getStatusLabel } from '@/lib/utils';
+import { Money } from '@/lib/format';
+import { getStatusLabel } from '@/lib/utils';
 import { mockOrders } from '@/lib/mock-data';
 import type { Order } from '@/types';
 
@@ -27,7 +28,7 @@ export default function TablesPreview() {
     {
       key: 'total',
       header: 'المجموع',
-      render: (item: Order) => <span className="font-semibold">{formatCurrency(item.total)}</span>,
+      render: (item: Order) => <span className="font-semibold"><Money value={item.total} /></span>,
       className: 'w-24',
     },
     {

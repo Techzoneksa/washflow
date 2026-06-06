@@ -2,7 +2,8 @@
 import Drawer from '@/components/ui/Drawer';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
-import { formatCurrency, formatDate } from '@/lib/utils';
+import { Money } from '@/lib/format';
+import { formatDate } from '@/lib/utils';
 import type { Expense, ExpenseType } from '@/types/expenses';
 import { CalendarDays, History, Tag, FileText, DollarSign, Building2, Paperclip, Pencil } from 'lucide-react';
 
@@ -80,12 +81,12 @@ export default function ExpenseDetailsDrawer({ open, onClose, expense, onEdit }:
               <p className="text-xs text-text-secondary">المبلغ</p>
               <div className="flex items-center gap-1 font-semibold tabular-nums">
                 <DollarSign className="h-4 w-4 text-text-secondary" />
-                {formatCurrency(expense.amount)}
+                <Money value={expense.amount} />
               </div>
             </div>
             <div>
               <p className="text-xs text-text-secondary">الإجمالي</p>
-              <p className="font-bold text-lg tabular-nums text-primary-600">{formatCurrency(expense.total)}</p>
+              <Money value={expense.total} className="font-bold text-lg tabular-nums text-primary-600" />
             </div>
             <div>
               <p className="text-xs text-text-secondary">طريقة الدفع</p>

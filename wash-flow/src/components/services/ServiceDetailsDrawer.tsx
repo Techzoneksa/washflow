@@ -1,7 +1,8 @@
 'use client';
 import Drawer from '@/components/ui/Drawer';
 import Badge from '@/components/ui/Badge';
-import { formatCurrency, formatDate } from '@/lib/utils';
+import { formatDate } from '@/lib/utils';
+import { Money } from '@/lib/format';
 import type { ServiceItem } from '@/types/services';
 import { Package, Clock, Eye, EyeOff, Hash, CalendarDays, History } from 'lucide-react';
 
@@ -40,7 +41,7 @@ export default function ServiceDetailsDrawer({ open, onClose, service, usageCoun
           </div>
           <div>
             <p className="text-text-secondary text-xs">السعر</p>
-            <p className="font-bold text-primary-600 tabular-nums">{formatCurrency(service.price)}</p>
+            <Money value={service.price} className="font-bold text-primary-600 tabular-nums" />
           </div>
           <div>
             <p className="text-text-secondary text-xs">المدة</p>

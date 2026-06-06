@@ -4,7 +4,7 @@ import Modal from '@/components/ui/Modal';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Textarea from '@/components/ui/Textarea';
-import { formatCurrency } from '@/lib/utils';
+import { Money } from '@/lib/format';
 import type { OrderHistoryItem } from '@/types/orders';
 import { RotateCcw } from 'lucide-react';
 
@@ -62,7 +62,7 @@ export default function RefundOrderModal({ open, onClose, order, onConfirm }: Re
         <div className="grid grid-cols-2 gap-3 text-sm bg-neutral-50 rounded-xl p-3">
           <div>
             <p className="text-text-secondary text-xs">إجمالي الطلب</p>
-            <p className="font-bold tabular-nums">{formatCurrency(order.total)}</p>
+            <Money value={order.total} className="font-bold tabular-nums" />
           </div>
           <div>
             <p className="text-text-secondary text-xs">طريقة الدفع</p>

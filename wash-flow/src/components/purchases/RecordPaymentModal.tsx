@@ -4,7 +4,7 @@ import Modal from '@/components/ui/Modal';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import type { PurchaseInvoice } from '@/types/purchases';
-import { formatCurrency } from '@/lib/utils';
+import { Money } from '@/lib/format';
 import { DollarSign } from 'lucide-react';
 
 interface RecordPaymentModalProps {
@@ -52,7 +52,7 @@ export default function RecordPaymentModal({ open, onClose, purchase, onSave }: 
           </div>
           <div className="flex justify-between">
             <span className="text-text-secondary">المبلغ المتبقي</span>
-            <span className="font-bold text-danger-600 tabular-nums">{formatCurrency(purchase.remainingAmount)}</span>
+            <Money value={purchase.remainingAmount} className="font-bold text-danger-600 tabular-nums" />
           </div>
         </div>
 

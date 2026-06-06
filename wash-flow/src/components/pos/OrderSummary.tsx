@@ -1,6 +1,6 @@
 'use client';
 import type { TaxCalculation } from '@/lib/mock-pos';
-import { formatCurrency } from '@/lib/utils';
+import { Money } from '@/lib/format';
 
 interface OrderSummaryProps {
   tax: TaxCalculation;
@@ -11,7 +11,7 @@ export default function OrderSummary({ tax }: OrderSummaryProps) {
     <div className="space-y-1.5 text-sm">
       <div className="flex items-center justify-between text-text-secondary">
         <span>الإجمالي</span>
-        <span className="tabular-nums">{formatCurrency(tax.total)}</span>
+        <span className="tabular-nums"><Money value={tax.total} /></span>
       </div>
     </div>
   );

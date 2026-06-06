@@ -2,7 +2,8 @@
 import Drawer from '@/components/ui/Drawer';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
-import { formatCurrency, formatDate, formatTime } from '@/lib/utils';
+import { formatDate, formatTime } from '@/lib/utils';
+import { Money } from '@/lib/format';
 import { getPaymentMethodLabel } from '@/lib/mock-pos';
 import type { OrderHistoryItem } from '@/types/orders';
 import type { UserRole } from '@/types';
@@ -95,7 +96,7 @@ export default function OrderDetailsDrawer({
                 <span>{item.nameAr}</span>
                 <div className="flex items-center gap-3">
                   <span className="text-text-secondary">x{item.quantity}</span>
-                  <span className="font-semibold tabular-nums">{formatCurrency(item.total)}</span>
+                  <Money value={item.total} className="font-semibold tabular-nums" />
                 </div>
               </div>
             ))}
@@ -105,7 +106,7 @@ export default function OrderDetailsDrawer({
         <div className="space-y-1 text-sm border-t border-border-default pt-3">
           <div className="flex justify-between text-base font-bold text-text-primary">
             <span>الإجمالي</span>
-            <span className="tabular-nums">{formatCurrency(order.total)}</span>
+            <Money value={order.total} className="tabular-nums" />
           </div>
           <div className="flex justify-between text-xs text-text-secondary pt-1">
             <span>طريقة الدفع</span>
@@ -115,11 +116,11 @@ export default function OrderDetailsDrawer({
             <>
               <div className="flex justify-between text-xs text-text-secondary pl-4">
                 <span>كاش</span>
-                <span className="tabular-nums">{formatCurrency(order.mixedPayment.cash || 0)}</span>
+                <Money value={order.mixedPayment.cash || 0} className="tabular-nums" />
               </div>
               <div className="flex justify-between text-xs text-text-secondary pl-4">
                 <span>شبكة</span>
-                <span className="tabular-nums">{formatCurrency(order.mixedPayment.network || 0)}</span>
+                <Money value={order.mixedPayment.network || 0} className="tabular-nums" />
               </div>
             </>
           )}
@@ -143,7 +144,7 @@ export default function OrderDetailsDrawer({
           <div className="bg-warning-50 rounded-xl p-3 space-y-1 text-sm">
             <p className="font-semibold text-warning-700 text-xs">معلومات الاسترداد</p>
             <p className="text-warning-600 text-xs">السبب: {order.refundedData.reason}</p>
-            <p className="text-warning-600 text-xs">المبلغ: {formatCurrency(order.refundedData.refundAmount)}</p>
+            <p className="text-warning-600 text-xs">المبلغ: <Money value={order.refundedData.refundAmount} /></p>
             <p className="text-warning-600 text-xs">بواسطة: {order.refundedData.refundedBy}</p>
             <p className="text-warning-600 text-xs">التاريخ: {formatDate(order.refundedData.refundedAt)}</p>
           </div>

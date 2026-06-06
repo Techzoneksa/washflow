@@ -8,7 +8,7 @@ import PaymentMethodSelector from './PaymentMethodSelector';
 import MixedPaymentForm from './MixedPaymentForm';
 import type { CartItem as CartItemType, PaymentMethod, PosCustomerInfo, MixedPayment } from '@/types/pos';
 import { calculateCartTotals } from '@/lib/mock-pos';
-import { formatCurrency } from '@/lib/utils';
+import { Money } from '@/lib/format';
 
 interface CartPanelProps {
   items: CartItemType[];
@@ -103,7 +103,7 @@ export default function CartPanel({
             disabled={!canSubmit || !isMixedValid}
             onClick={onCompleteOrder}
           >
-            إتمام الطلب — {formatCurrency(tax.total)}
+            إتمام الطلب — <Money value={tax.total} />
           </Button>
         </div>
       )}

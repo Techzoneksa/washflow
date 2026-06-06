@@ -2,7 +2,8 @@
 import Table, { Pagination } from '@/components/ui/Table';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
-import { formatCurrency, formatDate } from '@/lib/utils';
+import { Money } from '@/lib/format';
+import { formatDate } from '@/lib/utils';
 import type { Expense, ExpenseType } from '@/types/expenses';
 import type { Column } from '@/components/ui/Table';
 import { Eye, Pencil } from 'lucide-react';
@@ -64,13 +65,13 @@ export default function ExpensesTable({ expenses, page, totalPages, onPageChange
     {
       key: 'amount',
       header: 'المبلغ',
-      render: (e) => <span className="tabular-nums">{formatCurrency(e.amount)}</span>,
+      render: (e) => <Money value={e.amount} className="tabular-nums" />,
       className: 'text-left',
     },
     {
       key: 'total',
       header: 'الإجمالي',
-      render: (e) => <span className="font-semibold tabular-nums">{formatCurrency(e.total)}</span>,
+      render: (e) => <Money value={e.total} className="font-semibold tabular-nums" />,
       className: 'text-left',
     },
     {
@@ -118,7 +119,7 @@ export default function ExpensesTable({ expenses, page, totalPages, onPageChange
             <p className="text-text-primary font-medium text-sm">{e.title}</p>
             <div className="flex items-center justify-between text-sm">
               <span className="text-text-secondary">{formatDate(e.date)}</span>
-              <span className="font-bold tabular-nums">{formatCurrency(e.total)}</span>
+              <Money value={e.total} className="font-bold tabular-nums" />
             </div>
             <div className="flex items-center justify-between text-xs text-text-secondary">
               <span>{paymentMethodLabels[e.paymentMethod]}</span>

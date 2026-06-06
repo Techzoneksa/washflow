@@ -1,6 +1,6 @@
 'use client';
 import Card, { CardTitle } from '@/components/ui/Card';
-import { formatCurrency } from '@/lib/utils';
+import { formatMoneyAmount } from '@/lib/format';
 import { FileText, Banknote, XCircle } from 'lucide-react';
 
 interface InvoicesSummaryData {
@@ -21,7 +21,7 @@ export default function InvoicesSummaryCards({ data }: { data: InvoicesSummaryDa
     },
     {
       label: 'إجمالي المبلغ',
-      value: formatCurrency(data.totalAmount),
+      value: formatMoneyAmount(data.totalAmount),
       icon: Banknote,
       color: 'text-success-500',
       bg: 'bg-success-50',

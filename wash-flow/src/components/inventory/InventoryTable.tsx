@@ -1,6 +1,6 @@
 'use client';
 import Button from '@/components/ui/Button';
-import { formatCurrency } from '@/lib/utils';
+import { Money } from '@/lib/format';
 import type { InventoryItem } from '@/types/inventory';
 import { INVENTORY_CATEGORY_LABELS, INVENTORY_UNIT_LABELS } from '@/types/inventory';
 import LowStockBadge from './LowStockBadge';
@@ -73,7 +73,7 @@ export default function InventoryTable({
                     <LowStockBadge current={item.currentQuantity} minimum={item.minimumQuantity} status={item.status} />
                   </td>
                   <td className="px-4 py-3 text-text-secondary">
-                    {formatCurrency(item.averageCost)} / {INVENTORY_UNIT_LABELS[item.unit]}
+                    <Money value={item.averageCost} /> / {INVENTORY_UNIT_LABELS[item.unit]}
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-1">

@@ -7,7 +7,7 @@ import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
 import Textarea from '@/components/ui/Textarea';
 import Card from '@/components/ui/Card';
-import { formatCurrency } from '@/lib/utils';
+import { Money } from '@/lib/format';
 import type { Employee, PaymentMethod } from '@/types/employees';
 import { getOpenAdvancesByEmployeeId } from '@/lib/mock-employees';
 
@@ -136,13 +136,13 @@ export default function SalaryPaymentModal({
           <div className="space-y-1 text-sm">
             <div className="flex justify-between">
               <span>الراتب الأساسي</span>
-              <span className="font-medium">{formatCurrency(baseSalary)}</span>
+              <Money value={baseSalary} className="font-medium" />
             </div>
             {totalOpenAdvances > 0 && (
               <>
                 <div className="flex justify-between text-warning-500">
                   <span>السلف المفتوحة المتاحة للخصم</span>
-                  <span className="font-medium">{formatCurrency(totalOpenAdvances)}</span>
+                  <Money value={totalOpenAdvances} className="font-medium" />
                 </div>
                 <div className="flex justify-between">
                   <span className="text-text-tertiary">الخصم من السلف</span>
@@ -171,7 +171,7 @@ export default function SalaryPaymentModal({
             </div>
             <div className="flex justify-between pt-1 border-t border-border-default font-bold text-success-500">
               <span>صافي الراتب</span>
-              <span>{formatCurrency(netSalary)}</span>
+              <Money value={netSalary} />
             </div>
           </div>
         </Card>

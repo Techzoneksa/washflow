@@ -1,7 +1,7 @@
 'use client';
 import { Minus, Plus, X } from 'lucide-react';
 import type { CartItem as CartItemType } from '@/types/pos';
-import { formatCurrency } from '@/lib/utils';
+import { Money } from '@/lib/format';
 
 interface CartItemProps {
   item: CartItemType;
@@ -15,7 +15,7 @@ export default function CartItem({ item, onIncrease, onDecrease, onRemove }: Car
     <div className="flex items-center gap-3 p-2.5 rounded-lg bg-bg-hover">
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-text-primary truncate">{item.nameAr}</p>
-        <p className="text-xs text-primary-500 font-semibold">{formatCurrency(item.total)}</p>
+        <p className="text-xs text-primary-500 font-semibold"><Money value={item.total} /></p>
       </div>
       <div className="flex items-center gap-1.5">
         <button

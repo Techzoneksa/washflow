@@ -2,7 +2,8 @@
 import Drawer from '@/components/ui/Drawer';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
-import { formatCurrency, formatDate } from '@/lib/utils';
+import { Money } from '@/lib/format';
+import { formatDate } from '@/lib/utils';
 import type { UtilityBill, UtilityBillType, UtilityBillStatus } from '@/types/utility-bills';
 import { CalendarDays, History, FileText, Building2, Phone, DollarSign, CheckCircle2, Clock, Paperclip, Pencil, CreditCard } from 'lucide-react';
 
@@ -101,12 +102,12 @@ export default function UtilityBillDetailsDrawer({ open, onClose, bill, onEdit, 
               <p className="text-xs text-text-secondary">المبلغ</p>
               <div className="flex items-center gap-1 font-semibold tabular-nums">
                 <DollarSign className="h-4 w-4 text-text-secondary" />
-                {formatCurrency(bill.amount)}
+                <Money value={bill.amount} />
               </div>
             </div>
             <div>
               <p className="text-xs text-text-secondary">الإجمالي</p>
-              <p className="font-bold text-lg tabular-nums text-primary-600">{formatCurrency(bill.total)}</p>
+              <Money value={bill.total} className="font-bold text-lg tabular-nums text-primary-600" />
             </div>
             {bill.paymentMethod && (
               <div>

@@ -169,7 +169,7 @@ export default function InventoryItemFormDrawer({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-text-primary mb-1">متوسط التكلفة (ر.س)</label>
+          <label className="block text-sm font-medium text-text-primary mb-1">متوسط التكلفة</label>
           <Input
             type="number"
             min={0}

@@ -1,7 +1,8 @@
 'use client';
 import Image from 'next/image';
 import Modal from '@/components/ui/Modal';
-import { formatCurrency, formatDate } from '@/lib/utils';
+import { formatDate } from '@/lib/utils';
+import { Money } from '@/lib/format';
 import { getPaymentMethodLabel } from '@/lib/mock-pos';
 import { getCompanySetup } from '@/lib/mock-company-settings';
 import type { PosOrder } from '@/types/pos';
@@ -77,8 +78,8 @@ export default function InvoicePreviewModal({ open, onClose, order, onPrint }: I
               <tr key={item.serviceId} className="border-b border-border-default">
                 <td className="py-2 text-text-primary">{item.nameAr}</td>
                 <td className="py-2 text-center tabular-nums">{item.quantity}</td>
-                <td className="py-2 text-left tabular-nums">{formatCurrency(item.price)}</td>
-                <td className="py-2 text-left tabular-nums font-semibold">{formatCurrency(item.total)}</td>
+                <td className="py-2 text-left tabular-nums"><Money value={item.price} /></td>
+                <td className="py-2 text-left tabular-nums font-semibold"><Money value={item.total} /></td>
               </tr>
             ))}
           </tbody>
@@ -87,7 +88,7 @@ export default function InvoicePreviewModal({ open, onClose, order, onPrint }: I
         <div className="space-y-1 text-sm border-t border-border-default pt-3">
           <div className="flex justify-between text-base font-bold text-text-primary">
             <span>الإجمالي</span>
-            <span className="tabular-nums">{formatCurrency(order.total)}</span>
+            <span className="tabular-nums"><Money value={order.total} /></span>
           </div>
           <div className="flex justify-between text-xs text-text-secondary pt-1">
             <span>طريقة الدفع</span>
@@ -96,13 +97,13 @@ export default function InvoicePreviewModal({ open, onClose, order, onPrint }: I
           {order.paymentMethod === 'mixed' && order.mixedPayment && (
             <div className="flex justify-between text-xs text-text-secondary pl-4">
               <span>كاش</span>
-              <span className="tabular-nums">{formatCurrency(order.mixedPayment.cash || 0)}</span>
+              <span className="tabular-nums"><Money value={order.mixedPayment.cash || 0} /></span>
             </div>
           )}
           {order.paymentMethod === 'mixed' && order.mixedPayment && (
             <div className="flex justify-between text-xs text-text-secondary pl-4">
               <span>شبكة</span>
-              <span className="tabular-nums">{formatCurrency(order.mixedPayment.network || 0)}</span>
+              <span className="tabular-nums"><Money value={order.mixedPayment.network || 0} /></span>
             </div>
           )}
         </div>

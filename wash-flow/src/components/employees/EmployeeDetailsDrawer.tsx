@@ -2,7 +2,7 @@
 import Drawer from '@/components/ui/Drawer';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
-import { formatCurrency } from '@/lib/utils';
+import { Money, formatMoneyAmount } from '@/lib/format';
 import type { Employee } from '@/types/employees';
 import { getEmployeeLedger, getAdvancesByEmployeeId, getSalaryPaymentsByEmployeeId } from '@/lib/mock-employees';
 import { Pencil, Wallet, TrendingDown, History } from 'lucide-react';
@@ -86,21 +86,19 @@ export default function EmployeeDetailsDrawer({
               <div className="grid grid-cols-2 gap-3">
                 <Card padding="sm" className="bg-bg-subtle">
                   <p className="text-xs text-text-tertiary mb-1">الراتب الشهري</p>
-                  <p className="text-base font-bold text-text-primary">{formatCurrency(ledger.employee.monthlySalary)}</p>
+                  <Money value={ledger.employee.monthlySalary} className="text-base font-bold text-text-primary" />
                 </Card>
                 <Card padding="sm" className="bg-bg-subtle">
                   <p className="text-xs text-text-tertiary mb-1">السلف المفتوحة</p>
-                  <p className="text-base font-bold text-warning-500">{formatCurrency(ledger.openAdvances)}</p>
+                  <Money value={ledger.openAdvances} className="text-base font-bold text-warning-500" />
                 </Card>
                 <Card padding="sm" className="bg-bg-subtle">
                   <p className="text-xs text-text-tertiary mb-1">إجمالي السلف</p>
-                  <p className="text-base font-bold text-text-primary">{formatCurrency(ledger.totalAdvances)}</p>
+                  <Money value={ledger.totalAdvances} className="text-base font-bold text-text-primary" />
                 </Card>
                 <Card padding="sm" className="bg-bg-subtle">
                   <p className="text-xs text-text-tertiary mb-1">صافي الراتب المتوقع</p>
-                  <p className="text-base font-bold text-success-500">
-                    {formatCurrency(ledger.employee.monthlySalary - ledger.openAdvances)}
-                  </p>
+                  <Money value={ledger.employee.monthlySalary - ledger.openAdvances} className="text-base font-bold text-success-500" />
                 </Card>
                 <Card padding="sm" className="bg-bg-subtle">
                   <p className="text-xs text-text-tertiary mb-1">الرواتب المصروفة</p>
@@ -108,7 +106,7 @@ export default function EmployeeDetailsDrawer({
                 </Card>
                 <Card padding="sm" className="bg-bg-subtle">
                   <p className="text-xs text-text-tertiary mb-1">إجمالي ما تم صرفه</p>
-                  <p className="text-base font-bold text-primary-500">{formatCurrency(ledger.totalPaidSalaries)}</p>
+                  <Money value={ledger.totalPaidSalaries} className="text-base font-bold text-primary-500" />
                 </Card>
               </div>
             </div>
@@ -125,7 +123,7 @@ export default function EmployeeDetailsDrawer({
                   {advances.map((a) => (
                     <div key={a.id} className="flex items-center justify-between text-sm py-2 border-b border-border-subtle last:border-0">
                       <div>
-                        <p className="text-text-primary">{formatCurrency(a.amount)}</p>
+                        <Money value={a.amount} className="text-text-primary" />
                         <p className="text-xs text-text-tertiary">{a.reason || a.date}</p>
                       </div>
                       <span className={`text-xs font-medium ${a.status === 'open' ? 'text-warning-500' : a.status === 'deducted' ? 'text-info-500' : 'text-success-500'}`}>
@@ -151,10 +149,10 @@ export default function EmployeeDetailsDrawer({
                       <div>
                         <p className="text-text-primary">{s.month}</p>
                         <p className="text-xs text-text-tertiary">
-                          الأساسي: {formatCurrency(s.baseSalary)} | المخصومات: {formatCurrency(s.advancesDeducted + s.otherDeductions)}
+                          الأساسي: {formatMoneyAmount(s.baseSalary)} | المخصومات: {formatMoneyAmount(s.advancesDeducted + s.otherDeductions)}
                         </p>
                       </div>
-                      <p className="font-semibold text-success-500">{formatCurrency(s.netSalary)}</p>
+                      <Money value={s.netSalary} className="font-semibold text-success-500" />
                     </div>
                   ))}
                 </div>

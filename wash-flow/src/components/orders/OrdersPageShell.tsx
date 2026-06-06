@@ -11,7 +11,8 @@ import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import EmptyState from '@/components/ui/EmptyState';
 import { useToast } from '@/components/ui/Toast';
-import { formatCurrency, formatDate, formatTime } from '@/lib/utils';
+import { formatDate, formatTime } from '@/lib/utils';
+import { Money } from '@/lib/format';
 import { mockOrderHistory, getOrdersSummary, filterOrders, paginateOrders } from '@/lib/mock-orders';
 import type { OrderHistoryItem } from '@/types/orders';
 import type { UserRole } from '@/types';
@@ -151,7 +152,7 @@ export default function OrdersPageShell({ userRole }: OrdersPageShellProps) {
     {
       key: 'total',
       header: 'الإجمالي',
-      render: (order) => <span className="font-semibold tabular-nums">{formatCurrency(order.total)}</span>,
+      render: (order) => <Money value={order.total} className="font-semibold tabular-nums" />,
       className: 'text-left',
     },
     {
@@ -253,7 +254,7 @@ export default function OrdersPageShell({ userRole }: OrdersPageShellProps) {
                     <span className="text-text-secondary truncate max-w-[160px]">
                       {order.items.map((i) => i.nameAr).join('، ')}
                     </span>
-                    <span className="font-bold tabular-nums">{formatCurrency(order.total)}</span>
+                    <Money value={order.total} className="font-bold tabular-nums" />
                   </div>
                   <div className="flex items-center justify-between text-xs text-text-secondary">
                     <span>{getPaymentMethodLabelSafe(order.paymentMethod)}</span>

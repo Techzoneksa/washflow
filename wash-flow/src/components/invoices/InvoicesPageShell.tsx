@@ -10,7 +10,8 @@ import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import EmptyState from '@/components/ui/EmptyState';
 import { useToast } from '@/components/ui/Toast';
-import { formatCurrency, formatDate } from '@/lib/utils';
+import { formatDate } from '@/lib/utils';
+import { Money } from '@/lib/format';
 import { mockInvoices, getInvoicesSummary, filterInvoices, paginateInvoices } from '@/lib/mock-invoices';
 import type { PosOrder } from '@/types/pos';
 import type { Column } from '@/components/ui/Table';
@@ -95,7 +96,7 @@ export default function InvoicesPageShell() {
     {
       key: 'total',
       header: 'الإجمالي',
-      render: (inv) => <span className="font-semibold tabular-nums">{formatCurrency(inv.total)}</span>,
+      render: (inv) => <Money value={inv.total} className="font-semibold tabular-nums" />,
       className: 'text-left',
     },
     {
@@ -175,7 +176,7 @@ export default function InvoicesPageShell() {
                     <span className="text-text-secondary truncate max-w-[160px]">
                       {inv.items.map((i) => i.nameAr).join('، ')}
                     </span>
-                    <span className="font-bold tabular-nums">{formatCurrency(inv.total)}</span>
+                    <Money value={inv.total} className="font-bold tabular-nums" />
                   </div>
                   <div className="flex items-center justify-between text-xs text-text-secondary">
                     <span>{getPaymentMethodLabelSafe(inv.paymentMethod)}</span>

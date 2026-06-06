@@ -4,7 +4,7 @@ import Modal from '@/components/ui/Modal';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import type { UtilityBill } from '@/types/utility-bills';
-import { formatCurrency } from '@/lib/utils';
+import { Money } from '@/lib/format';
 import { DollarSign } from 'lucide-react';
 
 interface RecordUtilityPaymentModalProps {
@@ -56,7 +56,7 @@ export default function RecordUtilityPaymentModal({ open, onClose, bill, onSave 
           </div>
           <div className="flex justify-between">
             <span className="text-text-secondary">المبلغ المستحق</span>
-            <span className="font-bold text-primary-600 tabular-nums">{formatCurrency(bill.total)}</span>
+            <Money value={bill.total} className="font-bold text-primary-600 tabular-nums" />
           </div>
         </div>
 

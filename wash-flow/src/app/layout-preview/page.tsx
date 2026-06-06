@@ -50,11 +50,11 @@ export default function LayoutPreviewPage() {
                 <div className="grid grid-cols-2 gap-3">
                   <div className="bg-bg-surface border border-border-default rounded-card p-4">
                     <p className="text-xs text-text-secondary">المبيعات</p>
-                    <p className="text-lg font-bold text-text-primary">١٬٢٥٠ ر.س</p>
+                    <p className="text-lg font-bold text-text-primary">1,250 <img src="/SAR.svg" alt="SAR" className="inline-block h-3.5 w-3.5" /></p>
                   </div>
                   <div className="bg-bg-surface border border-border-default rounded-card p-4">
                     <p className="text-xs text-text-secondary">الطلبات</p>
-                    <p className="text-lg font-bold text-text-primary">٣٨</p>
+                    <p className="text-lg font-bold text-text-primary">38</p>
                   </div>
                 </div>
                 {[1, 2, 3].map((i) => (
@@ -93,7 +93,7 @@ export default function LayoutPreviewPage() {
                     {['مبيعات', 'طلبات', 'مصاريف', 'صافي'].map((label, idx) => (
                       <div key={label} className="bg-bg-surface border border-border-default rounded-card p-4">
                         <p className="text-xs text-text-secondary">{label}</p>
-                        <p className="text-lg font-bold text-text-primary">{([1200, 38, 320, 930])[idx]} ر.س</p>
+                        <p className="text-lg font-bold text-text-primary">{([1200, 38, 320, 930])[idx]} <img src="/SAR.svg" alt="SAR" className="inline-block h-3.5 w-3.5" /></p>
                       </div>
                     ))}
                   </div>
@@ -106,7 +106,7 @@ export default function LayoutPreviewPage() {
                       {[1, 2, 3, 4].map((i) => (
                         <div key={i} className="flex items-center justify-between py-2 border-b border-border-default last:border-0">
                           <span className="text-sm text-text-primary">طلب #{100 + i}</span>
-                          <span className="text-sm font-medium text-text-primary">{i * 25} ر.س</span>
+                          <span className="text-sm font-medium text-text-primary">{i * 25} <img src="/SAR.svg" alt="SAR" className="inline-block h-3.5 w-3.5" /></span>
                           <Badge variant={i % 2 === 0 ? 'success' : 'info'} size="sm">
                             {i % 2 === 0 ? 'مكتمل' : 'جديد'}
                           </Badge>
@@ -139,10 +139,10 @@ export default function LayoutPreviewPage() {
 
                   <div className="grid grid-cols-4 gap-4 mb-6">
                     {[
-                      { label: 'مبيعات اليوم', value: '١٬٢٥٠ ر.س', trend: '+١٢٪' },
-                      { label: 'الطلبات', value: '٣٨', trend: '+٥' },
-                      { label: 'المصاريف', value: '٣٢٠ ر.س', trend: '-٢٪' },
-                      { label: 'صافي الربح', value: '٩٣٠ ر.س', trend: '+١٥٪' },
+                      { label: 'مبيعات اليوم', value: '1,250 SAR', trend: '+12%' },
+                      { label: 'الطلبات', value: '38', trend: '+5' },
+                      { label: 'المصاريف', value: '320 SAR', trend: '-2%' },
+                      { label: 'صافي الربح', value: '930 SAR', trend: '+15%' },
                     ].map((stat) => (
                       <div key={stat.label} className="bg-bg-surface border border-border-default rounded-card p-4">
                         <p className="text-xs text-text-secondary">{stat.label}</p>
@@ -167,7 +167,7 @@ export default function LayoutPreviewPage() {
                           {[1, 2, 3, 4, 5].map((i) => (
                             <tr key={i} className="border-b border-border-default last:border-0">
                               <td className="py-2.5 text-text-primary">#ORD-{100 + i}</td>
-                              <td className="py-2.5 text-text-primary font-medium">{i * 25} ر.س</td>
+                              <td className="py-2.5 text-text-primary font-medium">{i * 25} <img src="/SAR.svg" alt="SAR" className="inline-block h-3.5 w-3.5" /></td>
                               <td className="py-2.5">
                                 <Badge variant={i % 2 === 0 ? 'success' : 'info'} size="sm">
                                   {i % 2 === 0 ? 'مكتمل' : 'جديد'}
@@ -189,7 +189,7 @@ export default function LayoutPreviewPage() {
                           <div key={svc.name} className="flex items-center justify-between">
                             <span className="text-sm text-text-primary">{svc.name}</span>
                             <span className="text-xs text-text-secondary">{svc.count} طلب</span>
-                            <span className="text-sm font-medium text-text-primary">{svc.revenue} ر.س</span>
+                            <span className="text-sm font-medium text-text-primary">{svc.revenue} <img src="/SAR.svg" alt="SAR" className="inline-block h-3.5 w-3.5" /></span>
                           </div>
                         ))}
                       </div>

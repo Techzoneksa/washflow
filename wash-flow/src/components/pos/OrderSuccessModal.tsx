@@ -1,7 +1,7 @@
 'use client';
 import Modal from '@/components/ui/Modal';
 import Button from '@/components/ui/Button';
-import { formatCurrency } from '@/lib/utils';
+import { Money } from '@/lib/format';
 import { getPaymentMethodLabel } from '@/lib/mock-pos';
 import type { PosOrder } from '@/types/pos';
 import { CheckCircle2, Printer, Eye, Plus } from 'lucide-react';
@@ -40,7 +40,7 @@ export default function OrderSuccessModal({
           </div>
           <div className="flex items-center justify-between">
             <span className="text-text-secondary">الإجمالي</span>
-            <span className="font-bold text-primary-600 tabular-nums">{formatCurrency(order.total)}</span>
+            <span className="font-bold text-primary-600 tabular-nums"><Money value={order.total} /></span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-text-secondary">طريقة الدفع</span>

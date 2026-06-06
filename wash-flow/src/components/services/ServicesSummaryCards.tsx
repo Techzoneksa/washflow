@@ -1,6 +1,6 @@
 'use client';
 import Card, { CardTitle } from '@/components/ui/Card';
-import { formatCurrency } from '@/lib/utils';
+import { formatMoneyAmount } from '@/lib/format';
 import { Package, CheckCircle2, EyeOff, TrendingUp } from 'lucide-react';
 
 interface ServicesSummaryData {
@@ -35,7 +35,7 @@ export default function ServicesSummaryCards({ data }: { data: ServicesSummaryDa
     },
     {
       label: 'متوسط السعر',
-      value: formatCurrency(data.avgPrice),
+      value: formatMoneyAmount(data.avgPrice),
       icon: TrendingUp,
       color: 'text-info-500',
       bg: 'bg-info-50',

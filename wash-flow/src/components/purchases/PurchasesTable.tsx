@@ -2,7 +2,8 @@
 import Table, { Pagination } from '@/components/ui/Table';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
-import { formatCurrency, formatDate } from '@/lib/utils';
+import { Money } from '@/lib/format';
+import { formatDate } from '@/lib/utils';
 import type { PurchaseInvoice } from '@/types/purchases';
 import type { Column } from '@/components/ui/Table';
 import { Eye } from 'lucide-react';
@@ -57,23 +58,21 @@ export default function PurchasesTable({ purchases, page, totalPages, onPageChan
     {
       key: 'total',
       header: 'الإجمالي',
-      render: (p) => <span className="font-semibold tabular-nums">{formatCurrency(p.total)}</span>,
+      render: (p) => <Money value={p.total} className="font-semibold tabular-nums" />,
       className: 'text-left',
     },
     {
       key: 'paidAmount',
       header: 'المدفوع',
       hideOnMobile: true,
-      render: (p) => <span className="tabular-nums text-success-600">{formatCurrency(p.paidAmount)}</span>,
+      render: (p) => <Money value={p.paidAmount} className="tabular-nums text-success-600" />,
       className: 'text-left',
     },
     {
       key: 'remainingAmount',
       header: 'المتبقي',
       render: (p) => (
-        <span className={`tabular-nums font-semibold ${p.remainingAmount > 0 ? 'text-danger-600' : 'text-text-secondary'}`}>
-          {formatCurrency(p.remainingAmount)}
-        </span>
+        <Money value={p.remainingAmount} className={`tabular-nums font-semibold ${p.remainingAmount > 0 ? 'text-danger-600' : 'text-text-secondary'}`} />
       ),
       className: 'text-left',
     },
@@ -120,9 +119,9 @@ export default function PurchasesTable({ purchases, page, totalPages, onPageChan
               <span className="text-xs text-text-secondary">{formatDate(p.date)}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-lg font-bold tabular-nums">{formatCurrency(p.total)}</span>
+              <Money value={p.total} className="text-lg font-bold tabular-nums" />
               {p.remainingAmount > 0 && (
-                <span className="text-sm text-danger-600 tabular-nums">متبقي: {formatCurrency(p.remainingAmount)}</span>
+                <span className="text-sm text-danger-600 tabular-nums">متبقي: <Money value={p.remainingAmount} /></span>
               )}
             </div>
             <div className="flex gap-2 pt-1">

@@ -185,7 +185,7 @@ export default function EmployeeFormDrawer({
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-text-primary mb-1">الراتب الشهري (ر.س) *</label>
+            <label className="block text-sm font-medium text-text-primary mb-1">الراتب الشهري *</label>
             <Input
               type="number"
               min={0}

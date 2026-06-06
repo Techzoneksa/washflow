@@ -1,6 +1,6 @@
 'use client';
 import Card, { CardTitle } from '@/components/ui/Card';
-import { formatCurrency } from '@/lib/utils';
+import { Money } from '@/lib/format';
 import { Wallet, CalendarDays, Receipt, TrendingUp } from 'lucide-react';
 
 interface ExpensesSummaryData {
@@ -14,14 +14,14 @@ export default function ExpensesSummaryCards({ data }: { data: ExpensesSummaryDa
   const cards = [
     {
       label: 'مصاريف اليوم',
-      value: formatCurrency(data.todayTotal),
+      value: <Money value={data.todayTotal} />,
       icon: CalendarDays,
       color: 'text-primary-500',
       bg: 'bg-primary-50',
     },
     {
       label: 'مصاريف الشهر',
-      value: formatCurrency(data.monthTotal),
+      value: <Money value={data.monthTotal} />,
       icon: Wallet,
       color: 'text-warning-500',
       bg: 'bg-warning-50',

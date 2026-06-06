@@ -2,7 +2,7 @@
 import Table, { Pagination } from '@/components/ui/Table';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
-import { formatCurrency } from '@/lib/utils';
+import { Money } from '@/lib/format';
 import type { ServiceItem } from '@/types/services';
 import type { Column } from '@/components/ui/Table';
 import { Eye, Pencil, ToggleLeft, ToggleRight } from 'lucide-react';
@@ -44,7 +44,7 @@ export default function ServicesTable({ services, page, totalPages, onPageChange
     {
       key: 'price',
       header: 'السعر',
-      render: (s) => <span className="font-semibold tabular-nums">{s.price === 0 ? 'متغير' : formatCurrency(s.price)}</span>,
+      render: (s) => <span className="font-semibold tabular-nums">{s.price === 0 ? 'متغير' : <Money value={s.price} className="font-semibold tabular-nums" />}</span>,
       className: 'text-left',
     },
     {
@@ -98,7 +98,7 @@ export default function ServicesTable({ services, page, totalPages, onPageChange
                 <p className="font-semibold">{s.nameAr}</p>
                 <p className="text-xs text-text-secondary">{s.category}</p>
               </div>
-              <span className="font-bold tabular-nums">{s.price === 0 ? 'متغير' : formatCurrency(s.price)}</span>
+              <span className="font-bold tabular-nums">{s.price === 0 ? 'متغير' : <Money value={s.price} className="font-bold tabular-nums" />}</span>
             </div>
             <div className="flex items-center gap-2 text-xs">
               {s.isActive ? <Badge variant="success" dot size="sm">نشط</Badge> : <Badge variant="danger" dot size="sm">غير نشط</Badge>}

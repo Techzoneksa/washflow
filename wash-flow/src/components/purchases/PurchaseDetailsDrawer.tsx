@@ -2,7 +2,8 @@
 import Drawer from '@/components/ui/Drawer';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
-import { formatCurrency, formatDate } from '@/lib/utils';
+import { Money } from '@/lib/format';
+import { formatDate } from '@/lib/utils';
 import type { PurchaseInvoice } from '@/types/purchases';
 import { CalendarDays, History, User, FileText, Paperclip, MessageSquare } from 'lucide-react';
 
@@ -76,8 +77,8 @@ export default function PurchaseDetailsDrawer({ open, onClose, purchase, onRecor
                   <span className="col-span-2 font-medium">{item.name}</span>
                   <span className="tabular-nums">{item.quantity}</span>
                   <span className="text-text-secondary">{item.unit}</span>
-                  <span className="tabular-nums">{formatCurrency(item.unitPrice)}</span>
-                  <span className="tabular-nums text-left font-semibold">{formatCurrency(item.total)}</span>
+                  <Money value={item.unitPrice} className="tabular-nums" />
+                  <Money value={item.total} className="tabular-nums text-left font-semibold" />
                 </div>
               ))}
             </div>
@@ -87,20 +88,18 @@ export default function PurchaseDetailsDrawer({ open, onClose, purchase, onRecor
         <div className="space-y-1 text-sm border-t border-border-default pt-3">
           <div className="flex justify-between text-base font-bold text-text-primary">
             <span>الإجمالي</span>
-            <span className="tabular-nums">{formatCurrency(purchase.total)}</span>
+            <Money value={purchase.total} className="tabular-nums" />
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-3 bg-neutral-50 rounded-xl p-3 text-sm">
           <div>
             <p className="text-xs text-text-secondary">المدفوع</p>
-            <p className="font-bold text-success-600 tabular-nums">{formatCurrency(purchase.paidAmount)}</p>
+            <Money value={purchase.paidAmount} className="font-bold text-success-600 tabular-nums" />
           </div>
           <div>
             <p className="text-xs text-text-secondary">المتبقي</p>
-            <p className={`font-bold tabular-nums ${purchase.remainingAmount > 0 ? 'text-danger-600' : 'text-text-secondary'}`}>
-              {formatCurrency(purchase.remainingAmount)}
-            </p>
+            <Money value={purchase.remainingAmount} className={`font-bold tabular-nums ${purchase.remainingAmount > 0 ? 'text-danger-600' : 'text-text-secondary'}`} />
           </div>
           <div>
             <p className="text-xs text-text-secondary">طريقة الدفع</p>

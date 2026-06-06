@@ -4,7 +4,8 @@ import Drawer from '@/components/ui/Drawer';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import InvoicePreviewModal from '@/components/pos/InvoicePreviewModal';
-import { formatCurrency, formatDate, formatTime } from '@/lib/utils';
+import { formatDate, formatTime } from '@/lib/utils';
+import { Money } from '@/lib/format';
 import { getPaymentMethodLabel } from '@/lib/mock-pos';
 import type { PosOrder } from '@/types/pos';
 import { Eye, Printer } from 'lucide-react';
@@ -81,7 +82,7 @@ export default function InvoiceDetailsDrawer({ open, onClose, invoice }: Invoice
                   <span>{item.nameAr}</span>
                   <div className="flex items-center gap-3">
                     <span className="text-text-secondary">x{item.quantity}</span>
-                    <span className="font-semibold tabular-nums">{formatCurrency(item.total)}</span>
+                    <Money value={item.total} className="font-semibold tabular-nums" />
                   </div>
                 </div>
               ))}
@@ -91,7 +92,7 @@ export default function InvoiceDetailsDrawer({ open, onClose, invoice }: Invoice
           <div className="space-y-1 text-sm border-t border-border-default pt-3">
             <div className="flex justify-between text-base font-bold text-text-primary">
               <span>الإجمالي</span>
-              <span className="tabular-nums">{formatCurrency(invoice.total)}</span>
+              <Money value={invoice.total} className="tabular-nums" />
             </div>
             <div className="flex justify-between text-xs text-text-secondary pt-1">
               <span>طريقة الدفع</span>
@@ -101,11 +102,11 @@ export default function InvoiceDetailsDrawer({ open, onClose, invoice }: Invoice
               <>
                 <div className="flex justify-between text-xs text-text-secondary pl-4">
                   <span>كاش</span>
-                  <span className="tabular-nums">{formatCurrency(invoice.mixedPayment.cash || 0)}</span>
+                  <Money value={invoice.mixedPayment.cash || 0} className="tabular-nums" />
                 </div>
                 <div className="flex justify-between text-xs text-text-secondary pl-4">
                   <span>شبكة</span>
-                  <span className="tabular-nums">{formatCurrency(invoice.mixedPayment.network || 0)}</span>
+                  <Money value={invoice.mixedPayment.network || 0} className="tabular-nums" />
                 </div>
               </>
             )}

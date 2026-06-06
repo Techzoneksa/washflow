@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import Card, { CardTitle, CardHeader } from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
-import { formatCurrency } from '@/lib/utils';
+import { Money } from '@/lib/format';
 import { getTodayOrders, getPaymentMethodLabel } from '@/lib/mock-pos';
 import type { TodayOrderSummary } from '@/types/pos';
 import { Clock, RefreshCw, Eye, Printer } from 'lucide-react';
@@ -60,7 +60,7 @@ export default function TodayOrdersPanel() {
                 </div>
               </div>
               <div className="text-left">
-                <p className="text-sm font-bold text-text-primary tabular-nums">{formatCurrency(order.total)}</p>
+                <p className="text-sm font-bold text-text-primary tabular-nums"><Money value={order.total} /></p>
               </div>
               <div className="flex gap-1">
                 <button className="p-1.5 rounded-md hover:bg-bg-surface text-text-secondary" title="عرض">

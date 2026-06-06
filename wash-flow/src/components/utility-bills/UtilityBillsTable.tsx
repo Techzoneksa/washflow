@@ -2,7 +2,8 @@
 import Table, { Pagination } from '@/components/ui/Table';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
-import { formatCurrency, formatDate } from '@/lib/utils';
+import { Money } from '@/lib/format';
+import { formatDate } from '@/lib/utils';
 import type { UtilityBill, UtilityBillType, UtilityBillStatus } from '@/types/utility-bills';
 import type { Column } from '@/components/ui/Table';
 import { Eye, Pencil } from 'lucide-react';
@@ -73,7 +74,7 @@ export default function UtilityBillsTable({ bills, page, totalPages, onPageChang
     {
       key: 'total',
       header: 'الإجمالي',
-      render: (b) => <span className="font-semibold tabular-nums">{formatCurrency(b.total)}</span>,
+      render: (b) => <Money value={b.total} className="font-semibold tabular-nums" />,
       className: 'text-left',
     },
     {
@@ -120,7 +121,7 @@ export default function UtilityBillsTable({ bills, page, totalPages, onPageChang
             <p className="text-text-primary text-sm truncate">{b.provider}</p>
             <div className="flex items-center justify-between text-sm">
               <span className="text-text-secondary">{formatDate(b.dueDate)}</span>
-              <span className="font-bold tabular-nums">{formatCurrency(b.total)}</span>
+              <Money value={b.total} className="font-bold tabular-nums" />
             </div>
             <div className="flex items-center justify-between">
               {statusBadge(b.status)}

@@ -14,10 +14,10 @@ export default function InputsPreview() {
           <h3 className="text-sm font-semibold text-text-secondary mb-2">أنواع الحقول</h3>
 
           <Input label="نص عادي" placeholder="أدخل النص..." />
-          <Input label="رقم" type="number" placeholder="٠" />
+          <Input label="رقم" type="number" placeholder="0" />
           <Input label="كلمة المرور" type="password" placeholder="••••••••" />
           <Input label="بحث" icon={<Search className="h-4 w-4" />} placeholder="بحث..." />
-          <Input label="مبلغ" icon={<DollarSign className="h-4 w-4" />} placeholder="٠.٠٠" />
+          <Input label="مبلغ" icon={<DollarSign className="h-4 w-4" />} placeholder="0.00" />
           <Input label="اسم المستخدم" icon={<User className="h-4 w-4" />} placeholder="أدخل اسم المستخدم" />
         </div>
 
@@ -45,8 +45,8 @@ export default function InputsPreview() {
           label="مع خطأ"
           error="الرجاء الاختيار"
           options={[
-            { label: 'خيار ١', value: '1' },
-            { label: 'خيار ٢', value: '2' },
+            { label: 'خيار 1', value: '1' },
+            { label: 'خيار 2', value: '2' },
           ]}
         />
       </div>
@@ -68,7 +68,7 @@ export default function InputsPreview() {
           {/* Radio */}
           <label className="flex items-center gap-3 cursor-pointer">
             <input type="radio" name="radio-demo" className="w-5 h-5 border-border-default text-primary-500 focus:ring-primary-500" />
-            <span className="text-sm text-text-primary">خيار وحيد ١</span>
+            <span className="text-sm text-text-primary">خيار وحيد 1</span>
           </label>
 
           {/* Toggle Switch */}

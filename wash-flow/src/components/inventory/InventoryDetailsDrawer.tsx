@@ -3,7 +3,7 @@ import Drawer from '@/components/ui/Drawer';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import Card from '@/components/ui/Card';
-import { formatCurrency } from '@/lib/utils';
+import { Money } from '@/lib/format';
 import type { InventoryItem } from '@/types/inventory';
 import { INVENTORY_CATEGORY_LABELS, INVENTORY_UNIT_LABELS, STOCK_MOVEMENT_TYPE_LABELS } from '@/types/inventory';
 import { getStockMovementsByItemId } from '@/lib/mock-inventory';
@@ -62,11 +62,11 @@ export default function InventoryDetailsDrawer({
           </Card>
           <Card padding="sm" className="bg-bg-subtle">
             <p className="text-xs text-text-tertiary mb-1">متوسط التكلفة</p>
-            <p className="text-lg font-bold text-text-primary">{formatCurrency(item.averageCost)}</p>
+            <Money value={item.averageCost} className="text-lg font-bold text-text-primary" />
           </Card>
           <Card padding="sm" className="bg-bg-subtle">
             <p className="text-xs text-text-tertiary mb-1">القيمة الإجمالية</p>
-            <p className="text-lg font-bold text-primary-500">{formatCurrency(item.currentQuantity * item.averageCost)}</p>
+            <Money value={item.currentQuantity * item.averageCost} className="text-lg font-bold text-primary-500" />
           </Card>
         </div>
 

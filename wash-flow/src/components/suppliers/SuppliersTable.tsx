@@ -2,7 +2,7 @@
 import Table, { Pagination } from '@/components/ui/Table';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
-import { formatCurrency } from '@/lib/utils';
+import { Money } from '@/lib/format';
 import type { Supplier } from '@/types/suppliers';
 import type { Column } from '@/components/ui/Table';
 import { Eye, Pencil, Phone } from 'lucide-react';
@@ -47,9 +47,7 @@ export default function SuppliersTable({ suppliers, page, totalPages, onPageChan
       key: 'balance',
       header: 'الرصيد',
       render: (s) => (
-        <span className={`font-semibold tabular-nums ${s.balance > 0 ? 'text-danger-600' : 'text-success-600'}`}>
-          {formatCurrency(s.balance)}
-        </span>
+        <Money value={s.balance} className={`font-semibold tabular-nums ${s.balance > 0 ? 'text-danger-600' : 'text-success-600'}`} />
       ),
       className: 'text-left',
     },
@@ -57,7 +55,7 @@ export default function SuppliersTable({ suppliers, page, totalPages, onPageChan
       key: 'totalPurchases',
       header: 'المشتريات',
       hideOnMobile: true,
-      render: (s) => <span className="tabular-nums">{formatCurrency(s.totalPurchases)}</span>,
+      render: (s) => <Money value={s.totalPurchases} className="tabular-nums" />,
       className: 'text-left',
     },
     {
@@ -106,13 +104,11 @@ export default function SuppliersTable({ suppliers, page, totalPages, onPageChan
             </div>
             <div className="flex items-center justify-between text-sm">
               <span className="text-text-secondary">الرصيد</span>
-              <span className={`font-bold tabular-nums ${s.balance > 0 ? 'text-danger-600' : 'text-success-600'}`}>
-                {formatCurrency(s.balance)}
-              </span>
+              <Money value={s.balance} className={`font-bold tabular-nums ${s.balance > 0 ? 'text-danger-600' : 'text-success-600'}`} />
             </div>
             <div className="flex items-center justify-between text-xs text-text-secondary">
               <span>{s.invoicesCount} فواتير</span>
-              <span>مشتريات: {formatCurrency(s.totalPurchases)}</span>
+              <span>مشتريات: <Money value={s.totalPurchases} /></span>
             </div>
             <div className="flex gap-2 pt-1">
               <Button size="sm" variant="outline" icon={<Eye className="h-3 w-3" />} onClick={(e) => { e.stopPropagation(); onView(s); }}>

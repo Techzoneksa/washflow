@@ -1,6 +1,6 @@
 'use client';
 import Card, { CardTitle } from '@/components/ui/Card';
-import { formatCurrency } from '@/lib/utils';
+import { Money } from '@/lib/format';
 import { ShoppingCart, FileText, CheckCircle2, Wallet } from 'lucide-react';
 
 interface PurchasesSummaryData {
@@ -15,7 +15,7 @@ export default function PurchasesSummaryCards({ data }: { data: PurchasesSummary
   const cards = [
     {
       label: 'مشتريات الشهر',
-      value: formatCurrency(data.monthTotal),
+      value: <Money value={data.monthTotal} />,
       icon: ShoppingCart,
       color: 'text-primary-500',
       bg: 'bg-primary-50',
@@ -36,7 +36,7 @@ export default function PurchasesSummaryCards({ data }: { data: PurchasesSummary
     },
     {
       label: 'المتبقي للموردين',
-      value: formatCurrency(data.totalRemaining),
+      value: <Money value={data.totalRemaining} />,
       icon: Wallet,
       color: 'text-warning-500',
       bg: 'bg-warning-50',

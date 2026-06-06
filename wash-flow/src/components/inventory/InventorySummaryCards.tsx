@@ -1,6 +1,6 @@
 'use client';
 import Card, { CardTitle } from '@/components/ui/Card';
-import { formatCurrency } from '@/lib/utils';
+import { Money } from '@/lib/format';
 import { Package, AlertTriangle, XCircle, Coins, Clock } from 'lucide-react';
 
 interface InventorySummaryData {
@@ -36,7 +36,7 @@ export default function InventorySummaryCards({ data }: { data: InventorySummary
     },
     {
       label: 'قيمة المخزون',
-      value: formatCurrency(data.totalValue),
+      value: <Money value={data.totalValue} />,
       icon: Coins,
       color: 'text-success-500',
       bg: 'bg-success-50',

@@ -1,6 +1,6 @@
 'use client';
 import Card, { CardTitle } from '@/components/ui/Card';
-import { formatCurrency } from '@/lib/utils';
+import { Money } from '@/lib/format';
 import { FileText, AlertCircle, Clock, CalendarDays, DollarSign } from 'lucide-react';
 
 interface UtilityBillsSummaryData {
@@ -43,7 +43,7 @@ export default function UtilityBillsSummaryCards({ data }: { data: UtilityBillsS
     },
     {
       label: 'المدفوع هذا الشهر',
-      value: formatCurrency(data.monthPaid),
+      value: <Money value={data.monthPaid} />,
       icon: DollarSign,
       color: 'text-success-500',
       bg: 'bg-success-50',

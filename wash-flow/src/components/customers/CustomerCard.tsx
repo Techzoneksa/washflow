@@ -1,7 +1,7 @@
 'use client';
 import type { Customer } from '@/types/customers';
 import Badge from '@/components/ui/Badge';
-import { formatCurrency } from '@/lib/utils';
+import { Money } from '@/lib/format';
 import { Eye, Edit, Phone } from 'lucide-react';
 
 interface Props {
@@ -44,7 +44,7 @@ export default function CustomerCard({ customer, onView, onEdit }: Props) {
             <p className="text-xs text-text-disabled">طلبات</p>
           </div>
           <div className="text-center">
-            <p className="text-lg font-bold text-primary-600">{formatCurrency(customer.totalSpent)}</p>
+            <p className="text-lg font-bold text-primary-600"><Money value={customer.totalSpent} /></p>
             <p className="text-xs text-text-disabled">إجمالي</p>
           </div>
         </div>

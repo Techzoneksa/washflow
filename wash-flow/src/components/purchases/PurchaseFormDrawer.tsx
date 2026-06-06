@@ -7,7 +7,7 @@ import Textarea from '@/components/ui/Textarea';
 import Button from '@/components/ui/Button';
 import { getSuppliers } from '@/lib/mock-suppliers';
 import { getInventoryItems, addStockMovement } from '@/lib/mock-inventory';
-import { formatCurrency } from '@/lib/utils';
+import { Money } from '@/lib/format';
 import { Plus, Trash2, Save, Boxes } from 'lucide-react';
 
 interface PurchaseItemForm {
@@ -272,7 +272,7 @@ export default function PurchaseFormDrawer({ open, onClose, onSave, preselectedS
               </div>
               <div className="text-left text-sm">
                 <span className="text-text-secondary">الإجمالي: </span>
-                <span className="font-semibold tabular-nums">{formatCurrency(item.total)}</span>
+                <Money value={item.total} className="font-semibold tabular-nums" />
               </div>
 
               <div className="border-t border-border-subtle pt-2 mt-2">
@@ -318,7 +318,7 @@ export default function PurchaseFormDrawer({ open, onClose, onSave, preselectedS
           <h4 className="text-sm font-semibold text-text-primary">الإجمالي</h4>
           <div className="flex justify-between text-base font-bold text-text-primary">
             <span>الإجمالي</span>
-            <span className="tabular-nums">{formatCurrency(total)}</span>
+            <Money value={total} className="tabular-nums" />
           </div>
         </div>
 
@@ -359,7 +359,7 @@ export default function PurchaseFormDrawer({ open, onClose, onSave, preselectedS
           {paymentStatus === 'partial' && (
             <div className="text-sm text-text-secondary">
               <span>المتبقي: </span>
-              <span className="font-semibold tabular-nums text-danger-600">{formatCurrency(remainingAmount)}</span>
+              <Money value={remainingAmount} className="font-semibold tabular-nums text-danger-600" />
             </div>
           )}
         </div>

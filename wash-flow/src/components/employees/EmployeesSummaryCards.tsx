@@ -1,6 +1,6 @@
 'use client';
 import Card, { CardTitle } from '@/components/ui/Card';
-import { formatCurrency } from '@/lib/utils';
+import { Money } from '@/lib/format';
 import { Users, UserCheck, Wallet, AlertCircle, Coins } from 'lucide-react';
 
 interface EmployeesSummaryData {
@@ -29,21 +29,21 @@ export default function EmployeesSummaryCards({ data }: { data: EmployeesSummary
     },
     {
       label: 'إجمالي الرواتب',
-      value: formatCurrency(data.totalSalaries),
+      value: <Money value={data.totalSalaries} />,
       icon: Wallet,
       color: 'text-info-500',
       bg: 'bg-info-50',
     },
     {
       label: 'السلف المفتوحة',
-      value: formatCurrency(data.openAdvancesTotal),
+      value: <Money value={data.openAdvancesTotal} />,
       icon: AlertCircle,
       color: 'text-warning-500',
       bg: 'bg-warning-50',
     },
     {
       label: 'صافي الرواتب',
-      value: formatCurrency(data.netSalariesThisMonth),
+      value: <Money value={data.netSalariesThisMonth} />,
       icon: Coins,
       color: 'text-success-500',
       bg: 'bg-success-50',

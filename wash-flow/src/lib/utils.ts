@@ -2,13 +2,16 @@ export function cn(...inputs: (string | undefined | null | false)[]): string {
   return inputs.filter(Boolean).join(' ');
 }
 
+import { toLatinDigits } from './format';
+
 export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('ar-SA', {
+  const formatted = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'SAR',
     minimumFractionDigits: 0,
     maximumFractionDigits: 2,
   }).format(amount);
+  return toLatinDigits(formatted.replace('SAR', '').trim());
 }
 
 export function formatDate(date: string): string {

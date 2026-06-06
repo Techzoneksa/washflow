@@ -1,6 +1,6 @@
 'use client';
 import Card, { CardTitle } from '@/components/ui/Card';
-import { formatCurrency } from '@/lib/utils';
+import { formatMoneyAmount } from '@/lib/format';
 import { Truck, CheckCircle2, ShoppingCart, Wallet, TrendingUp } from 'lucide-react';
 
 interface SuppliersSummaryData {
@@ -29,14 +29,14 @@ export default function SuppliersSummaryCards({ data }: { data: SuppliersSummary
     },
     {
       label: 'إجمالي المشتريات',
-      value: formatCurrency(data.totalPurchases),
+      value: formatMoneyAmount(data.totalPurchases),
       icon: ShoppingCart,
       color: 'text-info-500',
       bg: 'bg-info-50',
     },
     {
       label: 'إجمالي الأرصدة',
-      value: formatCurrency(data.totalBalance),
+      value: formatMoneyAmount(data.totalBalance),
       icon: Wallet,
       color: 'text-warning-500',
       bg: 'bg-warning-50',

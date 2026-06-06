@@ -1,6 +1,6 @@
 'use client';
 import type { CustomerSummary } from '@/lib/data/customers';
-import { formatCurrency } from '@/lib/utils';
+import { Money } from '@/lib/format';
 import { Users, UserCheck, UserPlus, ShoppingBag } from 'lucide-react';
 
 interface Props {
@@ -66,7 +66,7 @@ export default function CustomersSummaryCards({ data }: Props) {
             {data.topCustomer.phone && ` — ${data.topCustomer.phone}`}
           </p>
           <p className="text-lg font-bold text-primary-600 mt-1">
-            {formatCurrency(data.topCustomer.totalSpent)}
+            <Money value={data.topCustomer.totalSpent} />
           </p>
           <p className="text-xs text-text-secondary mt-0.5">{data.topCustomer.ordersCount} طلب</p>
         </div>

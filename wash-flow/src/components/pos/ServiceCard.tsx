@@ -1,6 +1,6 @@
 'use client';
 import { cn } from '@/lib/utils';
-import { formatCurrency } from '@/lib/utils';
+import { Money } from '@/lib/format';
 import { getServiceIcon } from '@/lib/mock-pos';
 import type { WashService } from '@/types/pos';
 import { Clock, Check } from 'lucide-react';
@@ -26,7 +26,7 @@ export default function ServiceCard({ service, onAdd, added }: ServiceCardProps)
       <span className="text-2xl sm:text-3xl leading-none">{getServiceIcon(service.icon)}</span>
       <span className="text-xs sm:text-sm font-semibold text-text-primary leading-tight px-1">{service.nameAr}</span>
       {service.price > 0 ? (
-        <span className="text-sm sm:text-base font-bold text-primary-600">{formatCurrency(service.price)}</span>
+        <span className="text-sm sm:text-base font-bold text-primary-600"><Money value={service.price} /></span>
       ) : (
         <span className="text-[10px] text-text-secondary">متغير</span>
       )}

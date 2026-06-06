@@ -92,7 +92,7 @@ export default function AdvanceFormModal({
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-sm font-medium text-text-primary mb-1">المبلغ (ر.س) *</label>
+            <label className="block text-sm font-medium text-text-primary mb-1">المبلغ *</label>
             <Input
               type="number"
               min={0}

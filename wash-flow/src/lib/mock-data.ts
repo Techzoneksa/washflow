@@ -62,6 +62,7 @@ export const navigationItems: NavItem[] = [
   { label: 'نقطة البيع', icon: 'ShoppingCart', href: '/pos', roles: ['owner', 'manager', 'cashier'] },
   { label: 'الطلبات', icon: 'ClipboardList', href: '/orders', roles: ['owner', 'manager', 'cashier'] },
   { label: 'الفواتير', icon: 'FileText', href: '/invoices', roles: ['owner', 'manager', 'accountant', 'cashier'] },
+  { label: 'العملاء', icon: 'UserRound', href: '/customers', roles: ['owner', 'manager', 'accountant', 'cashier'] },
   { label: 'الخدمات', icon: 'Wrench', href: '/services', roles: ['owner', 'manager'] },
   { label: 'المصاريف', icon: 'Wallet', href: '/expenses', roles: ['owner', 'manager', 'accountant'] },
   { label: 'فواتير الخدمات', icon: 'FileText', href: '/utility-bills', roles: ['owner', 'manager', 'accountant'] },

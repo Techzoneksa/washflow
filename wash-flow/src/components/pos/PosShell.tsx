@@ -12,13 +12,18 @@ import {
 } from '@/lib/mock-pos';
 import { getPOSWashServices } from '@/lib/mock-services';
 import { formatCurrency } from '@/lib/utils';
+import {
+  getCustomerByPhone,
+  updateCustomerStats,
+} from '@/lib/mock-customers';
+import type { Customer } from '@/types/customers';
 import type {
   WashService, CartItem as CartItemType,
   PosCustomerInfo, PaymentMethod, MixedPayment, PosOrder,
 } from '@/types/pos';
 import {
   ShoppingCart, Search, X, Clock, Check,
-  Minus, Plus, Trash2,
+  Minus, Plus, Trash2, UserRound, Phone,
 } from 'lucide-react';
 
 export default function PosShell() {
@@ -37,6 +42,9 @@ export default function PosShell() {
   const [showCartSheet, setShowCartSheet] = useState(false);
   const [activeCategory, setActiveCategory] = useState('الكل');
   const [searchQuery, setSearchQuery] = useState('');
+
+  const [customerSearchPhone, setCustomerSearchPhone] = useState('');
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
 
   const cartServiceIds = new Set(cartItems.map(i => i.serviceId));
   const cartTotals = calculateCartTotals(cartItems);
@@ -70,6 +78,8 @@ export default function PosShell() {
     setCustomerInfo({});
     setPaymentMethod(null);
     setMixedPayment({ cash: 0, card: 0, transfer: 0 });
+    setSelectedCustomer(null);
+    setCustomerSearchPhone('');
   }, []);
 
   const handleCompleteOrder = useCallback(() => {
@@ -83,13 +93,24 @@ export default function PosShell() {
     setSubmitting(true);
 
     setTimeout(() => {
-      const order = createMockOrder(cartItems, paymentMethod, customerInfo, mixedPayment);
+      const orderCustomerInfo: PosCustomerInfo = {
+        ...customerInfo,
+        customerId: selectedCustomer?.id,
+        phone: selectedCustomer?.phone || customerInfo.phone,
+        name: selectedCustomer?.name || customerInfo.name,
+      };
+      const order = createMockOrder(cartItems, paymentMethod, orderCustomerInfo, mixedPayment);
       setCompletedOrder(order);
+
+      if (selectedCustomer) {
+        updateCustomerStats(selectedCustomer.id, cartTotals.total);
+      }
+
       setSubmitting(false);
       setShowSuccess(true);
       setShowCartSheet(false);
     }, 800);
-  }, [cartItems, paymentMethod, mixedPayment, customerInfo, cartTotals.total]);
+  }, [cartItems, paymentMethod, mixedPayment, customerInfo, cartTotals.total, selectedCustomer]);
 
   const handleNewOrder = useCallback(() => {
     setShowSuccess(false);
@@ -99,6 +120,8 @@ export default function PosShell() {
     setCustomerInfo({});
     setPaymentMethod(null);
     setMixedPayment({ cash: 0, card: 0, transfer: 0 });
+    setSelectedCustomer(null);
+    setCustomerSearchPhone('');
   }, []);
 
   const handlePrint = useCallback(() => {
@@ -107,6 +130,21 @@ export default function PosShell() {
 
   const handleViewInvoice = useCallback(() => {
     setShowInvoice(true);
+  }, []);
+
+  const handleSearchCustomer = useCallback((phone: string) => {
+    setCustomerSearchPhone(phone);
+    if (!phone.trim()) {
+      setSelectedCustomer(null);
+      return;
+    }
+    const found = getCustomerByPhone(phone);
+    setSelectedCustomer(found || null);
+  }, []);
+
+  const handleClearCustomer = useCallback(() => {
+    setSelectedCustomer(null);
+    setCustomerSearchPhone('');
   }, []);
 
   // cartPanelProps removed — using inline JSX
@@ -207,6 +245,38 @@ export default function PosShell() {
         {/* Bottom Sheet */}
         <BottomSheet open={showCartSheet} onClose={() => setShowCartSheet(false)} height="full" title="سلة الطلب">
           <div className="flex flex-col h-full min-h-0 -mx-4 -mb-4">
+            <div className="shrink-0 px-4 py-3 border-b border-[#E5E7EB]">
+              {selectedCustomer ? (
+                <div className="flex items-center gap-2 p-2 bg-success-50 rounded-lg">
+                  <UserRound className="h-4 w-4 text-success-500 shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-success-700 truncate">
+                      {selectedCustomer.name || 'عميل'}
+                    </p>
+                    {selectedCustomer.phone && (
+                      <p className="text-xs text-success-600">{selectedCustomer.phone}</p>
+                    )}
+                  </div>
+                  <button
+                    onClick={handleClearCustomer}
+                    className="p-1 text-success-500 hover:text-success-700 shrink-0"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              ) : (
+                <div className="relative">
+                  <Phone className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B7280] pointer-events-none" />
+                  <input
+                    type="tel"
+                    placeholder="رقم جوال العميل (اختياري)"
+                    value={customerSearchPhone}
+                    onChange={(e) => handleSearchCustomer(e.target.value)}
+                    className="w-full pl-9 pr-4 py-2 rounded-lg border border-[#EEEEEE] bg-[#F9FAFB] text-sm text-[#111827] placeholder:text-[#6B7280] focus:outline-none focus:border-[#2563EB]"
+                  />
+                </div>
+              )}
+            </div>
             <div className="flex-1 min-h-0 overflow-y-auto px-4 py-3 space-y-3">
               {cartItems.map((item) => (
                 <div key={item.serviceId} className="flex items-center gap-3 p-3 bg-[#F9FAFB] rounded-xl">
@@ -361,6 +431,38 @@ export default function PosShell() {
             </div>
             {cartItems.length > 0 && (
               <button onClick={handleClearCart} className="text-xs text-[#EF4444] hover:text-[#DC2626] transition-colors">تفريغ</button>
+            )}
+          </div>
+          <div className="shrink-0 px-5 py-3 border-b border-[#E5E7EB]">
+            {selectedCustomer ? (
+              <div className="flex items-center gap-2 p-2 bg-success-50 rounded-lg">
+                <UserRound className="h-4 w-4 text-success-500 shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-success-700 truncate">
+                    {selectedCustomer.name || 'عميل'}
+                  </p>
+                  {selectedCustomer.phone && (
+                    <p className="text-xs text-success-600">{selectedCustomer.phone}</p>
+                  )}
+                </div>
+                <button
+                  onClick={handleClearCustomer}
+                  className="p-1 text-success-500 hover:text-success-700 shrink-0"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            ) : (
+              <div className="relative">
+                <Phone className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B7280] pointer-events-none" />
+                <input
+                  type="tel"
+                  placeholder="رقم جوال العميل (اختياري)"
+                  value={customerSearchPhone}
+                  onChange={(e) => handleSearchCustomer(e.target.value)}
+                  className="w-full pl-9 pr-4 py-2 rounded-lg border border-[#EEEEEE] bg-[#F9FAFB] text-sm text-[#111827] placeholder:text-[#6B7280] focus:outline-none focus:border-[#2563EB]"
+                />
+              </div>
             )}
           </div>
           <div className="flex-1 min-h-0 overflow-y-auto px-5 py-3">

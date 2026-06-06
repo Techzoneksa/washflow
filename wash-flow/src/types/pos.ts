@@ -19,6 +19,7 @@ export interface CartItem {
 }
 
 export interface PosCustomerInfo {
+  customerId?: string;
   name?: string;
   phone?: string;
   plateNumber?: string;

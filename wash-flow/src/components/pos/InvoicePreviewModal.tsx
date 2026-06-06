@@ -28,14 +28,14 @@ export default function InvoicePreviewModal({ open, onClose, order, onPrint }: I
               <Image src={setup.company.logo} alt="logo" width={40} height={40} className="h-10 w-10 rounded-lg object-cover" unoptimized />
             ) : (
               <div className="h-10 w-10 rounded-lg bg-primary-100 flex items-center justify-center text-primary-600 font-bold text-sm">
-                {setup?.company.nameAr?.charAt(0) || 'W'}
+                {setup?.company.nameAr?.charAt(0) || 'ف'}
               </div>
             )}
           </div>
         </div>
 
         <div className="text-center">
-          <h3 className="text-lg font-bold text-text-primary">{setup?.company.nameAr || 'شركة غسيل سيارات'}</h3>
+          <h3 className="text-lg font-bold text-text-primary">{setup?.company.nameAr || 'فال المستقبل'}</h3>
         </div>
 
         <div className="grid grid-cols-2 gap-3 text-xs bg-neutral-50 rounded-xl p-4">

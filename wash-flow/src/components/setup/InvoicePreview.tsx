@@ -28,9 +28,9 @@ export default function InvoicePreview({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               {settings.showLogo && logo && <Image src={logo} alt="شعار" width={40} height={40} className="h-10 w-10 object-contain" unoptimized />}
-              {settings.showLogo && !logo && <div className="h-10 w-10 rounded-lg bg-primary-100 flex items-center justify-center text-primary-600 text-xs font-bold">WF</div>}
+              {settings.showLogo && !logo && <div className="h-10 w-10 rounded-lg bg-primary-100 flex items-center justify-center text-primary-600 text-xs font-bold">ف</div>}
               <div>
-                <h4 className="text-sm font-bold text-text-primary">{companyName || 'اسم الشركة'}</h4>
+                <h4 className="text-sm font-bold text-text-primary">{companyName || 'فال المستقبل'}</h4>
                 <p className="text-[10px] text-text-secondary">{settings.invoiceTitle}</p>
               </div>
             </div>

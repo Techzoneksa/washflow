@@ -58,7 +58,7 @@ export default function CartPanel({
         )}
       </div>
 
-      <div className="flex-1 overflow-y-auto space-y-1.5 py-2">
+      <div className="flex-1 min-h-0 overflow-y-auto space-y-1.5 py-2">
         {isEmpty ? (
           <div className="flex flex-col items-center justify-center py-8 text-center">
             <ShoppingCart className="h-10 w-10 text-text-disabled mb-2" />

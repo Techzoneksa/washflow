@@ -3,6 +3,7 @@ import { CheckCircle2, Settings, LogOut } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 import { clearSession } from '@/lib/mock-auth';
+import { signOutUser } from '@/lib/supabase/auth';
 
 interface SetupSuccessCardProps {
   onDashboard: () => void;
@@ -26,7 +27,7 @@ export default function SetupSuccessCard({ onDashboard, onReview }: SetupSuccess
         <Button fullWidth size="md" variant="outline" onClick={onReview} icon={<Settings className="h-4 w-4" />}>
           مراجعة الإعدادات
         </Button>
-        <Button fullWidth size="sm" variant="ghost" onClick={() => { clearSession(); window.location.href = '/login'; }} icon={<LogOut className="h-4 w-4" />}>
+        <Button fullWidth size="sm" variant="ghost" onClick={async () => { await signOutUser(); clearSession(); window.location.href = '/login'; }} icon={<LogOut className="h-4 w-4" />}>
           تسجيل الخروج
         </Button>
       </div>

@@ -4,11 +4,13 @@ import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import { LogIn } from 'lucide-react';
 import { loginMockUser } from '@/lib/mock-auth';
+import { signIn, signOutUser, getCurrentProfile } from '@/lib/supabase/auth';
+import { isSupabaseConfigured } from '@/lib/supabase/client';
 import type { LoginFormData } from '@/types/auth';
 import type { UserRole } from '@/types';
 
 interface LoginFormProps {
-  onSuccess: (roles: UserRole[]) => void;
+  onSuccess: (roles: UserRole[], authSource: 'supabase' | 'mock') => void;
 }
 
 export default function LoginForm({ onSuccess }: LoginFormProps) {
@@ -30,6 +32,28 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
     setLoginError('');
     if (!validate()) return;
     setLoading(true);
+
+    const supabaseAvailable = isSupabaseConfigured();
+
+    if (supabaseAvailable) {
+      const result = await signIn(form.email, form.password);
+      if (result.error) {
+        setLoading(false);
+        setLoginError(result.error?.message || 'بيانات الدخول غير صحيحة');
+        return;
+      }
+      const profile = await getCurrentProfile();
+      if (profile) {
+        setLoading(false);
+        onSuccess([profile.role], 'supabase');
+        return;
+      }
+      await signOutUser();
+      setLoading(false);
+      setLoginError('لا توجد صلاحية لهذا المستخدم، تواصل مع المدير');
+      return;
+    }
+
     await new Promise((r) => setTimeout(r, 800));
     const result = loginMockUser(form);
     setLoading(false);
@@ -37,7 +61,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
       setLoginError(result.error || 'بيانات الدخول غير صحيحة');
       return;
     }
-    onSuccess(result.user.roles);
+    onSuccess(result.user.roles, 'mock');
   };
 
   return (

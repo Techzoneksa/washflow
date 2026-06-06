@@ -2,6 +2,7 @@
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { clearSession } from '@/lib/mock-auth';
+import { signOutUser } from '@/lib/supabase/auth';
 import { User, ChevronDown, LogOut, Settings, UserCircle } from 'lucide-react';
 import { useState } from 'react';
 import type { UserRole } from '@/types';
@@ -30,7 +31,8 @@ export default function UserMenu({ userName, userRole, compact = false }: UserMe
   const router = useRouter();
   const [open, setOpen] = useState(false);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await signOutUser();
     clearSession();
     router.push('/login');
   };

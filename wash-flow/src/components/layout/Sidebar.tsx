@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { navigationItems } from '@/lib/mock-data';
 import { clearSession } from '@/lib/mock-auth';
+import { signOutUser } from '@/lib/supabase/auth';
 import type { UserRole } from '@/types';
 import * as Icons from 'lucide-react';
 
@@ -35,7 +36,8 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 export default function Sidebar({ userRole, activePath = '/', compact = false, onClose }: SidebarProps) {
   const filteredItems = navigationItems.filter((item) => item.roles.includes(userRole));
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await signOutUser();
     clearSession();
     window.location.href = '/login';
   };

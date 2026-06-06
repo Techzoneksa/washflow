@@ -2,6 +2,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { getSession, clearSession } from '@/lib/mock-auth';
+import { signOutUser } from '@/lib/supabase/auth';
+import { getCompanySettings, FALLBACK_COMPANY_NAME } from '@/lib/data/company-settings';
 import { LogOut, Sun, Moon, XCircle, Bell } from 'lucide-react';
 import Modal from '@/components/ui/Modal';
 import Button from '@/components/ui/Button';
@@ -12,9 +14,16 @@ export default function POSHeader() {
   const [date, setDate] = useState('');
   const [dark, setDark] = useState(false);
   const [showCloseDrawer, setShowCloseDrawer] = useState(false);
+  const [companyName, setCompanyName] = useState('');
 
   const session = typeof window !== 'undefined' ? getSession() : null;
   const userName = session?.user?.name || 'مستخدم';
+
+  useEffect(() => {
+    getCompanySettings().then((settings) => {
+      setCompanyName(settings?.companyNameAr || FALLBACK_COMPANY_NAME);
+    });
+  }, []);
 
   useEffect(() => {
     const update = () => {
@@ -27,7 +36,8 @@ export default function POSHeader() {
     return () => clearInterval(id);
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await signOutUser();
     clearSession();
     router.push('/login');
   };
@@ -48,9 +58,9 @@ export default function POSHeader() {
 
         <div className="hidden md:flex items-center gap-2 mr-3">
           <div className="w-7 h-7 rounded-md bg-white/10 flex items-center justify-center text-xs font-bold">
-            WF
+            {companyName ? companyName.charAt(0) : 'و'}
           </div>
-          <span className="text-sm text-white/80">واش فلو</span>
+          <span className="text-sm text-white/80">{companyName || 'واش فلو'}</span>
         </div>
 
         <div className="flex-1" />

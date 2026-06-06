@@ -151,7 +151,7 @@ export default function PosShell() {
   return (
     <>
       {/* ===== MOBILE LAYOUT (< 640px): Full width services + FAB + Bottom Sheet ===== */}
-      <div className="sm:hidden flex flex-col h-screen bg-[#F8F9FA]">
+      <div className="sm:hidden flex flex-col h-full bg-[#F8F9FA]">
 
         {/* Category Tabs */}
         <div className="shrink-0 px-4 pt-4 pb-2">
@@ -366,7 +366,7 @@ export default function PosShell() {
       </div>
 
       {/* ===== TABLET+ LAYOUT (>= 640px): Split view ===== */}
-      <div className="hidden sm:flex h-screen bg-[#F8F9FA]">
+      <div className="hidden sm:flex h-full bg-[#F8F9FA]">
 
         {/* LEFT: Services */}
         <div className="flex flex-col h-full flex-1 min-w-0 lg:flex-[13]">
@@ -434,7 +434,7 @@ export default function PosShell() {
         </div>
 
         {/* RIGHT: Order Panel */}
-        <div className="h-[calc(100dvh-96px)] min-h-0 w-[340px] lg:w-[380px] xl:w-[420px] shrink-0 overflow-hidden">
+        <div className="h-full min-h-0 w-[340px] lg:w-[380px] xl:w-[420px] shrink-0 overflow-hidden">
           <div className="h-full min-h-0 flex flex-col overflow-hidden rounded-2xl border border-border-default bg-bg-surface">
           <div className="shrink-0 flex items-center justify-between px-5 py-4 border-b border-[#E5E7EB]">
             <div className="flex items-center gap-2">

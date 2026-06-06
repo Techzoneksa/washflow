@@ -1,5 +1,5 @@
 'use client';
-import AppShell from '@/components/layout/AppShell';
+import POSFullscreenShell from '@/components/pos/POSFullscreenShell';
 import PosShell from '@/components/pos/PosShell';
 import LoadingState from '@/components/ui/LoadingState';
 import { useAuthGuard } from '@/lib/route-guards';
@@ -11,8 +11,8 @@ export default function POSPage() {
   if (!authorized) return null;
 
   return (
-    <AppShell title="نقطة البيع" activePath="/pos" showSearch={false}>
+    <POSFullscreenShell>
       <PosShell />
-    </AppShell>
+    </POSFullscreenShell>
   );
 }

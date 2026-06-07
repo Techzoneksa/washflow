@@ -2,7 +2,6 @@
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { navigationItems } from '@/lib/mock-data';
-import { clearSession } from '@/lib/mock-auth';
 import { signOutUser } from '@/lib/supabase/auth';
 import type { UserRole } from '@/types';
 import * as Icons from 'lucide-react';
@@ -38,7 +37,6 @@ export default function Sidebar({ userRole, activePath = '/', compact = false, o
 
   const handleLogout = async () => {
     await signOutUser();
-    clearSession();
     window.location.href = '/login';
   };
 

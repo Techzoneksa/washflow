@@ -3,14 +3,13 @@ import { useState } from 'react';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import { LogIn } from 'lucide-react';
-import { loginMockUser } from '@/lib/mock-auth';
 import { signIn, signOutUser, getCurrentProfile } from '@/lib/supabase/auth';
 import { isSupabaseConfigured } from '@/lib/supabase/client';
 import type { LoginFormData } from '@/types/auth';
 import type { UserRole } from '@/types';
 
 interface LoginFormProps {
-  onSuccess: (roles: UserRole[], authSource: 'supabase' | 'mock') => void;
+  onSuccess: (role: UserRole) => void;
 }
 
 export default function LoginForm({ onSuccess }: LoginFormProps) {
@@ -33,35 +32,29 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
     if (!validate()) return;
     setLoading(true);
 
-    const supabaseAvailable = isSupabaseConfigured();
+    if (!isSupabaseConfigured()) {
+      setLoading(false);
+      setLoginError('النظام غير مهيأ بعد، تواصل مع المدير');
+      return;
+    }
 
-    if (supabaseAvailable) {
-      const result = await signIn(form.email, form.password);
-      if (result.error) {
-        setLoading(false);
-        setLoginError(result.error?.message || 'بيانات الدخول غير صحيحة');
-        return;
-      }
-      const profile = await getCurrentProfile();
-      if (profile) {
-        setLoading(false);
-        onSuccess([profile.role], 'supabase');
-        return;
-      }
+    const result = await signIn(form.email, form.password);
+    if (result.error) {
+      setLoading(false);
+      setLoginError(result.error?.message || 'بيانات الدخول غير صحيحة');
+      return;
+    }
+
+    const profile = await getCurrentProfile();
+    if (!profile) {
       await signOutUser();
       setLoading(false);
       setLoginError('لا توجد صلاحية لهذا المستخدم، تواصل مع المدير');
       return;
     }
 
-    await new Promise((r) => setTimeout(r, 800));
-    const result = loginMockUser(form);
     setLoading(false);
-    if (!result.success || !result.user) {
-      setLoginError(result.error || 'بيانات الدخول غير صحيحة');
-      return;
-    }
-    onSuccess(result.user.roles, 'mock');
+    onSuccess(profile.role);
   };
 
   return (
@@ -75,7 +68,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
       <Input
         label="البريد الإلكتروني"
         type="email"
-        placeholder="owner@washflow.sa"
+        placeholder="your@email.com"
         value={form.email}
         onChange={(e) => { setForm({ ...form, email: e.target.value }); setLoginError(''); }}
         error={errors.email}
@@ -110,16 +103,6 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
       <Button type="submit" fullWidth size="lg" loading={loading} icon={<LogIn className="h-5 w-5" />}>
         تسجيل الدخول
       </Button>
-
-      <div className="bg-neutral-50 border border-border-default rounded-lg p-3 text-xs text-text-secondary space-y-1">
-        <p className="font-medium text-text-primary mb-1">بيانات تجريبية:</p>
-        <p>مالك: owner@washflow.sa</p>
-        <p>مدير: manager@washflow.sa</p>
-        <p>محاسب: accountant@washflow.sa</p>
-        <p>كاشير: cashier@washflow.sa</p>
-        <p>متعدد: multi@washflow.sa</p>
-        <p className="text-[10px] text-text-disabled">كلمة المرور: 123456 للجميع</p>
-      </div>
     </form>
   );
 }

@@ -2,7 +2,6 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import LoginForm from '@/components/auth/LoginForm';
-import { createSession, getSession } from '@/lib/mock-auth';
 import { getCurrentProfile, getCurrentUser } from '@/lib/supabase/auth';
 import { isSupabaseConfigured } from '@/lib/supabase/client';
 import type { UserRole } from '@/types';
@@ -14,14 +13,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    // Check existing Supabase session on mount
     const checkSession = async () => {
-      const mockSession = getSession();
-      if (mockSession) {
-        if (mockSession.selectedRole === 'cashier') router.replace('/pos');
-        else router.replace('/dashboard');
-        return;
-      }
       if (isSupabaseConfigured()) {
         const user = await getCurrentUser();
         if (user) {
@@ -38,23 +30,9 @@ export default function LoginPage() {
     checkSession();
   }, [router]);
 
-  const handleSuccess = async (roles: UserRole[], authSource: 'supabase' | 'mock') => {
-    if (authSource === 'supabase') {
-      const profile = await getCurrentProfile();
-      const role = profile?.role || roles[0];
-      if (role === 'cashier') router.push('/pos');
-      else router.push('/dashboard');
-    } else if (roles.length > 1) {
-      sessionStorage.setItem('wf_pending_user', JSON.stringify({
-        email: (document.querySelector('input[type="email"]') as HTMLInputElement)?.value,
-      }));
-      router.push('/select-role');
-    } else {
-      const email = (document.querySelector('input[type="email"]') as HTMLInputElement)?.value || '';
-      createSession({ email, password: '', name: 'مستخدم', roles }, roles[0]);
-      if (roles[0] === 'cashier') router.push('/pos');
-      else router.push('/dashboard');
-    }
+  const handleSuccess = async (role: UserRole) => {
+    if (role === 'cashier') router.push('/pos');
+    else router.push('/dashboard');
   };
 
   if (checkingSession) {

@@ -1,6 +1,4 @@
 import type { CartItem, PosOrder, TodayOrderSummary, PosCustomerInfo, PaymentMethod, MixedPayment } from '@/types/pos';
-import type { AuthSession } from '@/types/auth';
-import { getSession } from '@/lib/mock-auth';
 import { getCompanySetup } from '@/lib/mock-company-settings';
 import { getPOSWashServices, serviceCategories as svcCategories } from '@/lib/data/services';
 
@@ -56,7 +54,6 @@ export function createMockOrder(
   customer?: PosCustomerInfo,
   mixedPayment?: MixedPayment,
 ): PosOrder {
-  const session: AuthSession | null = getSession();
   const tax = calculateCartTotals(items);
 
   const cashAmount = paymentMethod === 'cash' ? tax.total : (paymentMethod === 'mixed' && mixedPayment ? mixedPayment.cash : 0);
@@ -77,8 +74,8 @@ export function createMockOrder(
     cashAmount,
     networkAmount,
     status: 'completed',
-    cashierName: session?.user.name || 'كاشير',
-    cashierRole: session?.selectedRole || 'cashier',
+    cashierName: 'كاشير',
+    cashierRole: 'cashier',
     createdAt: new Date().toISOString(),
   };
 

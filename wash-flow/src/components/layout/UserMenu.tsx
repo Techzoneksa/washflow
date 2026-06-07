@@ -1,7 +1,6 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { clearSession } from '@/lib/mock-auth';
 import { signOutUser } from '@/lib/supabase/auth';
 import { User, ChevronDown, LogOut, Settings, UserCircle } from 'lucide-react';
 import { useState } from 'react';
@@ -33,7 +32,6 @@ export default function UserMenu({ userName, userRole, compact = false }: UserMe
 
   const handleLogout = async () => {
     await signOutUser();
-    clearSession();
     router.push('/login');
   };
 

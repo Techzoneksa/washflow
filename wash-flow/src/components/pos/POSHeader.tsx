@@ -1,8 +1,8 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { getSession, clearSession } from '@/lib/mock-auth';
 import { signOutUser } from '@/lib/supabase/auth';
+import { getCurrentProfile } from '@/lib/supabase/auth';
 import { getCompanySettings, FALLBACK_COMPANY_NAME } from '@/lib/data/company-settings';
 import { LogOut, Sun, Moon, XCircle, Bell } from 'lucide-react';
 import Modal from '@/components/ui/Modal';
@@ -15,13 +15,14 @@ export default function POSHeader() {
   const [dark, setDark] = useState(false);
   const [showCloseDrawer, setShowCloseDrawer] = useState(false);
   const [companyName, setCompanyName] = useState('');
-
-  const session = typeof window !== 'undefined' ? getSession() : null;
-  const userName = session?.user?.name || 'مستخدم';
+  const [userName, setUserName] = useState('مستخدم');
 
   useEffect(() => {
     getCompanySettings().then((settings) => {
       setCompanyName(settings?.companyNameAr || FALLBACK_COMPANY_NAME);
+    });
+    getCurrentProfile().then((profile) => {
+      if (profile) setUserName(profile.fullName);
     });
   }, []);
 
@@ -38,7 +39,6 @@ export default function POSHeader() {
 
   const handleLogout = async () => {
     await signOutUser();
-    clearSession();
     router.push('/login');
   };
 

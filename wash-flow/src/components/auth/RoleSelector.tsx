@@ -3,7 +3,7 @@ import { useState } from 'react';
 import Card, { CardTitle } from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
-import { getRoleLabel, createSession } from '@/lib/mock-auth';
+import { getRoleLabel } from '@/lib/mock-auth';
 import type { UserRole } from '@/types';
 import type { MockUser } from '@/types/auth';
 import { Crown, UserCog, Calculator, ShoppingCart, LogIn } from 'lucide-react';
@@ -47,7 +47,6 @@ export default function RoleSelector({ user, onSelect }: RoleSelectorProps) {
     setSelected(role);
     setLoading(true);
     await new Promise((r) => setTimeout(r, 500));
-    createSession(user, role);
     onSelect(role);
   };
 

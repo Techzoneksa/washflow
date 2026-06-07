@@ -1,7 +1,7 @@
 'use client';
 import { cn } from '@/lib/utils';
 import type { PaymentMethod } from '@/types/pos';
-import { Banknote, CreditCard, Smartphone, Landmark, ArrowLeftRight } from 'lucide-react';
+import { Banknote, CreditCard, ArrowLeftRight } from 'lucide-react';
 
 interface PaymentMethodSelectorProps {
   value: PaymentMethod | null;
@@ -9,16 +9,14 @@ interface PaymentMethodSelectorProps {
 }
 
 const methods: { id: PaymentMethod; label: string; icon: React.ReactNode }[] = [
-  { id: 'cash', label: 'نقدي', icon: <Banknote className="h-5 w-5" /> },
-  { id: 'mada', label: 'شبكة / مدى', icon: <CreditCard className="h-5 w-5" /> },
-  { id: 'card', label: 'بطاقة', icon: <Smartphone className="h-5 w-5" /> },
-  { id: 'transfer', label: 'تحويل', icon: <Landmark className="h-5 w-5" /> },
-  { id: 'mixed', label: 'دفع مختلط', icon: <ArrowLeftRight className="h-5 w-5" /> },
+  { id: 'cash', label: 'كاش', icon: <Banknote className="h-5 w-5" /> },
+  { id: 'network', label: 'شبكة', icon: <CreditCard className="h-5 w-5" /> },
+  { id: 'mixed', label: 'تخصيص', icon: <ArrowLeftRight className="h-5 w-5" /> },
 ];
 
 export default function PaymentMethodSelector({ value, onChange }: PaymentMethodSelectorProps) {
   return (
-    <div className="grid grid-cols-5 gap-2">
+    <div className="grid grid-cols-3 gap-2">
       {methods.map((method) => (
         <button
           key={method.id}

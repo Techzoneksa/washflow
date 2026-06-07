@@ -66,10 +66,8 @@ export default function RefundOrderModal({ open, onClose, order, onConfirm }: Re
           </div>
           <div>
             <p className="text-text-secondary text-xs">طريقة الدفع</p>
-            <p className="font-medium">{order.paymentMethod === 'cash' ? 'نقدي' :
-              order.paymentMethod === 'mada' ? 'شبكة' :
-              order.paymentMethod === 'card' ? 'بطاقة' :
-              order.paymentMethod === 'transfer' ? 'تحويل' : 'مختلط'}</p>
+            <p className="font-medium">{order.paymentMethod === 'cash' ? 'كاش' :
+              order.paymentMethod === 'network' ? 'شبكة' : 'تخصيص'}</p>
           </div>
         </div>
 

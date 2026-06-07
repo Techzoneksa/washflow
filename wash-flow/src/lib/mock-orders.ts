@@ -47,7 +47,7 @@ function buildMockOrders(): OrderHistoryItem[] {
     undefined,
   ];
 
-  const paymentMethods: PaymentMethod[] = ['cash', 'mada', 'card', 'transfer', 'mixed'];
+  const paymentMethods: PaymentMethod[] = ['cash', 'network', 'mixed'];
 
   const orders: OrderHistoryItem[] = [];
   let orderNum = 1001;
@@ -107,6 +107,9 @@ function buildMockOrders(): OrderHistoryItem[] {
       vatRate,
       total,
       paymentMethod,
+      cashAmount: paymentMethod === 'cash' ? total : (paymentMethod === 'mixed' ? total / 2 : 0),
+      networkAmount: paymentMethod === 'network' ? total : (paymentMethod === 'mixed' ? total / 2 : 0),
+      mixedPayment: paymentMethod === 'mixed' ? { cash: total / 2, network: total / 2 } : undefined,
       status,
       cashierName: cashier.name,
       cashierRole: cashier.role,

@@ -2,7 +2,7 @@ import type { CartItem, PosOrder, TodayOrderSummary, PosCustomerInfo, PaymentMet
 import type { AuthSession } from '@/types/auth';
 import { getSession } from '@/lib/mock-auth';
 import { getCompanySetup } from '@/lib/mock-company-settings';
-import { getPOSWashServices, serviceCategories as svcCategories } from '@/lib/mock-services';
+import { getPOSWashServices, serviceCategories as svcCategories } from '@/lib/data/services';
 
 export const washServices = getPOSWashServices();
 
@@ -59,6 +59,9 @@ export function createMockOrder(
   const session: AuthSession | null = getSession();
   const tax = calculateCartTotals(items);
 
+  const cashAmount = paymentMethod === 'cash' ? tax.total : (paymentMethod === 'mixed' && mixedPayment ? mixedPayment.cash : 0);
+  const networkAmount = paymentMethod === 'network' ? tax.total : (paymentMethod === 'mixed' && mixedPayment ? mixedPayment.network : 0);
+
   const order: PosOrder = {
     id: crypto.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`,
     orderNumber: generateOrderNumber(),
@@ -71,6 +74,8 @@ export function createMockOrder(
     total: tax.total,
     paymentMethod,
     mixedPayment: paymentMethod === 'mixed' && mixedPayment ? { ...mixedPayment } : undefined,
+    cashAmount,
+    networkAmount,
     status: 'completed',
     cashierName: session?.user.name || 'كاشير',
     cashierRole: session?.selectedRole || 'cashier',
@@ -107,20 +112,14 @@ export function removeFromCart(cart: CartItem[], serviceId: string): CartItem[] 
 
 function getPaymentMethodLabel(method: PaymentMethod): string {
   const labels: Record<PaymentMethod, string> = {
-    cash: 'كاش', mada: 'شبكة', card: 'شبكة', transfer: 'شبكة', mixed: 'تخصيص',
+    cash: 'كاش', network: 'شبكة', mixed: 'تخصيص',
   };
   return labels[method];
 }
 
 export { getPaymentMethodLabel };
 
-const mockTodayOrdersCache: TodayOrderSummary[] = [
-  { id: 't1', orderNumber: 'ORD-1001', time: '09:15', total: 80, paymentMethod: 'cash', status: 'completed', itemsCount: 3 },
-  { id: 't2', orderNumber: 'ORD-1002', time: '09:45', total: 110, paymentMethod: 'mada', status: 'completed', itemsCount: 4 },
-  { id: 't3', orderNumber: 'ORD-1003', time: '10:20', total: 25, paymentMethod: 'cash', status: 'completed', itemsCount: 1 },
-  { id: 't4', orderNumber: 'ORD-1004', time: '10:55', total: 175, paymentMethod: 'transfer', status: 'completed', itemsCount: 5 },
-  { id: 't5', orderNumber: 'ORD-1005', time: '11:30', total: 45, paymentMethod: 'mada', status: 'completed', itemsCount: 2 },
-];
+const mockTodayOrdersCache: TodayOrderSummary[] = [];
 
 export function getTodayOrders(): TodayOrderSummary[] {
   return [...mockTodayOrdersCache];

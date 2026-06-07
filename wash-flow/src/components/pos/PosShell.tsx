@@ -1,5 +1,5 @@
 'use client';
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import OrderSuccessModal from './OrderSuccessModal';
 import InvoicePreviewModal from './InvoicePreviewModal';
 import MixedPaymentForm from './MixedPaymentForm';
@@ -11,7 +11,7 @@ import {
   serviceCategories,
   getServiceIcon,
 } from '@/lib/mock-pos';
-import { getPOSWashServices } from '@/lib/mock-services';
+import { getPOSWashServices } from '@/lib/data/services';
 import { Money } from '@/lib/format';
 import {
   getCustomerByPhone as getCustomerByPhoneReal,
@@ -32,7 +32,7 @@ export default function PosShell() {
   const [cartItems, setCartItems] = useState<CartItemType[]>([]);
   const [customerInfo, setCustomerInfo] = useState<PosCustomerInfo>({});
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null);
-  const [mixedPayment, setMixedPayment] = useState<MixedPayment>({ cash: 0, network: 0, card: 0, transfer: 0 });
+  const [mixedPayment, setMixedPayment] = useState<MixedPayment>({ cash: 0, network: 0 });
 
   const [submitting, setSubmitting] = useState(false);
   const [completedOrder, setCompletedOrder] = useState<PosOrder | null>(null);
@@ -51,8 +51,16 @@ export default function PosShell() {
   const isMixedValid = paymentMethod !== 'mixed' ||
     Math.abs((mixedPayment.cash || 0) + (mixedPayment.network || 0) - cartTotals.total) < 0.01;
 
+  const [allServices, setAllServices] = useState<WashService[]>([]);
+
+  useEffect(() => {
+    getPOSWashServices().then((data) => {
+      setAllServices(data);
+    });
+  }, []);
+
   const filteredServices = useMemo(() => {
-    let result = getPOSWashServices();
+    let result = allServices;
     if (activeCategory !== 'الكل') {
       result = result.filter(s => s.category === activeCategory);
     }
@@ -61,7 +69,7 @@ export default function PosShell() {
       result = result.filter(s => s.nameAr.includes(q) || s.category.includes(q));
     }
     return result;
-  }, [activeCategory, searchQuery]);
+  }, [allServices, activeCategory, searchQuery]);
 
   const handleAddService = useCallback((service: WashService) => {
     setCartItems(prev => addToCart(prev, service));
@@ -79,7 +87,7 @@ export default function PosShell() {
     setCartItems([]);
     setCustomerInfo({});
     setPaymentMethod(null);
-    setMixedPayment({ cash: 0, network: 0, card: 0, transfer: 0 });
+    setMixedPayment({ cash: 0, network: 0 });
     setSelectedCustomer(null);
     setCustomerSearchPhone('');
   }, []);
@@ -117,7 +125,7 @@ export default function PosShell() {
     setCartItems([]);
     setCustomerInfo({});
     setPaymentMethod(null);
-    setMixedPayment({ cash: 0, network: 0, card: 0, transfer: 0 });
+    setMixedPayment({ cash: 0, network: 0 });
     setSelectedCustomer(null);
     setCustomerSearchPhone('');
   }, []);
@@ -315,8 +323,8 @@ export default function PosShell() {
                   </div>
                   <div className="px-4 pb-3">
                     <div className="flex gap-2">
-                      {(['cash', 'card', 'mixed'] as const).map((method) => {
-                        const labels = { cash: 'كاش', card: 'شبكة', mixed: 'تخصيص' };
+                      {(['cash', 'network', 'mixed'] as const).map((method) => {
+                        const labels = { cash: 'كاش', network: 'شبكة', mixed: 'تخصيص' };
                         return (
                           <button
                             key={method}
@@ -526,8 +534,8 @@ export default function PosShell() {
                 </div>
                 <div className="px-5 pb-3">
                   <div className="flex gap-2">
-                    {(['cash', 'card', 'mixed'] as const).map((method) => {
-                      const labels = { cash: 'كاش', card: 'شبكة', mixed: 'تخصيص' };
+                    {(['cash', 'network', 'mixed'] as const).map((method) => {
+                      const labels = { cash: 'كاش', network: 'شبكة', mixed: 'تخصيص' };
                       return (
                         <button
                           key={method}

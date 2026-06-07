@@ -1,4 +1,4 @@
-export type PaymentMethod = 'cash' | 'mada' | 'card' | 'transfer' | 'mixed';
+export type PaymentMethod = 'cash' | 'network' | 'mixed';
 
 export interface WashService {
   id: string;
@@ -29,8 +29,6 @@ export interface PosCustomerInfo {
 export interface MixedPayment {
   cash: number;
   network: number;
-  card: number;
-  transfer: number;
 }
 
 export interface PosOrder {
@@ -45,6 +43,8 @@ export interface PosOrder {
   total: number;
   paymentMethod: PaymentMethod;
   mixedPayment?: MixedPayment;
+  cashAmount: number;
+  networkAmount: number;
   status: 'completed' | 'cancelled' | 'refunded';
   cashierName: string;
   cashierRole: string;

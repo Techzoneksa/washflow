@@ -1,6 +1,7 @@
 import { getSupabase, isSupabaseConfigured } from '@/lib/supabase/client';
 import type { OrderHistoryItem, OrderCancelData, OrderRefundData } from '@/types/orders';
 import type { CartItem, TodayOrderSummary } from '@/types/pos';
+import { completeOrderWithConsumption } from './recipes';
 
 export interface OrdersSummaryData {
   total: number;
@@ -217,6 +218,41 @@ export async function createPOSOrder(
   }
 
   return data;
+}
+
+export async function createPOSOrderWithConsumption(
+  items: CartItem[],
+  customerId: string | null,
+  customerName: string | null,
+  customerPhone: string | null,
+  paymentMethod: string,
+  cashAmount: number,
+  networkAmount: number,
+  total: number,
+  subtotal: number,
+): Promise<{ orderId: string; orderNumber: string; invoiceId: string; invoiceNumber: string; cashierName: string; cashierRole: string; consumptionError?: string } | null> {
+  const orderResult = await createPOSOrder(
+    items, customerId, customerName, customerPhone,
+    paymentMethod, cashAmount, networkAmount, total, subtotal,
+  );
+
+  if (!orderResult) return null;
+
+  const consumption = await completeOrderWithConsumption(orderResult.orderId);
+
+  if (!consumption.success && consumption.error) {
+    const match = consumption.error.match(/Insufficient stock for (.+?) \(available: (.+?), required: (.+?)\)/);
+    if (match) {
+      const itemName = match[1];
+      return {
+        ...orderResult,
+        consumptionError: `الكمية المتاحة من ${itemName} غير كافية لإتمام الخدمة.`,
+      };
+    }
+    return { ...orderResult, consumptionError: 'فشل تحديث المخزون. تحقق من كميات المواد.' };
+  }
+
+  return orderResult;
 }
 
 export async function cancelOrder(orderId: string, reason: string): Promise<boolean> {

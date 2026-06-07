@@ -11,7 +11,7 @@ import {
   serviceCategories,
   getServiceIcon,
 } from '@/lib/mock-pos';
-import { createPOSOrder } from '@/lib/data/orders';
+import { createPOSOrderWithConsumption } from '@/lib/data/orders';
 import { getPOSWashServices } from '@/lib/data/services';
 import { Money } from '@/lib/format';
 import {
@@ -106,7 +106,7 @@ export default function PosShell() {
     const cashAmount = paymentMethod === 'cash' ? cartTotals.total : (paymentMethod === 'mixed' ? (mixedPayment.cash || 0) : 0);
     const networkAmount = paymentMethod === 'network' ? cartTotals.total : (paymentMethod === 'mixed' ? (mixedPayment.network || 0) : 0);
 
-    const result = await createPOSOrder(
+    const result = await createPOSOrderWithConsumption(
       cartItems,
       selectedCustomer?.id || null,
       selectedCustomer?.name || customerInfo.name || null,
@@ -120,6 +120,12 @@ export default function PosShell() {
 
     if (!result) {
       toast('error', 'فشل حفظ الطلب. تحقق من اتصال قاعدة البيانات');
+      setSubmitting(false);
+      return;
+    }
+
+    if (result.consumptionError) {
+      toast('error', result.consumptionError);
       setSubmitting(false);
       return;
     }

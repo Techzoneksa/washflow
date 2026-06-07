@@ -1,12 +1,14 @@
 'use client';
+import { useState, useEffect } from 'react';
 import AppShell from '@/components/layout/AppShell';
-import Card from '@/components/ui/Card';
+import Card, { CardTitle } from '@/components/ui/Card';
 import { useAuthGuard } from '@/lib/route-guards';
 import { Money } from '@/lib/format';
+import { getDashboardData, type ConsumptionDashboardData } from '@/lib/data/dashboard';
 import {
   TrendingUp, ClipboardList, ShoppingCart, DollarSign,
   AlertTriangle, Clock, BarChart3, Wallet, Users,
-  Inbox
+  Package
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -25,18 +27,6 @@ function StatCard({ label, value, icon, colorClass }: {
         <p className="text-2xl font-bold text-text-primary tabular-nums">{value}</p>
       </div>
     </div>
-  );
-}
-
-function EmptyStateWidget({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
-  return (
-    <Card padding="lg" className="flex flex-col items-center justify-center text-center py-12">
-      <div className="w-12 h-12 rounded-xl bg-neutral-100 flex items-center justify-center mb-3">
-        {icon}
-      </div>
-      <h3 className="text-sm font-semibold text-text-primary mb-1">{title}</h3>
-      <p className="text-xs text-text-secondary">{description}</p>
-    </Card>
   );
 }
 
@@ -76,53 +66,107 @@ function QuickActionsWidget() {
 
 export default function DashboardPage() {
   const { authorized, checking } = useAuthGuard();
+  const [data, setData] = useState<ConsumptionDashboardData | null>(null);
+  const [loadingData, setLoadingData] = useState(true);
+
+  useEffect(() => {
+    if (!authorized || checking) return;
+    getDashboardData().then((d) => {
+      setData(d);
+      setLoadingData(false);
+    });
+  }, [authorized, checking]);
 
   if (checking || !authorized) return null;
+
+  const netToday = data ? data.todayRevenue - data.todayExpenses : 0;
 
   return (
     <AppShell title="لوحة التحكم" activePath="/dashboard" showSearch>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
         <StatCard
           label="مبيعات اليوم"
-          value={<Money value={0} />}
+          value={loadingData ? '—' : <Money value={data?.todayRevenue || 0} />}
           icon={<TrendingUp className="h-4 w-4" />}
           colorClass="bg-primary-50"
         />
         <StatCard
           label="الطلبات"
-          value="0"
+          value={loadingData ? '—' : String(data?.todayOrders || 0)}
           icon={<ClipboardList className="h-4 w-4" />}
           colorClass="bg-info-50"
         />
         <StatCard
           label="المصاريف"
-          value={<Money value={0} />}
+          value={loadingData ? '—' : <Money value={data?.todayExpenses || 0} />}
           icon={<Wallet className="h-4 w-4" />}
           colorClass="bg-warning-50"
         />
         <StatCard
           label="صافي اليوم"
-          value={<Money value={0} />}
+          value={loadingData ? '—' : <Money value={netToday} />}
           icon={<DollarSign className="h-4 w-4" />}
           colorClass="bg-success-50"
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-2">
-          <EmptyStateWidget
-            icon={<Inbox className="h-6 w-6 text-text-disabled" />}
-            title="لا توجد طلبات بعد"
-            description="عند إضافة طلب جديد من نقطة البيع سيظهر هنا"
-          />
-        </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+        <Card>
+          <div className="flex items-center gap-2 mb-3">
+            <Package className="h-4 w-4 text-text-secondary" />
+            <CardTitle>استهلاك المواد اليوم</CardTitle>
+          </div>
+          {loadingData ? (
+            <div className="animate-pulse h-8 bg-neutral-100 rounded" />
+          ) : (
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-text-secondary">إجمالي المستهلك:</span>
+                <span className="font-semibold tabular-nums">{data?.todayConsumptionQty || 0} وحدة</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-text-secondary">تكلفة المواد:</span>
+                <span className="font-semibold tabular-nums"><Money value={data?.todayConsumptionCost || 0} /></span>
+              </div>
+              {data?.topConsumedMaterial && (
+                <div className="flex justify-between">
+                  <span className="text-text-secondary">أكثر مادة استهلاكًا:</span>
+                  <span className="font-semibold">{data.topConsumedMaterial.name}</span>
+                </div>
+              )}
+            </div>
+          )}
+        </Card>
+
+        <Card>
+          <div className="flex items-center gap-2 mb-3">
+            <AlertTriangle className="h-4 w-4 text-text-secondary" />
+            <CardTitle>تنبيهات</CardTitle>
+          </div>
+          {loadingData ? (
+            <div className="animate-pulse space-y-2">
+              <div className="h-5 bg-neutral-100 rounded" />
+              <div className="h-5 bg-neutral-100 rounded" />
+            </div>
+          ) : (
+            <div className="space-y-2 text-sm">
+              <div className="flex items-center justify-between">
+                <span className="text-text-secondary">خدمات بلا بطاقة استهلاك:</span>
+                <span className={`font-semibold ${(data?.servicesWithoutRecipe || 0) > 0 ? 'text-warning-600' : 'text-success-600'}`}>
+                  {data?.servicesWithoutRecipe || 0}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-text-secondary">مواد وصلت للحد الأدنى:</span>
+                <span className={`font-semibold ${(data?.lowStockMaterials || 0) > 0 ? 'text-danger-600' : 'text-success-600'}`}>
+                  {data?.lowStockMaterials || 0}
+                </span>
+              </div>
+            </div>
+          )}
+        </Card>
 
         <div className="flex flex-col gap-4">
-          <EmptyStateWidget
-            icon={<AlertTriangle className="h-6 w-6 text-text-disabled" />}
-            title="لا توجد تنبيهات"
-            description="كل شيء يعمل بشكل طبيعي"
-          />
           <QuickActionsWidget />
         </div>
       </div>

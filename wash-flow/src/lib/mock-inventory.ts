@@ -15,6 +15,9 @@ function makeItem(overrides: Partial<InventoryItem> = {}): InventoryItem {
     name: '',
     category: 'washing',
     unit: 'liter',
+    baseUnit: overrides.unit || 'liter',
+    purchaseUnit: undefined,
+    conversionFactor: 1,
     currentQuantity: 0,
     minimumQuantity: 0,
     averageCost: 0,
@@ -233,6 +236,9 @@ export function getStockAdjustments(): StockAdjustment[] {
 export function addInventoryItem(item: Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'>): InventoryItem {
   const newItem: InventoryItem = {
     ...item,
+    baseUnit: item.baseUnit || item.unit,
+    purchaseUnit: item.purchaseUnit || undefined,
+    conversionFactor: item.conversionFactor || 1,
     id: `inv-${Date.now()}`,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),

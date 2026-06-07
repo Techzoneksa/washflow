@@ -46,14 +46,13 @@ export const INVENTORY_UNIT_LABELS: Record<InventoryUnit, string> = {
   pack: 'حزمة',
 };
 
-export type StockMovementType = 'purchase' | 'consumption' | 'waste' | 'adjustment';
-export type StockMovementReference = 'purchase' | 'manual' | 'waste' | 'adjustment';
-
 export const STOCK_MOVEMENT_TYPE_LABELS: Record<StockMovementType, string> = {
   purchase: 'دخول من مشتريات',
   consumption: 'استهلاك تشغيلي',
   waste: 'هدر / تالف',
   adjustment: 'جرد / تسوية',
+  return: 'مرتجع',
+  reversal: 'إعادة مخزون',
 };
 
 export interface InventoryItem {
@@ -61,6 +60,9 @@ export interface InventoryItem {
   name: string;
   category: InventoryCategory;
   unit: InventoryUnit;
+  baseUnit: string;
+  purchaseUnit?: string;
+  conversionFactor: number;
   currentQuantity: number;
   minimumQuantity: number;
   averageCost: number;
@@ -71,6 +73,9 @@ export interface InventoryItem {
   createdAt: string;
   updatedAt: string;
 }
+
+export type StockMovementType = 'purchase' | 'consumption' | 'waste' | 'adjustment' | 'return' | 'reversal';
+export type StockMovementReference = 'purchase' | 'manual' | 'waste' | 'adjustment' | 'order_item';
 
 export interface StockMovement {
   id: string;

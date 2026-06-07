@@ -10,6 +10,7 @@ import ServicesTable from './ServicesTable';
 import ServiceDetailsDrawer from './ServiceDetailsDrawer';
 import ServiceFormDrawer from './ServiceFormDrawer';
 import DisableServiceModal from './DisableServiceModal';
+import RecipeManagementDrawer from './RecipeManagementDrawer';
 import { getServices, createService, updateService, toggleServiceActive } from '@/lib/data/services';
 import type { ServiceItem } from '@/types/services';
 import type { ServiceFormData } from './ServiceFormDrawer';
@@ -34,6 +35,8 @@ export default function ServicesPageShell() {
   const [toggleTarget, setToggleTarget] = useState<ServiceItem | null>(null);
   const [toggleEnable, setToggleEnable] = useState(false);
   const [disableModalOpen, setDisableModalOpen] = useState(false);
+  const [recipeDrawerService, setRecipeDrawerService] = useState<ServiceItem | null>(null);
+  const [recipeDrawerOpen, setRecipeDrawerOpen] = useState(false);
 
   const loadServices = useCallback(async () => {
     setLoading(true);
@@ -104,6 +107,11 @@ export default function ServicesPageShell() {
     setToggleTarget(s);
     setToggleEnable(!s.isActive);
     setDisableModalOpen(true);
+  }, []);
+
+  const handleRecipe = useCallback((s: ServiceItem) => {
+    setRecipeDrawerService(s);
+    setRecipeDrawerOpen(true);
   }, []);
 
   const handleConfirmToggle = useCallback(async () => {
@@ -208,6 +216,7 @@ export default function ServicesPageShell() {
                   onView={handleView}
                   onEdit={handleEdit}
                   onToggle={handleToggle}
+                  onRecipe={handleRecipe}
                 />
               )}
             </div>
@@ -234,6 +243,12 @@ export default function ServicesPageShell() {
         service={toggleTarget}
         onConfirm={handleConfirmToggle}
         enable={toggleEnable}
+      />
+
+      <RecipeManagementDrawer
+        open={recipeDrawerOpen}
+        onClose={() => { setRecipeDrawerOpen(false); setRecipeDrawerService(null); }}
+        service={recipeDrawerService}
       />
     </>
   );

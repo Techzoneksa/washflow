@@ -5,7 +5,7 @@ import Button from '@/components/ui/Button';
 import { Money } from '@/lib/format';
 import type { ServiceItem } from '@/types/services';
 import type { Column } from '@/components/ui/Table';
-import { Eye, Pencil, ToggleLeft, ToggleRight } from 'lucide-react';
+import { Eye, Pencil, ToggleLeft, ToggleRight, ClipboardList } from 'lucide-react';
 
 interface ServicesTableProps {
   services: ServiceItem[];
@@ -15,9 +15,10 @@ interface ServicesTableProps {
   onView: (s: ServiceItem) => void;
   onEdit: (s: ServiceItem) => void;
   onToggle: (s: ServiceItem) => void;
+  onRecipe?: (s: ServiceItem) => void;
 }
 
-export default function ServicesTable({ services, page, totalPages, onPageChange, onView, onEdit, onToggle }: ServicesTableProps) {
+export default function ServicesTable({ services, page, totalPages, onPageChange, onView, onEdit, onToggle, onRecipe }: ServicesTableProps) {
   const columns: Column<ServiceItem>[] = [
     {
       key: 'sortOrder',
@@ -76,6 +77,11 @@ export default function ServicesTable({ services, page, totalPages, onPageChange
           <button onClick={() => onEdit(s)} className="p-1.5 rounded-md hover:bg-bg-hover text-text-secondary hover:text-primary-600 transition-colors" title="تعديل">
             <Pencil className="h-4 w-4" />
           </button>
+          {onRecipe && (
+            <button onClick={() => onRecipe(s)} className="p-1.5 rounded-md hover:bg-bg-hover text-text-secondary hover:text-info-600 transition-colors" title="بطاقة الاستهلاك">
+              <ClipboardList className="h-4 w-4" />
+            </button>
+          )}
           <button onClick={() => onToggle(s)} className="p-1.5 rounded-md hover:bg-bg-hover text-text-secondary hover:text-warning-600 transition-colors" title={s.isActive ? 'تعطيل' : 'تفعيل'}>
             {s.isActive ? <ToggleRight className="h-4 w-4" /> : <ToggleLeft className="h-4 w-4" />}
           </button>
@@ -105,13 +111,18 @@ export default function ServicesTable({ services, page, totalPages, onPageChange
               {s.showInPOS ? <Badge variant="success" size="sm">POS</Badge> : <Badge variant="neutral" size="sm">مخفي</Badge>}
               {s.durationMinutes && <span className="text-text-secondary">{s.durationMinutes} د</span>}
             </div>
-            <div className="flex gap-2 pt-1">
+            <div className="flex gap-2 pt-1 flex-wrap">
               <Button size="sm" variant="outline" icon={<Eye className="h-3 w-3" />} onClick={(e) => { e.stopPropagation(); onView(s); }}>
                 عرض
               </Button>
               <Button size="sm" variant="outline" icon={<Pencil className="h-3 w-3" />} onClick={(e) => { e.stopPropagation(); onEdit(s); }}>
                 تعديل
               </Button>
+              {onRecipe && (
+                <Button size="sm" variant="outline" icon={<ClipboardList className="h-3 w-3" />} onClick={(e) => { e.stopPropagation(); onRecipe(s); }}>
+                  استهلاك
+                </Button>
+              )}
               <Button size="sm" variant={s.isActive ? 'danger' : 'success'} icon={s.isActive ? <ToggleRight className="h-3 w-3" /> : <ToggleLeft className="h-3 w-3" />} onClick={(e) => { e.stopPropagation(); onToggle(s); }}>
                 {s.isActive ? 'تعطيل' : 'تفعيل'}
               </Button>

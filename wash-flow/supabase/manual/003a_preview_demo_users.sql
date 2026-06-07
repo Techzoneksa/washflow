@@ -16,37 +16,49 @@
 -- These are deleted from Supabase Dashboard → Authentication manually.
 -- This script only shows the related data that will be cleaned up.
 
-WITH demo_auth_users AS (
-  SELECT id, email
-  FROM auth.users
-  WHERE email IN (
-    'owner@washflow.sa',
-    'manager@washflow.sa',
-    'accountant@washflow.sa',
-    'cashier@washflow.sa',
-    'admin@washflow.sa'
-  )
-  AND id <> '8c0edf34-8a11-4a62-bc3b-302ce9b46ea3'
-),
-orphaned_profiles AS (
-  SELECT p.id, p.full_name, p.role, p.status, p.created_at
-  FROM public.profiles p
-  WHERE p.id <> '8c0edf34-8a11-4a62-bc3b-302ce9b46ea3'
-    AND NOT EXISTS (SELECT 1 FROM auth.users u WHERE u.id = p.id)
-),
-demo_pos_devices AS (
-  SELECT id, pos_code, device_name, status, created_at
-  FROM public.pos_devices
-  WHERE device_name ILIKE '%demo%'
-     OR device_name ILIKE '%test%'
-     OR device_name ILIKE '%تجريبي%'
-),
-demo_cashier_accounts AS (
-  SELECT ca.id, ca.full_name, ca.username, ca.status, ca.pos_device_id, ca.created_at
-  FROM public.cashier_accounts ca
-  WHERE ca.pos_device_id IS NULL
-     OR ca.pos_device_id IN (SELECT id FROM demo_pos_devices)
+-- ============================================================
+-- Create temp tables for preview
+-- ============================================================
+
+DROP TABLE IF EXISTS demo_auth_users;
+CREATE TEMP TABLE demo_auth_users AS
+SELECT id, email
+FROM auth.users
+WHERE email IN (
+  'owner@washflow.sa',
+  'manager@washflow.sa',
+  'accountant@washflow.sa',
+  'cashier@washflow.sa',
+  'admin@washflow.sa'
 )
+AND id <> '8c0edf34-8a11-4a62-bc3b-302ce9b46ea3';
+
+DROP TABLE IF EXISTS orphaned_profiles;
+CREATE TEMP TABLE orphaned_profiles AS
+SELECT p.id, p.full_name, p.role, p.status, p.created_at
+FROM public.profiles p
+WHERE p.id <> '8c0edf34-8a11-4a62-bc3b-302ce9b46ea3'
+  AND NOT EXISTS (SELECT 1 FROM auth.users u WHERE u.id = p.id);
+
+DROP TABLE IF EXISTS demo_pos_devices;
+CREATE TEMP TABLE demo_pos_devices AS
+SELECT id, pos_code, device_name, status, created_at
+FROM public.pos_devices
+WHERE device_name ILIKE '%demo%'
+   OR device_name ILIKE '%test%'
+   OR device_name ILIKE '%تجريبي%';
+
+DROP TABLE IF EXISTS demo_cashier_accounts;
+CREATE TEMP TABLE demo_cashier_accounts AS
+SELECT ca.id, ca.full_name, ca.username, ca.status, ca.pos_device_id, ca.created_at
+FROM public.cashier_accounts ca
+WHERE ca.pos_device_id IS NULL
+   OR ca.pos_device_id IN (SELECT id FROM demo_pos_devices);
+
+-- ============================================================
+-- Preview sections
+-- ============================================================
+
 SELECT '=== 1. TARGETED DEMO AUTH USERS (delete from Dashboard manually) ===' AS section;
 SELECT id, email FROM demo_auth_users ORDER BY email;
 
@@ -95,3 +107,11 @@ UNION ALL
 SELECT 'Demo cashier accounts to delete', COUNT(*)::TEXT FROM demo_cashier_accounts
 UNION ALL
 SELECT 'Demo cashier sessions to delete', COUNT(*)::TEXT FROM public.cashier_sessions WHERE cashier_account_id IN (SELECT id FROM demo_cashier_accounts);
+
+-- ============================================================
+-- Cleanup temp tables
+-- ============================================================
+DROP TABLE IF EXISTS demo_cashier_accounts;
+DROP TABLE IF EXISTS demo_pos_devices;
+DROP TABLE IF EXISTS orphaned_profiles;
+DROP TABLE IF EXISTS demo_auth_users;

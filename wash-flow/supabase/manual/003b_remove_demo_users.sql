@@ -33,7 +33,7 @@ END $$;
 
 -- Identify demo auth user UUIDs by known demo emails only
 -- (not wildcard pattern, exact email list)
-CREATE TEMP TABLE _demo_auth_users ON COMMIT DROP AS
+CREATE TEMP TABLE demo_auth_users ON COMMIT DROP AS
 SELECT id, email
 FROM auth.users
 WHERE email IN (
@@ -84,7 +84,7 @@ WHERE pd.device_name ILIKE '%demo%'
 -- STEP 4: Delete profiles of demo admin users
 -- ============================================================
 DELETE FROM public.profiles p
-WHERE p.id IN (SELECT id FROM _demo_auth_users);
+WHERE p.id IN (SELECT id FROM demo_auth_users);
 
 -- ============================================================
 -- STEP 5: Delete orphaned profiles

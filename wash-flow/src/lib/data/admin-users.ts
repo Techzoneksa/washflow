@@ -1,40 +1,83 @@
-import { getSession } from '@/lib/supabase/auth';
+import { getSupabase, isSupabaseConfigured } from '@/lib/supabase/client';
 import { resetPasswordForEmail } from '@/lib/supabase/auth';
 
-const API_BASE = '/api/admin/users';
+export interface AdminUserData {
+  id: string;
+  email: string;
+  fullName: string;
+  role: string;
+  status: string;
+  createdAt: string;
+  lastSignInAt: string | null;
+}
+
+function mapAdminUser(raw: Record<string, unknown>): AdminUserData {
+  return {
+    id: raw.id as string,
+    email: raw.email as string,
+    fullName: raw.full_name as string,
+    role: raw.role as string,
+    status: raw.status as string,
+    createdAt: raw.created_at as string,
+    lastSignInAt: raw.last_sign_in_at as string | null,
+  };
+}
 
 export async function createAdminUser(data: {
   fullName: string;
   email: string;
-  password: string;
   role: 'owner' | 'manager' | 'accountant';
   status: 'active' | 'inactive';
-}): Promise<{ success: boolean; userId?: string; error?: string }> {
-  const session = await getSession();
-  if (!session?.access_token) return { success: false, error: 'Not authenticated' };
+}): Promise<{ success: boolean; error?: string }> {
+  if (!isSupabaseConfigured()) return { success: false, error: 'Supabase not configured' };
+  const client = getSupabase();
+  if (!client) return { success: false, error: 'No client' };
 
   try {
-    const res = await fetch(API_BASE, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${session.access_token}`,
-      },
-      body: JSON.stringify({
+    const { data: result, error } = await client.functions.invoke('create-admin-user', {
+      body: {
         full_name: data.fullName,
         email: data.email,
-        password: data.password,
         role: data.role,
         status: data.status,
-      }),
+      },
     });
 
-    const result = await res.json();
-    if (!res.ok) return { success: false, error: result.error || 'Failed to create user' };
+    if (error) {
+      return { success: false, error: error.message };
+    }
 
-    return { success: true, userId: result.user_id };
+    const parsed = result as Record<string, unknown>;
+    if (!parsed.success) {
+      return { success: false, error: (parsed.error as string) || 'Failed to create user' };
+    }
+
+    return { success: true };
   } catch (err) {
     return { success: false, error: err instanceof Error ? err.message : 'Network error' };
+  }
+}
+
+export async function getAdminUsers(): Promise<AdminUserData[]> {
+  if (!isSupabaseConfigured()) return [];
+  const client = getSupabase();
+  if (!client) return [];
+
+  try {
+    const { data: result, error } = await client.functions.invoke('list-admin-users', {
+      method: 'GET',
+    });
+
+    if (error) {
+      console.error('[AdminUsers] Fetch error:', error.message);
+      return [];
+    }
+
+    const rows = result as Record<string, unknown>[];
+    return (rows || []).map(mapAdminUser);
+  } catch (err) {
+    console.error('[AdminUsers] Fetch error:', err);
+    return [];
   }
 }
 
@@ -42,19 +85,4 @@ export async function sendPasswordReset(email: string): Promise<{ success: boole
   const { error } = await resetPasswordForEmail(email);
   if (error) return { success: false, error: error.message };
   return { success: true };
-}
-
-export async function getAdminEmails(): Promise<Record<string, string>> {
-  const session = await getSession();
-  if (!session?.access_token) return {};
-
-  try {
-    const res = await fetch('/api/admin/users-emails', {
-      headers: { Authorization: `Bearer ${session.access_token}` },
-    });
-    if (!res.ok) return {};
-    return await res.json();
-  } catch {
-    return {};
-  }
 }

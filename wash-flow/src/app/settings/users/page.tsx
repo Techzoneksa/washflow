@@ -11,7 +11,8 @@ import Drawer from '@/components/ui/Drawer';
 import { useAuthGuard } from '@/lib/route-guards';
 import { useToast } from '@/components/ui/Toast';
 import { getProfiles, updateProfileRole, updateProfileStatus } from '@/lib/data/profiles';
-import { sendPasswordReset, createAdminUser, getAdminEmails } from '@/lib/data/admin-users';
+import { sendPasswordReset, createAdminUser, getAdminUsers } from '@/lib/data/admin-users';
+import type { AdminUserData } from '@/lib/data/admin-users';
 import { getPosDevices } from '@/lib/data/pos-devices';
 import {
   getCashierAccounts,
@@ -88,7 +89,7 @@ export default function UsersSettingsPage() {
   const [profiles, setProfiles] = useState<ProfileData[]>([]);
   const [cashiers, setCashiers] = useState<CashierAccount[]>([]);
   const [devices, setDevices] = useState<PosDevice[]>([]);
-  const [adminEmails, setAdminEmails] = useState<Record<string, string>>({});
+  const [adminUsersData, setAdminUsersData] = useState<AdminUserData[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -103,16 +104,16 @@ export default function UsersSettingsPage() {
   const loadData = useCallback(async () => {
     if (!authorized) return;
     setLoading(true);
-    const [profileList, cashierList, deviceList, emails] = await Promise.all([
+    const [profileList, cashierList, deviceList, adminList] = await Promise.all([
       getProfiles(),
       getCashierAccounts(),
       getPosDevices(),
-      getAdminEmails(),
+      getAdminUsers(),
     ]);
     setProfiles(profileList);
     setCashiers(cashierList);
     setDevices(deviceList);
-    setAdminEmails(emails);
+    setAdminUsersData(adminList);
     setLoading(false);
   }, [authorized]);
 
@@ -121,22 +122,30 @@ export default function UsersSettingsPage() {
     const fetchData = async () => {
       if (!authorized) return;
       setLoading(true);
-      const [profileList, cashierList, deviceList, emails] = await Promise.all([
+      const [profileList, cashierList, deviceList, adminList] = await Promise.all([
         getProfiles(),
         getCashierAccounts(),
         getPosDevices(),
-        getAdminEmails(),
+        getAdminUsers(),
       ]);
       if (cancelled) return;
       setProfiles(profileList);
       setCashiers(cashierList);
       setDevices(deviceList);
-      setAdminEmails(emails);
+      setAdminUsersData(adminList);
       setLoading(false);
     };
     fetchData();
     return () => { cancelled = true; };
   }, [authorized]);
+
+  const adminEmailMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    for (const a of adminUsersData) {
+      if (a.email) map[a.id] = a.email;
+    }
+    return map;
+  }, [adminUsersData]);
 
   const deviceMap = useMemo(() => {
     const map: Record<string, PosDevice> = {};
@@ -154,7 +163,7 @@ export default function UsersSettingsPage() {
         fullName: p.fullName,
         userType: 'admin',
         role: p.role,
-        email: adminEmails[p.id],
+        email: adminEmailMap[p.id],
         status: p.status,
         lastLoginAt: undefined,
         createdAt: p.createdAt,
@@ -185,7 +194,7 @@ export default function UsersSettingsPage() {
 
     result.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     return result;
-  }, [profiles, cashiers, deviceMap, adminEmails]);
+  }, [profiles, cashiers, deviceMap, adminEmailMap]);
 
   const filtered = useMemo(() => {
     return unifiedUsers.filter((u) => {
@@ -384,7 +393,6 @@ function AddUserModal({
   const [email, setEmail] = useState('');
   const [role, setRole] = useState('accountant');
   const [status, setStatus] = useState('active');
-  const [password, setPassword] = useState('');
 
   const [cashierName, setCashierName] = useState('');
   const [username, setUsername] = useState('');
@@ -394,7 +402,7 @@ function AddUserModal({
   const [cashierStatus, setCashierStatus] = useState('active');
 
   const resetForms = () => {
-    setName(''); setEmail(''); setRole('accountant'); setStatus('active'); setPassword('');
+    setName(''); setEmail(''); setRole('accountant'); setStatus('active');
     setCashierName(''); setUsername(''); setDeviceId(''); setPin(''); setConfirmPin(''); setCashierStatus('active');
     setError('');
   };
@@ -408,8 +416,6 @@ function AddUserModal({
     setError('');
     if (!name.trim()) { setError('الاسم مطلوب'); return; }
     if (!email.trim()) { setError('البريد الإلكتروني مطلوب'); return; }
-    if (!password) { setError('كلمة المرور مطلوبة'); return; }
-    if (password.length < 6) { setError('كلمة المرور يجب أن تكون 6 أحرف على الأقل'); return; }
 
     if (profiles.some((p) => p.role === 'owner' && role === 'owner')) {
       setError('يوجد مالك بالفعل');
@@ -420,7 +426,6 @@ function AddUserModal({
     const result = await createAdminUser({
       fullName: name.trim(),
       email: email.trim(),
-      password,
       role: role as 'owner' | 'manager' | 'accountant',
       status: status as 'active' | 'inactive',
     });
@@ -497,7 +502,7 @@ function AddUserModal({
 
           <Input label="الاسم الكامل *" value={name} onChange={(e) => setName(e.target.value)} fullWidth />
           <Input label="البريد الإلكتروني *" type="email" value={email} onChange={(e) => setEmail(e.target.value)} fullWidth />
-          <Input label="كلمة المرور *" type="password" value={password} onChange={(e) => setPassword(e.target.value)} fullWidth />
+          <p className="text-xs text-text-secondary -mt-2">سيتم إرسال دعوة للمستخدم لتعيين كلمة المرور</p>
           <Select
             label="الدور *"
             options={adminRoleOptions}

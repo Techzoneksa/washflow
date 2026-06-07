@@ -4,7 +4,7 @@ import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 import { Money, formatMoneyAmount } from '@/lib/format';
 import type { Employee } from '@/types/employees';
-import { getEmployeeLedger, getAdvancesByEmployeeId, getSalaryPaymentsByEmployeeId } from '@/lib/mock-employees';
+import { getEmployeeLedger, getAdvancesByEmployeeId, getSalaryPaymentsByEmployeeId } from '@/lib/employees';
 import { Pencil, Wallet, TrendingDown, History } from 'lucide-react';
 
 interface EmployeeDetailsDrawerProps {

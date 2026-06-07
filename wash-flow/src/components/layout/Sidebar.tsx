@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import { navigationItems } from '@/lib/mock-data';
+import { navigationItems } from '@/lib/navigation';
 import { signOutUser } from '@/lib/supabase/auth';
 import type { UserRole } from '@/types';
 import * as Icons from 'lucide-react';

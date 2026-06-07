@@ -5,29 +5,15 @@ import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
-import Table from '@/components/ui/Table';
 import { Money } from '@/lib/format';
-import { getStatusLabel } from '@/lib/utils';
-import { mockOrders, mockServices } from '@/lib/mock-data';
 import { Plus, Search, Filter, Download } from 'lucide-react';
-import type { Order } from '@/types';
 
-const statusVariant: Record<string, 'success' | 'warning' | 'danger' | 'info' | 'neutral' | 'primary'> = {
-  completed: 'success',
-  'in-progress': 'info',
-  cancelled: 'danger',
-  refunded: 'warning',
-  new: 'primary',
-};
+const sampleServices = [
+  { id: 's1', name: 'سيارة صغيرة', price: 25, category: 'غسيل', active: true },
+  { id: 's2', name: 'سيارة كبيرة', price: 35, category: 'غسيل', active: true },
+];
 
 export default function RTLPreviewPage() {
-  const columns = [
-    { key: 'id', header: 'رقم الطلب' },
-    { key: 'services', header: 'الخدمات', render: (item: Order) => item.services.join('، ') },
-    { key: 'total', header: 'المجموع', render: (item: Order) => <span className="font-semibold"><Money value={item.total} /></span> },
-    { key: 'status', header: 'الحالة', render: (item: Order) => <Badge variant={statusVariant[item.status] || 'neutral'} size="sm">{getStatusLabel(item.status)}</Badge> },
-    { key: 'paymentStatus', header: 'الدفع', render: (item: Order) => <Badge variant={item.paymentStatus === 'paid' ? 'success' : item.paymentStatus === 'unpaid' ? 'danger' : 'warning'} size="sm">{getStatusLabel(item.paymentStatus)}</Badge> },
-  ];
 
   return (
     <AppShell title="التحقق من RTL" activePath="/rtl-preview">
@@ -83,7 +69,7 @@ export default function RTLPreviewPage() {
             <Input label="رقم الجوال" placeholder="0500000000" type="tel" />
             <Select
               label="اختر الخدمة"
-              options={mockServices.map((s) => ({ label: s.name, value: s.id }))}
+              options={sampleServices.map((s) => ({ label: s.name, value: s.id }))}
             />
             <Input label="المبلغ" placeholder="0.00" />
           </div>
@@ -119,11 +105,7 @@ export default function RTLPreviewPage() {
           <CardHeader>
             <CardTitle>جدول بالعربية</CardTitle>
           </CardHeader>
-          <Table
-            columns={columns}
-            data={mockOrders}
-            keyExtractor={(item) => item.id}
-          />
+          <p className="text-sm text-text-secondary p-4">جدول اختباري لعرض الاتجاه RTL</p>
         </Card>
 
         {/* RTL Direction Test */}

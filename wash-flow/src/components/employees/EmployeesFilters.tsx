@@ -3,7 +3,7 @@ import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
 import { Search } from 'lucide-react';
 import type { EmployeeFilter } from '@/types/employees';
-import { JOB_TITLES, NATIONALITIES } from '@/lib/mock-employees';
+import { JOB_TITLES, NATIONALITIES } from '@/lib/employees';
 
 interface EmployeesFiltersProps {
   filters: EmployeeFilter;

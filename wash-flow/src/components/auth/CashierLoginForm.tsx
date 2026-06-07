@@ -45,7 +45,7 @@ export default function CashierLoginForm({ onSuccess }: CashierLoginFormProps) {
 
       <Input
         label="رقم جهاز POS"
-        placeholder="مثال: F465"
+        placeholder="أدخل رمز الجهاز"
         value={posCode}
         onChange={(e) => { setPosCode(e.target.value); setError(''); }}
         icon={<Monitor className="h-4 w-4" />}
@@ -54,7 +54,7 @@ export default function CashierLoginForm({ onSuccess }: CashierLoginFormProps) {
 
       <Input
         label="اسم المستخدم"
-        placeholder="مثال: ahmed"
+        placeholder="أدخل اسم المستخدم"
         value={username}
         onChange={(e) => { setUsername(e.target.value); setError(''); }}
         icon={<User className="h-4 w-4" />}

@@ -3,7 +3,7 @@
 -- ============================================================
 -- HOW TO USE:
 -- 1. Go to Supabase Dashboard → Authentication → Users → Add User
---    Create a user with email e.g. owner@washflow.sa and password.
+--    Create a user with the owner's email.
 --    Copy the generated UUID.
 -- 2. Replace 'USER_UUID_FROM_AUTH' below with the actual UUID.
 -- 3. Run this SQL in Supabase Dashboard → SQL Editor.
@@ -30,7 +30,7 @@ VALUES ('فال المستقبل', '', '')
 ON CONFLICT DO NOTHING;
 
 -- ============================================================
--- To create additional users (manager, accountant, cashier):
+-- To create additional users (manager, accountant):
 -- 1. Create user via Supabase Dashboard → Authentication → Add User
 -- 2. Copy UUID
 -- 3. Run INSERT with appropriate role

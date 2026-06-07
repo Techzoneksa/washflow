@@ -3,61 +3,14 @@ import Table, { Pagination } from '@/components/ui/Table';
 import Badge from '@/components/ui/Badge';
 import { Money } from '@/lib/format';
 import { getStatusLabel } from '@/lib/utils';
-import { mockOrders } from '@/lib/mock-data';
-import type { Order } from '@/types';
-
-const statusVariant: Record<string, 'success' | 'warning' | 'danger' | 'info' | 'neutral' | 'primary'> = {
-  completed: 'success',
-  'in-progress': 'info',
-  cancelled: 'danger',
-  refunded: 'warning',
-  new: 'primary',
-};
-
-const paymentVariant: Record<string, 'success' | 'warning' | 'danger' | 'info' | 'neutral'> = {
-  paid: 'success',
-  unpaid: 'danger',
-  partial: 'warning',
-  overdue: 'danger',
-};
 
 export default function TablesPreview() {
   const columns = [
     { key: 'id', header: 'رقم الطلب', className: 'w-24' },
-    { key: 'services', header: 'الخدمات', render: (item: Order) => item.services.join('، '), hideOnMobile: false },
-    {
-      key: 'total',
-      header: 'المجموع',
-      render: (item: Order) => <span className="font-semibold"><Money value={item.total} /></span>,
-      className: 'w-24',
-    },
-    {
-      key: 'status',
-      header: 'الحالة',
-      render: (item: Order) => (
-        <Badge variant={statusVariant[item.status] || 'neutral'} size="sm">
-          {getStatusLabel(item.status)}
-        </Badge>
-      ),
-      className: 'w-28',
-    },
-    {
-      key: 'paymentStatus',
-      header: 'الدفع',
-      render: (item: Order) => (
-        <Badge variant={paymentVariant[item.paymentStatus] || 'neutral'} size="sm">
-          {getStatusLabel(item.paymentStatus)}
-        </Badge>
-      ),
-      className: 'w-28',
-    },
-    {
-      key: 'createdAt',
-      header: 'التاريخ',
-      render: (item: Order) => new Date(item.createdAt).toLocaleDateString('ar-SA'),
-      className: 'w-20',
-      hideOnMobile: true,
-    },
+    { key: 'services', header: 'الخدمات', hideOnMobile: false },
+    { key: 'total', header: 'المجموع', render: () => <span className="font-semibold"><Money value={0} /></span>, className: 'w-24' },
+    { key: 'status', header: 'الحالة', render: () => <Badge variant="neutral" size="sm">{getStatusLabel('new')}</Badge>, className: 'w-28' },
+    { key: 'createdAt', header: 'التاريخ', className: 'w-20', hideOnMobile: true },
   ];
 
   return (
@@ -73,12 +26,11 @@ export default function TablesPreview() {
         </div>
         <Table
           columns={columns}
-          data={mockOrders}
-          keyExtractor={(item) => item.id}
-          onRowClick={(item) => alert(`تم النقر على ${item.id}`)}
+          data={[]}
+          keyExtractor={() => ''}
         />
         <div className="px-4 border-t border-border-default">
-          <Pagination currentPage={1} totalPages={3} onPageChange={() => {}} />
+          <Pagination currentPage={1} totalPages={1} onPageChange={() => {}} />
         </div>
       </div>
     </div>

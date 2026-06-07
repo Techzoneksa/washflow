@@ -9,7 +9,7 @@ import Textarea from '@/components/ui/Textarea';
 import Card from '@/components/ui/Card';
 import { Money } from '@/lib/format';
 import type { Employee, PaymentMethod } from '@/types/employees';
-import { getOpenAdvancesByEmployeeId } from '@/lib/mock-employees';
+import { getOpenAdvancesByEmployeeId } from '@/lib/employees';
 
 export interface SalaryPaymentFormData {
   employeeId: string;

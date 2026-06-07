@@ -21,7 +21,7 @@ import {
   addAdvance,
   addSalaryPayment,
   getOpenAdvancesByEmployeeId,
-} from '@/lib/mock-employees';
+} from '@/lib/employees';
 import type { Employee, EmployeeFilter } from '@/types/employees';
 import { Plus, Users } from 'lucide-react';
 

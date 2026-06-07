@@ -3,7 +3,7 @@ import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import { Money } from '@/lib/format';
 import type { Employee } from '@/types/employees';
-import { getOpenAdvancesByEmployeeId } from '@/lib/mock-employees';
+import { getOpenAdvancesByEmployeeId } from '@/lib/employees';
 import { Phone } from 'lucide-react';
 
 interface EmployeeCardProps {

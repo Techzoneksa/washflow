@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import { mobileNavItems } from '@/lib/mock-data';
+import { mobileNavItems } from '@/lib/navigation';
 import * as Icons from 'lucide-react';
 
 interface MobileBottomNavProps {

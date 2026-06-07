@@ -7,7 +7,7 @@ import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
 import Textarea from '@/components/ui/Textarea';
 import type { Employee } from '@/types/employees';
-import { JOB_TITLES, NATIONALITIES } from '@/lib/mock-employees';
+import { JOB_TITLES, NATIONALITIES } from '@/lib/employees';
 
 export interface EmployeeFormData {
   fullName: string;

@@ -2,7 +2,7 @@
 import Button from '@/components/ui/Button';
 import { Money } from '@/lib/format';
 import type { Employee } from '@/types/employees';
-import { getOpenAdvancesByEmployeeId } from '@/lib/mock-employees';
+import { getOpenAdvancesByEmployeeId } from '@/lib/employees';
 import EmployeeBadge from './EmployeeBadge';
 import { Eye, Pencil } from 'lucide-react';
 

@@ -1,10 +1,11 @@
 'use client';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Modal from '@/components/ui/Modal';
 import { formatDate } from '@/lib/utils';
 import { Money } from '@/lib/format';
-import { getPaymentMethodLabel } from '@/lib/mock-pos';
-import { getCompanySetup } from '@/lib/mock-company-settings';
+import { getPaymentMethodLabel } from '@/lib/payment-labels';
+import { getCompanySettings, FALLBACK_COMPANY_NAME } from '@/lib/data/company-settings';
 import type { PosOrder } from '@/types/pos';
 import { Printer } from 'lucide-react';
 
@@ -16,26 +17,37 @@ interface InvoicePreviewModalProps {
 }
 
 export default function InvoicePreviewModal({ open, onClose, order, onPrint }: InvoicePreviewModalProps) {
+  const [companyName, setCompanyName] = useState('');
+  const [logoUrl, setLogoUrl] = useState('');
+
+  useEffect(() => {
+    if (open) {
+      getCompanySettings().then((settings) => {
+        setCompanyName(settings?.companyNameAr || FALLBACK_COMPANY_NAME);
+        setLogoUrl(settings?.logoUrl || '');
+      });
+    }
+  }, [open]);
+
   if (!order) return null;
-  const setup = getCompanySetup();
 
   return (
     <Modal open={open} onClose={onClose} size="lg" title="الفاتورة">
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            {setup?.company.logo ? (
-              <Image src={setup.company.logo} alt="logo" width={40} height={40} className="h-10 w-10 rounded-lg object-cover" unoptimized />
+            {logoUrl ? (
+              <Image src={logoUrl} alt="logo" width={40} height={40} className="h-10 w-10 rounded-lg object-cover" unoptimized />
             ) : (
               <div className="h-10 w-10 rounded-lg bg-primary-100 flex items-center justify-center text-primary-600 font-bold text-sm">
-                {setup?.company.nameAr?.charAt(0) || 'ف'}
+                {companyName?.charAt(0) || 'ف'}
               </div>
             )}
           </div>
         </div>
 
         <div className="text-center">
-          <h3 className="text-lg font-bold text-text-primary">{setup?.company.nameAr || 'فال المستقبل'}</h3>
+          <h3 className="text-lg font-bold text-text-primary">{companyName || FALLBACK_COMPANY_NAME}</h3>
         </div>
 
         <div className="grid grid-cols-2 gap-3 text-xs bg-neutral-50 rounded-xl p-4">
@@ -100,20 +112,6 @@ export default function InvoicePreviewModal({ open, onClose, order, onPrint }: I
             </div>
           )}
         </div>
-
-        {setup?.invoice.showQr && (
-          <div className="flex justify-center py-2">
-            <div className="w-16 h-16 bg-neutral-100 rounded-lg flex items-center justify-center border-2 border-dashed border-neutral-300">
-              <span className="text-[8px] text-text-disabled text-center leading-tight">QR<br />Mock</span>
-            </div>
-          </div>
-        )}
-
-        {setup?.invoice.footerText && (
-          <p className="text-center text-xs text-text-secondary border-t border-border-default pt-3">
-            {setup.invoice.footerText}
-          </p>
-        )}
 
         <button
           onClick={onPrint}

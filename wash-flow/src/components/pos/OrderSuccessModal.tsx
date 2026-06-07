@@ -2,7 +2,7 @@
 import Modal from '@/components/ui/Modal';
 import Button from '@/components/ui/Button';
 import { Money } from '@/lib/format';
-import { getPaymentMethodLabel } from '@/lib/mock-pos';
+import { getPaymentMethodLabel } from '@/lib/payment-labels';
 import type { PosOrder } from '@/types/pos';
 import { CheckCircle2, Printer, Eye, Plus } from 'lucide-react';
 

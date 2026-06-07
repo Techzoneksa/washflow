@@ -1,5 +1,5 @@
 'use client';
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import PageHeader from '@/components/layout/PageHeader';
 import Button from '@/components/ui/Button';
 import EmptyState from '@/components/ui/EmptyState';
@@ -10,7 +10,7 @@ import ServicesTable from './ServicesTable';
 import ServiceDetailsDrawer from './ServiceDetailsDrawer';
 import ServiceFormDrawer from './ServiceFormDrawer';
 import DisableServiceModal from './DisableServiceModal';
-import { getServices, addService, updateService, toggleServiceActive } from '@/lib/mock-services';
+import { getServices, createService, updateService, toggleServiceActive } from '@/lib/data/services';
 import type { ServiceItem } from '@/types/services';
 import type { ServiceFormData } from './ServiceFormDrawer';
 import { Plus, Wrench } from 'lucide-react';
@@ -19,14 +19,14 @@ const PAGE_SIZE = 10;
 
 export default function ServicesPageShell() {
   const { toast } = useToast();
-  const [services, setServices] = useState<ServiceItem[]>(getServices);
+  const [services, setServices] = useState<ServiceItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('all');
   const [posVisibility, setPosVisibility] = useState('all');
   const [category, setCategory] = useState('all');
   const [page, setPage] = useState(1);
 
-  // Drawer / Modal state
   const [selectedService, setSelectedService] = useState<ServiceItem | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [formOpen, setFormOpen] = useState(false);
@@ -35,8 +35,18 @@ export default function ServicesPageShell() {
   const [toggleEnable, setToggleEnable] = useState(false);
   const [disableModalOpen, setDisableModalOpen] = useState(false);
 
-  const refreshServices = useCallback(() => {
-    setServices([...getServices()]);
+  const loadServices = useCallback(async () => {
+    setLoading(true);
+    const data = await getServices();
+    setServices(data);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    getServices().then((data) => {
+      setServices(data);
+      setLoading(false);
+    });
   }, []);
 
   const filtered = useMemo(() => {
@@ -96,33 +106,41 @@ export default function ServicesPageShell() {
     setDisableModalOpen(true);
   }, []);
 
-  const handleConfirmToggle = useCallback(() => {
+  const handleConfirmToggle = useCallback(async () => {
     if (!toggleTarget) return;
-    toggleServiceActive(toggleTarget.id, toggleEnable);
-    refreshServices();
+    const result = await toggleServiceActive(toggleTarget.id, toggleEnable);
+    if (result) {
+      await loadServices();
+      toast('success', toggleEnable ? 'تم تفعيل الخدمة بنجاح' : 'تم تعطيل الخدمة بنجاح');
+    } else {
+      toast('error', 'حدث خطأ أثناء تحديث الخدمة');
+    }
     setDisableModalOpen(false);
     setToggleTarget(null);
-    toast('success', toggleEnable ? 'تم تفعيل الخدمة بنجاح' : 'تم تعطيل الخدمة بنجاح');
-  }, [toggleTarget, toggleEnable, refreshServices, toast]);
+  }, [toggleTarget, toggleEnable, loadServices, toast]);
 
-  const handleSaveService = useCallback((data: ServiceFormData) => {
+  const handleSaveService = useCallback(async (data: ServiceFormData) => {
     if (editService) {
-      const updated = updateService(editService.id, data);
+      const updated = await updateService(editService.id, data as unknown as Record<string, unknown>);
       if (updated) {
-        refreshServices();
+        await loadServices();
         setFormOpen(false);
         setEditService(null);
         toast('success', 'تم تحديث الخدمة بنجاح');
+      } else {
+        toast('error', 'حدث خطأ أثناء تحديث الخدمة');
       }
     } else {
-      const created = addService(data);
+      const created = await createService(data as unknown as Record<string, unknown>);
       if (created) {
-        refreshServices();
+        await loadServices();
         setFormOpen(false);
         toast('success', 'تم إضافة الخدمة بنجاح');
+      } else {
+        toast('error', 'حدث خطأ أثناء إضافة الخدمة');
       }
     }
-  }, [editService, refreshServices, toast]);
+  }, [editService, loadServices, toast]);
 
   const handleCloseForm = useCallback(() => {
     setFormOpen(false);
@@ -141,40 +159,61 @@ export default function ServicesPageShell() {
         }
       />
 
-      <ServicesSummaryCards data={summary} />
-
-      <div className="bg-bg-surface border border-border-default rounded-card">
-        <div className="p-4 pb-0">
-          <ServicesFilters
-            search={search}
-            status={status}
-            posVisibility={posVisibility}
-            category={category}
-            onSearchChange={(v) => { setSearch(v); setPage(1); }}
-            onStatusChange={(v) => { setStatus(v); setPage(1); }}
-            onPosVisibilityChange={(v) => { setPosVisibility(v); setPage(1); }}
-            onCategoryChange={(v) => { setCategory(v); setPage(1); }}
-          />
+      {loading ? (
+        <div className="flex items-center justify-center py-20">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500" />
         </div>
+      ) : (
+        <>
+          <ServicesSummaryCards data={summary} />
 
-        {filtered.length === 0 ? (
-          <EmptyState
-            icon={<Wrench className="h-16 w-16" />}
-            title="لا توجد خدمات"
-            description="لا توجد خدمات تطابق معايير البحث"
-          />
-        ) : (
-          <ServicesTable
-            services={paginated.items}
-            page={page}
-            totalPages={paginated.totalPages}
-            onPageChange={setPage}
-            onView={handleView}
-            onEdit={handleEdit}
-            onToggle={handleToggle}
-          />
-        )}
-      </div>
+          {services.length === 0 ? (
+            <EmptyState
+              icon={<Wrench className="h-16 w-16" />}
+              title="لا توجد خدمات بعد"
+              description="أضف خدمتك الأولى لبدء استخدام نقطة البيع"
+              action={
+                <Button icon={<Plus className="h-4 w-4" />} onClick={handleAdd}>
+                  إضافة خدمة
+                </Button>
+              }
+            />
+          ) : (
+            <div className="bg-bg-surface border border-border-default rounded-card">
+              <div className="p-4 pb-0">
+                <ServicesFilters
+                  search={search}
+                  status={status}
+                  posVisibility={posVisibility}
+                  category={category}
+                  onSearchChange={(v) => { setSearch(v); setPage(1); }}
+                  onStatusChange={(v) => { setStatus(v); setPage(1); }}
+                  onPosVisibilityChange={(v) => { setPosVisibility(v); setPage(1); }}
+                  onCategoryChange={(v) => { setCategory(v); setPage(1); }}
+                />
+              </div>
+
+              {filtered.length === 0 ? (
+                <EmptyState
+                  icon={<Wrench className="h-16 w-16" />}
+                  title="لا توجد خدمات"
+                  description="لا توجد خدمات تطابق معايير البحث"
+                />
+              ) : (
+                <ServicesTable
+                  services={paginated.items}
+                  page={page}
+                  totalPages={paginated.totalPages}
+                  onPageChange={setPage}
+                  onView={handleView}
+                  onEdit={handleEdit}
+                  onToggle={handleToggle}
+                />
+              )}
+            </div>
+          )}
+        </>
+      )}
 
       <ServiceDetailsDrawer
         open={detailsOpen}

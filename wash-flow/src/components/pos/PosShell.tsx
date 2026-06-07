@@ -7,10 +7,11 @@ import BottomSheet from '@/components/ui/BottomSheet';
 import { useToast } from '@/components/ui/Toast';
 import {
   addToCart, updateCartQuantity, removeFromCart,
-  createMockOrder, calculateCartTotals,
+  calculateCartTotals,
   serviceCategories,
   getServiceIcon,
 } from '@/lib/mock-pos';
+import { createPOSOrder } from '@/lib/data/orders';
 import { getPOSWashServices } from '@/lib/data/services';
 import { Money } from '@/lib/format';
 import {
@@ -92,7 +93,7 @@ export default function PosShell() {
     setCustomerSearchPhone('');
   }, []);
 
-  const handleCompleteOrder = useCallback(() => {
+  const handleCompleteOrder = useCallback(async () => {
     if (cartItems.length === 0) return;
     if (!paymentMethod) return;
 
@@ -102,21 +103,54 @@ export default function PosShell() {
 
     setSubmitting(true);
 
-    setTimeout(() => {
-      const orderCustomerInfo: PosCustomerInfo = {
-        ...customerInfo,
-        customerId: selectedCustomer?.id,
-        phone: selectedCustomer?.phone || customerInfo.phone,
-        name: selectedCustomer?.name || customerInfo.name,
-      };
-      const order = createMockOrder(cartItems, paymentMethod, orderCustomerInfo, mixedPayment);
-      setCompletedOrder(order);
+    const cashAmount = paymentMethod === 'cash' ? cartTotals.total : (paymentMethod === 'mixed' ? (mixedPayment.cash || 0) : 0);
+    const networkAmount = paymentMethod === 'network' ? cartTotals.total : (paymentMethod === 'mixed' ? (mixedPayment.network || 0) : 0);
 
+    const result = await createPOSOrder(
+      cartItems,
+      selectedCustomer?.id || null,
+      selectedCustomer?.name || customerInfo.name || null,
+      selectedCustomer?.phone || customerInfo.phone || null,
+      paymentMethod,
+      cashAmount,
+      networkAmount,
+      cartTotals.total,
+      cartTotals.subtotal,
+    );
+
+    if (!result) {
+      toast('error', 'فشل حفظ الطلب. تحقق من اتصال قاعدة البيانات');
       setSubmitting(false);
-      setShowSuccess(true);
-      setShowCartSheet(false);
-    }, 800);
-  }, [cartItems, paymentMethod, mixedPayment, customerInfo, cartTotals.total, selectedCustomer]);
+      return;
+    }
+
+    const order: PosOrder = {
+      id: result.orderId,
+      orderNumber: result.orderNumber,
+      invoiceNumber: result.invoiceNumber,
+      items: cartItems.map(i => ({ ...i })),
+      customer: selectedCustomer
+        ? { customerId: selectedCustomer.id, name: selectedCustomer.name, phone: selectedCustomer.phone }
+        : customerInfo.name ? { ...customerInfo } : undefined,
+      subtotal: cartTotals.subtotal,
+      vatAmount: cartTotals.vatAmount,
+      vatRate: cartTotals.vatRate,
+      total: cartTotals.total,
+      paymentMethod,
+      mixedPayment: paymentMethod === 'mixed' ? { ...mixedPayment } : undefined,
+      cashAmount,
+      networkAmount,
+      status: 'completed',
+      cashierName: result.cashierName,
+      cashierRole: result.cashierRole,
+      createdAt: new Date().toISOString(),
+    };
+    setCompletedOrder(order);
+
+    setSubmitting(false);
+    setShowSuccess(true);
+    setShowCartSheet(false);
+  }, [cartItems, paymentMethod, mixedPayment, customerInfo, cartTotals, selectedCustomer, toast]);
 
   const handleNewOrder = useCallback(() => {
     setShowSuccess(false);

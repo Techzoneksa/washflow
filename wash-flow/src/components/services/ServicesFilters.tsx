@@ -5,7 +5,7 @@ import Select from '@/components/ui/Select';
 import BottomSheet from '@/components/ui/BottomSheet';
 import Button from '@/components/ui/Button';
 import { Search, SlidersHorizontal, X } from 'lucide-react';
-import { categoryLabels } from '@/lib/mock-services';
+import { categoryLabels } from '@/lib/data/services';
 
 interface ServicesFiltersProps {
   search: string;

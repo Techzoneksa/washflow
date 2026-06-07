@@ -50,7 +50,7 @@ export default function LayoutPreviewPage() {
                 <div className="grid grid-cols-2 gap-3">
                   <div className="bg-bg-surface border border-border-default rounded-card p-4">
                     <p className="text-xs text-text-secondary">المبيعات</p>
-                    <p className="text-lg font-bold text-text-primary">1,250 <img src="/SAR.svg" alt="SAR" className="inline-block h-3.5 w-3.5" /></p>
+                    <p className="text-lg font-bold text-text-primary">1,250 <img src="/SR.svg" alt="SAR" className="inline-block h-3.5 w-3.5" /></p>
                   </div>
                   <div className="bg-bg-surface border border-border-default rounded-card p-4">
                     <p className="text-xs text-text-secondary">الطلبات</p>
@@ -93,7 +93,7 @@ export default function LayoutPreviewPage() {
                     {['مبيعات', 'طلبات', 'مصاريف', 'صافي'].map((label, idx) => (
                       <div key={label} className="bg-bg-surface border border-border-default rounded-card p-4">
                         <p className="text-xs text-text-secondary">{label}</p>
-                        <p className="text-lg font-bold text-text-primary">{([1200, 38, 320, 930])[idx]} <img src="/SAR.svg" alt="SAR" className="inline-block h-3.5 w-3.5" /></p>
+                        <p className="text-lg font-bold text-text-primary">{([1200, 38, 320, 930])[idx]} <img src="/SR.svg" alt="SAR" className="inline-block h-3.5 w-3.5" /></p>
                       </div>
                     ))}
                   </div>
@@ -106,7 +106,7 @@ export default function LayoutPreviewPage() {
                       {[1, 2, 3, 4].map((i) => (
                         <div key={i} className="flex items-center justify-between py-2 border-b border-border-default last:border-0">
                           <span className="text-sm text-text-primary">طلب #{100 + i}</span>
-                          <span className="text-sm font-medium text-text-primary">{i * 25} <img src="/SAR.svg" alt="SAR" className="inline-block h-3.5 w-3.5" /></span>
+                          <span className="text-sm font-medium text-text-primary">{i * 25} <img src="/SR.svg" alt="SAR" className="inline-block h-3.5 w-3.5" /></span>
                           <Badge variant={i % 2 === 0 ? 'success' : 'info'} size="sm">
                             {i % 2 === 0 ? 'مكتمل' : 'جديد'}
                           </Badge>
@@ -167,7 +167,7 @@ export default function LayoutPreviewPage() {
                           {[1, 2, 3, 4, 5].map((i) => (
                             <tr key={i} className="border-b border-border-default last:border-0">
                               <td className="py-2.5 text-text-primary">#ORD-{100 + i}</td>
-                              <td className="py-2.5 text-text-primary font-medium">{i * 25} <img src="/SAR.svg" alt="SAR" className="inline-block h-3.5 w-3.5" /></td>
+                              <td className="py-2.5 text-text-primary font-medium">{i * 25} <img src="/SR.svg" alt="SAR" className="inline-block h-3.5 w-3.5" /></td>
                               <td className="py-2.5">
                                 <Badge variant={i % 2 === 0 ? 'success' : 'info'} size="sm">
                                   {i % 2 === 0 ? 'مكتمل' : 'جديد'}
@@ -189,7 +189,7 @@ export default function LayoutPreviewPage() {
                           <div key={svc.name} className="flex items-center justify-between">
                             <span className="text-sm text-text-primary">{svc.name}</span>
                             <span className="text-xs text-text-secondary">{svc.count} طلب</span>
-                            <span className="text-sm font-medium text-text-primary">{svc.revenue} <img src="/SAR.svg" alt="SAR" className="inline-block h-3.5 w-3.5" /></span>
+                            <span className="text-sm font-medium text-text-primary">{svc.revenue} <img src="/SR.svg" alt="SAR" className="inline-block h-3.5 w-3.5" /></span>
                           </div>
                         ))}
                       </div>

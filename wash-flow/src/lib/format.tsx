@@ -36,8 +36,8 @@ export function Money({ value, className, iconClassName }: MoneyProps) {
     <span className={`inline-flex items-center gap-1 ${className ?? ""}`}>
       <span>{formatMoneyAmount(value)}</span>
       <img
-        src="/SAR.svg"
-        alt="SAR"
+        src="/SR.svg"
+        alt="SR"
         className={`inline-block h-3.5 w-3.5 ${iconClassName ?? ""}`}
       />
     </span>

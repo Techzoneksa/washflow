@@ -21,11 +21,9 @@ const statusOptions = [
 
 const paymentOptions = [
   { label: 'الكل', value: 'all' },
-  { label: 'نقدي', value: 'cash' },
-  { label: 'شبكة / مدى', value: 'mada' },
-  { label: 'بطاقة', value: 'card' },
-  { label: 'تحويل', value: 'transfer' },
-  { label: 'دفع مختلط', value: 'mixed' },
+  { label: 'كاش', value: 'cash' },
+  { label: 'شبكة', value: 'network' },
+  { label: 'تخصيص', value: 'mixed' },
 ];
 
 export default function OrdersFilters(props: OrdersFiltersProps) {

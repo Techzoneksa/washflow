@@ -1,9 +1,10 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Card, { CardTitle, CardHeader } from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import { Money } from '@/lib/format';
-import { getTodayOrders, getPaymentMethodLabel } from '@/lib/mock-pos';
+import { getTodayOrders } from '@/lib/data/orders';
+import { getPaymentMethodLabel } from '@/lib/payment-labels';
 import type { TodayOrderSummary } from '@/types/pos';
 import { Clock, RefreshCw, Eye, Printer } from 'lucide-react';
 
@@ -20,14 +21,22 @@ const statusLabel: Record<string, string> = {
 };
 
 export default function TodayOrdersPanel() {
-  const [orders, setOrders] = useState<TodayOrderSummary[]>(getTodayOrders());
+  const [orders, setOrders] = useState<TodayOrderSummary[]>([]);
+
+  const fetchOrders = () => {
+    getTodayOrders().then(setOrders);
+  };
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
 
   return (
     <Card padding="md">
       <CardHeader>
         <CardTitle>آخر الطلبات</CardTitle>
         <button
-          onClick={() => setOrders(getTodayOrders())}
+          onClick={fetchOrders}
           className="p-1.5 rounded-md hover:bg-bg-hover text-text-secondary"
         >
           <RefreshCw className="h-4 w-4" />

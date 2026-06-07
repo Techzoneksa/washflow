@@ -73,6 +73,16 @@ export async function isAuthenticated(): Promise<boolean> {
   return !!user;
 }
 
+export async function resetPasswordForEmail(email: string) {
+  const client = getSupabase();
+  if (!client) return { error: new Error('Supabase not configured') };
+  const redirectTo = typeof window !== 'undefined' ? `${window.location.origin}/reset-password/` : undefined;
+  const { error } = await client.auth.resetPasswordForEmail(email, {
+    redirectTo,
+  });
+  return { error };
+}
+
 export function onAuthStateChange(callback: (user: User | null) => void) {
   const client = getSupabase();
   if (!client) return { data: { unsubscribe: () => {} } };

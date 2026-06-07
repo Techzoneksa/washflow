@@ -1,5 +1,5 @@
 'use client';
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import PageHeader from '@/components/layout/PageHeader';
 import InvoicesSummaryCards from './SummaryCards';
 import InvoicesFilters from './InvoicesFilters';
@@ -9,11 +9,13 @@ import Table, { Pagination } from '@/components/ui/Table';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import EmptyState from '@/components/ui/EmptyState';
+import Spinner from '@/components/ui/Spinner';
 import { useToast } from '@/components/ui/Toast';
 import { formatDate } from '@/lib/utils';
 import { Money } from '@/lib/format';
-import { mockInvoices, getInvoicesSummary, filterInvoices, paginateInvoices } from '@/lib/mock-invoices';
-import type { PosOrder } from '@/types/pos';
+import { getInvoices, getInvoicesSummary, filterInvoices, paginateInvoices } from '@/lib/data/invoices';
+import { getPaymentMethodLabel } from '@/lib/payment-labels';
+import type { Invoice } from '@/types/invoices';
 import type { Column } from '@/components/ui/Table';
 import { FileText, Eye } from 'lucide-react';
 
@@ -27,27 +29,29 @@ function getStatusBadge(status: string) {
   }
 }
 
-function getPaymentMethodLabelSafe(method: string): string {
-  const labels: Record<string, string> = {
-    cash: 'نقدي', mada: 'شبكة / مدى', card: 'بطاقة', transfer: 'تحويل', mixed: 'دفع مختلط',
-  };
-  return labels[method] || method;
-}
-
 export default function InvoicesPageShell() {
   const { toast } = useToast();
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('all');
   const [paymentMethod, setPaymentMethod] = useState('all');
   const [page, setPage] = useState(1);
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const [selectedInvoice, setSelectedInvoice] = useState<PosOrder | null>(null);
+  useEffect(() => {
+    getInvoices().then((data) => {
+      setInvoices(data);
+      setLoading(false);
+    });
+  }, []);
+
+  const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
 
   const filtered = useMemo(
-    () => filterInvoices(mockInvoices, { search, status, paymentMethod }),
-    [search, status, paymentMethod],
+    () => filterInvoices(invoices, { search, status, paymentMethod }),
+    [invoices, search, status, paymentMethod],
   );
 
   const paginated = useMemo(
@@ -57,12 +61,12 @@ export default function InvoicesPageShell() {
 
   const summary = useMemo(() => getInvoicesSummary(filtered), [filtered]);
 
-  const handleRowClick = useCallback((invoice: PosOrder) => {
+  const handleRowClick = useCallback((invoice: Invoice) => {
     setSelectedInvoice(invoice);
     setDrawerOpen(true);
   }, []);
 
-  const handlePreview = useCallback((invoice: PosOrder) => {
+  const handlePreview = useCallback((invoice: Invoice) => {
     setSelectedInvoice(invoice);
     setPreviewOpen(true);
   }, []);
@@ -71,7 +75,18 @@ export default function InvoicesPageShell() {
     toast('success', 'تم إرسال أمر الطباعة تجريبيًا');
   }, [toast]);
 
-  const columns: Column<PosOrder>[] = [
+  if (loading) {
+    return (
+      <>
+        <PageHeader title="الفواتير" description="عرض وإدارة جميع الفواتير" />
+        <div className="flex items-center justify-center py-20">
+          <Spinner />
+        </div>
+      </>
+    );
+  }
+
+  const columns: Column<Invoice>[] = [
     {
       key: 'invoiceNumber',
       header: 'رقم الفاتورة',
@@ -179,7 +194,7 @@ export default function InvoicesPageShell() {
                     <Money value={inv.total} className="font-bold tabular-nums" />
                   </div>
                   <div className="flex items-center justify-between text-xs text-text-secondary">
-                    <span>{getPaymentMethodLabelSafe(inv.paymentMethod)}</span>
+                    <span>{getPaymentMethodLabel(inv.paymentMethod)}</span>
                     <span>{formatDate(inv.createdAt)}</span>
                   </div>
                   <div className="flex gap-2 pt-1">

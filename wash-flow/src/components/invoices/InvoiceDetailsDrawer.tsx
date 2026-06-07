@@ -6,15 +6,15 @@ import Button from '@/components/ui/Button';
 import InvoicePreviewModal from '@/components/pos/InvoicePreviewModal';
 import { formatDate, formatTime } from '@/lib/utils';
 import { Money } from '@/lib/format';
-import { getPaymentMethodLabel } from '@/lib/mock-pos';
-import type { PosOrder } from '@/types/pos';
+import { getPaymentMethodLabel } from '@/lib/payment-labels';
+import type { Invoice } from '@/types/invoices';
 import { Eye, Printer } from 'lucide-react';
 import { useToast } from '@/components/ui/Toast';
 
 interface InvoiceDetailsDrawerProps {
   open: boolean;
   onClose: () => void;
-  invoice: PosOrder | null;
+  invoice: Invoice | null;
 }
 
 function getStatusBadge(status: string) {

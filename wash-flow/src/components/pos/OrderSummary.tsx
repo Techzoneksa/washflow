@@ -1,9 +1,12 @@
 'use client';
-import type { TaxCalculation } from '@/lib/mock-pos';
 import { Money } from '@/lib/format';
 
+interface TaxSummary {
+  total: number;
+}
+
 interface OrderSummaryProps {
-  tax: TaxCalculation;
+  tax: TaxSummary;
 }
 
 export default function OrderSummary({ tax }: OrderSummaryProps) {

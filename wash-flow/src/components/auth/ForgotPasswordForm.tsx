@@ -3,6 +3,8 @@ import { useState } from 'react';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import { ArrowRight, Mail, CheckCircle2 } from 'lucide-react';
+import { resetPasswordForEmail } from '@/lib/supabase/auth';
+import { isSupabaseConfigured } from '@/lib/supabase/client';
 
 export default function ForgotPasswordForm() {
   const [email, setEmail] = useState('');
@@ -14,7 +16,15 @@ export default function ForgotPasswordForm() {
     e.preventDefault();
     if (!email.trim()) { setError('البريد الإلكتروني مطلوب'); return; }
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 1000));
+    setError('');
+    if (isSupabaseConfigured()) {
+      const { error } = await resetPasswordForEmail(email);
+      if (error) {
+        setLoading(false);
+        setError(error.message || 'حدث خطأ أثناء الإرسال');
+        return;
+      }
+    }
     setLoading(false);
     setSent(true);
   };

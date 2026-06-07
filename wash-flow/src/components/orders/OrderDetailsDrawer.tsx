@@ -4,7 +4,7 @@ import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import { formatDate, formatTime } from '@/lib/utils';
 import { Money } from '@/lib/format';
-import { getPaymentMethodLabel } from '@/lib/mock-pos';
+import { getPaymentMethodLabel } from '@/lib/payment-labels';
 import type { OrderHistoryItem } from '@/types/orders';
 import type { UserRole } from '@/types';
 import { XCircle, RotateCcw, User, Phone, CreditCard } from 'lucide-react';

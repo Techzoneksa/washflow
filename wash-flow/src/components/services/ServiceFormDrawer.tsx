@@ -6,7 +6,7 @@ import Select from '@/components/ui/Select';
 import Textarea from '@/components/ui/Textarea';
 import Button from '@/components/ui/Button';
 import type { ServiceItem, ServiceCategory } from '@/types/services';
-import { serviceCategories } from '@/lib/mock-services';
+import { serviceCategories } from '@/lib/data/services';
 import { Save } from 'lucide-react';
 
 interface ServiceFormDrawerProps {
@@ -26,7 +26,6 @@ export interface ServiceFormData {
   icon?: string;
   isActive: boolean;
   showInPOS: boolean;
-  isTaxable: boolean;
   sortOrder: number;
 }
 
@@ -40,7 +39,6 @@ const defaultForm: ServiceFormData = {
   icon: 'car',
   isActive: true,
   showInPOS: true,
-  isTaxable: true,
   sortOrder: 0,
 };
 
@@ -56,7 +54,6 @@ function buildForm(service?: ServiceItem | null): ServiceFormData {
       icon: service.icon || 'car',
       isActive: service.isActive,
       showInPOS: service.showInPOS,
-      isTaxable: service.isTaxable,
       sortOrder: service.sortOrder,
     };
   }

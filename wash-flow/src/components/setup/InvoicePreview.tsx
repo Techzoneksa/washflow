@@ -91,7 +91,7 @@ export default function InvoicePreview({
         <div className="p-3 border-b border-border-default text-[11px] space-y-0.5">
           <div className="flex justify-between text-sm font-bold pt-1 border-t border-border-default">
             <span className="text-text-primary">الإجمالي:</span>
-            <span className="text-primary-600">{total.toFixed(2)} <img src="/SAR.svg" alt="SAR" className="inline-block h-3.5 w-3.5" /></span>
+            <span className="text-primary-600">{total.toFixed(2)} <img src="/SR.svg" alt="SAR" className="inline-block h-3.5 w-3.5" /></span>
           </div>
         </div>
 

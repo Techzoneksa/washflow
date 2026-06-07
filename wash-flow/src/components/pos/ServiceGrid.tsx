@@ -1,7 +1,7 @@
 'use client';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { serviceCategories } from '@/lib/mock-pos';
-import { getPOSWashServices } from '@/lib/mock-services';
+import { getPOSWashServices } from '@/lib/data/services';
 import type { WashService } from '@/types/pos';
 import ServiceCard from './ServiceCard';
 import { Search, X } from 'lucide-react';
@@ -19,11 +19,20 @@ const columnClasses = {
 };
 
 export default function ServiceGrid({ cartServiceIds, onAddService, breakpoint = 'desktop' }: ServiceGridProps) {
+  const [services, setServices] = useState<WashService[]>([]);
+  const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState('الكل');
   const [searchQuery, setSearchQuery] = useState('');
 
+  useEffect(() => {
+    getPOSWashServices().then((data) => {
+      setServices(data);
+      setLoading(false);
+    });
+  }, []);
+
   const filteredServices = useMemo(() => {
-    let result = getPOSWashServices();
+    let result = services;
     if (activeCategory !== 'الكل') {
       result = result.filter(s => s.category === activeCategory);
     }
@@ -32,7 +41,25 @@ export default function ServiceGrid({ cartServiceIds, onAddService, breakpoint =
       result = result.filter(s => s.nameAr.includes(q) || s.category.includes(q));
     }
     return result;
-  }, [activeCategory, searchQuery]);
+  }, [services, activeCategory, searchQuery]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500" />
+      </div>
+    );
+  }
+
+  if (services.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-center">
+        <span className="text-4xl mb-3">🧼</span>
+        <p className="text-sm font-medium text-text-secondary">لا توجد خدمات متاحة في نقطة البيع</p>
+        <p className="text-xs text-text-disabled mt-1">قم بإضافة خدمات من صفحة الإدارة</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full">

@@ -1,5 +1,5 @@
 'use client';
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import PageHeader from '@/components/layout/PageHeader';
 import OrdersSummaryCards from './SummaryCards';
 import OrdersFilters from './OrdersFilters';
@@ -13,7 +13,8 @@ import EmptyState from '@/components/ui/EmptyState';
 import { useToast } from '@/components/ui/Toast';
 import { formatDate, formatTime } from '@/lib/utils';
 import { Money } from '@/lib/format';
-import { mockOrderHistory, getOrdersSummary, filterOrders, paginateOrders } from '@/lib/mock-orders';
+import { getOrders, getOrdersSummary, filterOrders, paginateOrders, cancelOrder, refundOrder } from '@/lib/data/orders';
+import { getPaymentMethodLabel } from '@/lib/payment-labels';
 import type { OrderHistoryItem } from '@/types/orders';
 import type { UserRole } from '@/types';
 import type { Column } from '@/components/ui/Table';
@@ -34,20 +35,13 @@ function getStatusBadge(status: string) {
   }
 }
 
-function getPaymentMethodLabelSafe(method: string): string {
-  const labels: Record<string, string> = {
-    cash: 'نقدي', mada: 'شبكة / مدى', card: 'بطاقة', transfer: 'تحويل', mixed: 'دفع مختلط',
-  };
-  return labels[method] || method;
-}
-
 export default function OrdersPageShell({ userRole }: OrdersPageShellProps) {
   const { toast } = useToast();
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('all');
   const [paymentMethod, setPaymentMethod] = useState('all');
   const [page, setPage] = useState(1);
-  const [orders, setOrders] = useState<OrderHistoryItem[]>(mockOrderHistory);
+  const [orders, setOrders] = useState<OrderHistoryItem[]>([]);
 
   // Drawer / Modal state
   const [selectedOrder, setSelectedOrder] = useState<OrderHistoryItem | null>(null);
@@ -56,6 +50,12 @@ export default function OrdersPageShell({ userRole }: OrdersPageShellProps) {
   const [refundModalOpen, setRefundModalOpen] = useState(false);
   const [cancelTarget, setCancelTarget] = useState<OrderHistoryItem | null>(null);
   const [refundTarget, setRefundTarget] = useState<OrderHistoryItem | null>(null);
+
+  useEffect(() => {
+    getOrders().then((data) => {
+      setOrders(data);
+    });
+  }, []);
 
   const canAct = userRole === 'owner' || userRole === 'manager';
 
@@ -86,51 +86,38 @@ export default function OrdersPageShell({ userRole }: OrdersPageShellProps) {
     setRefundModalOpen(true);
   }, []);
 
-  const handleConfirmCancel = useCallback((orderId: string, reason: string) => {
-    const session = typeof window !== 'undefined' ? JSON.parse(sessionStorage.getItem('wf_session') || 'null') : null;
-    setOrders((prev) =>
-      prev.map((o) =>
-        o.id === orderId
-          ? {
-              ...o,
-              status: 'cancelled' as const,
-              cancelledData: {
-                reason,
-                cancelledBy: session?.user?.name || 'مالك النظام',
-                cancelledAt: new Date().toISOString(),
-              },
-            }
-          : o,
-      ),
-    );
+  const handleConfirmCancel = useCallback(async (orderId: string, reason: string) => {
+    const ok = await cancelOrder(orderId, reason);
+    if (ok) {
+      setOrders((prev) =>
+        prev.map((o) =>
+          o.id === orderId ? { ...o, status: 'cancelled' as const, cancelledData: { reason, cancelledBy: '', cancelledAt: new Date().toISOString() } } : o,
+        ),
+      );
+      toast('success', 'تم إلغاء الطلب بنجاح');
+    } else {
+      toast('error', 'فشل إلغاء الطلب');
+    }
     setCancelModalOpen(false);
     setCancelTarget(null);
     setDrawerOpen(false);
-    toast('success', 'تم إلغاء الطلب بنجاح');
   }, [toast]);
 
-  const handleConfirmRefund = useCallback((orderId: string, reason: string, amount: number) => {
-    const session = typeof window !== 'undefined' ? JSON.parse(sessionStorage.getItem('wf_session') || 'null') : null;
-    setOrders((prev) =>
-      prev.map((o) =>
-        o.id === orderId
-          ? {
-              ...o,
-              status: 'refunded' as const,
-              refundedData: {
-                reason,
-                refundAmount: amount,
-                refundedBy: session?.user?.name || 'مالك النظام',
-                refundedAt: new Date().toISOString(),
-              },
-            }
-          : o,
-      ),
-    );
+  const handleConfirmRefund = useCallback(async (orderId: string, reason: string, amount: number) => {
+    const ok = await refundOrder(orderId, reason, amount);
+    if (ok) {
+      setOrders((prev) =>
+        prev.map((o) =>
+          o.id === orderId ? { ...o, status: 'refunded' as const, refundedData: { reason, refundAmount: amount, refundedBy: '', refundedAt: new Date().toISOString() } } : o,
+        ),
+      );
+      toast('success', 'تم استرداد الطلب بنجاح');
+    } else {
+      toast('error', 'فشل استرداد الطلب');
+    }
     setRefundModalOpen(false);
     setRefundTarget(null);
     setDrawerOpen(false);
-    toast('success', 'تم استرداد الطلب بنجاح');
   }, [toast]);
 
   const columns: Column<OrderHistoryItem>[] = [
@@ -159,7 +146,7 @@ export default function OrdersPageShell({ userRole }: OrdersPageShellProps) {
       key: 'paymentMethod',
       header: 'طريقة الدفع',
       hideOnMobile: true,
-      render: (order) => <span className="text-text-secondary">{getPaymentMethodLabelSafe(order.paymentMethod)}</span>,
+      render: (order) => <span className="text-text-secondary">{getPaymentMethodLabel(order.paymentMethod)}</span>,
     },
     {
       key: 'status',
@@ -257,7 +244,7 @@ export default function OrdersPageShell({ userRole }: OrdersPageShellProps) {
                     <Money value={order.total} className="font-bold tabular-nums" />
                   </div>
                   <div className="flex items-center justify-between text-xs text-text-secondary">
-                    <span>{getPaymentMethodLabelSafe(order.paymentMethod)}</span>
+                    <span>{getPaymentMethodLabel(order.paymentMethod)}</span>
                     <span>{formatDate(order.createdAt)}</span>
                   </div>
                   {canAct && order.status === 'completed' && (

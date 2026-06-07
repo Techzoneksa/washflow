@@ -2,18 +2,22 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import LoginForm from '@/components/auth/LoginForm';
+import CashierLoginForm from '@/components/auth/CashierLoginForm';
 import { getCurrentProfile, getCurrentUser } from '@/lib/supabase/auth';
+import { getStoredCashierSession } from '@/lib/data/cashier-session';
 import { isSupabaseConfigured } from '@/lib/supabase/client';
 import type { UserRole } from '@/types';
-import { Droplets } from 'lucide-react';
+import { Droplets, Monitor } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
   const [checkingSession, setCheckingSession] = useState(true);
+  const [tab, setTab] = useState<'admin' | 'cashier'>('admin');
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const checkSession = async () => {
+      // Check existing admin session
       if (isSupabaseConfigured()) {
         const user = await getCurrentUser();
         if (user) {
@@ -25,14 +29,24 @@ export default function LoginPage() {
           }
         }
       }
+      // Check existing cashier session
+      const cashierSession = getStoredCashierSession();
+      if (cashierSession && new Date(cashierSession.expiresAt) > new Date()) {
+        router.replace('/pos');
+        return;
+      }
       setCheckingSession(false);
     };
     checkSession();
   }, [router]);
 
-  const handleSuccess = async (role: UserRole) => {
+  const handleAdminSuccess = async (role: UserRole) => {
     if (role === 'cashier') router.push('/pos');
     else router.push('/dashboard');
+  };
+
+  const handleCashierSuccess = () => {
+    router.push('/pos');
   };
 
   if (checkingSession) {
@@ -54,9 +68,41 @@ export default function LoginPage() {
           <p className="text-sm text-text-secondary mt-1">نظام إدارة غسيل السيارات</p>
         </div>
         <div className="bg-bg-surface border border-border-default rounded-2xl shadow-card p-6">
-          <h2 className="text-lg font-semibold text-text-primary mb-1">تسجيل الدخول</h2>
-          <p className="text-sm text-text-secondary mb-6">أدخل بيانات الدخول للوصول للنظام</p>
-          <LoginForm onSuccess={handleSuccess} />
+          {/* Tabs */}
+          <div className="flex gap-1 mb-6 bg-neutral-100 rounded-xl p-1">
+            <button
+              onClick={() => setTab('admin')}
+              className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                tab === 'admin' ? 'bg-white text-text-primary shadow-sm' : 'text-text-secondary hover:text-text-primary'
+              }`}
+            >
+              <Droplets className="h-4 w-4" />
+              دخول الإدارة
+            </button>
+            <button
+              onClick={() => setTab('cashier')}
+              className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                tab === 'cashier' ? 'bg-white text-text-primary shadow-sm' : 'text-text-secondary hover:text-text-primary'
+              }`}
+            >
+              <Monitor className="h-4 w-4" />
+              دخول الكاشير
+            </button>
+          </div>
+
+          {tab === 'admin' ? (
+            <>
+              <h2 className="text-lg font-semibold text-text-primary mb-1">تسجيل الدخول</h2>
+              <p className="text-sm text-text-secondary mb-6">أدخل بيانات الدخول للوصول للنظام</p>
+              <LoginForm onSuccess={handleAdminSuccess} />
+            </>
+          ) : (
+            <>
+              <h2 className="text-lg font-semibold text-text-primary mb-1">دخول الكاشير</h2>
+              <p className="text-sm text-text-secondary mb-6">أدخل بيانات جهاز POS للدخول</p>
+              <CashierLoginForm onSuccess={handleCashierSuccess} />
+            </>
+          )}
         </div>
       </div>
     </div>

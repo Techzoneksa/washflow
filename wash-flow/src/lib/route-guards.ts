@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getCurrentUser, getCurrentProfile } from '@/lib/supabase/auth';
 import { isSupabaseConfigured } from '@/lib/supabase/client';
+import { getStoredCashierSession } from '@/lib/data/cashier-session';
 import type { UserRole } from '@/types';
 
 interface AuthGuardResult {
@@ -10,7 +11,20 @@ interface AuthGuardResult {
   checking: boolean;
 }
 
+function checkCashierSession(): boolean {
+  const session = getStoredCashierSession();
+  return !!session && new Date(session.expiresAt) > new Date();
+}
+
 async function checkAuth(requiredRoles?: UserRole[]): Promise<{ authorized: boolean; redirect: string | null }> {
+  // Check cashier session first (for POS access)
+  if (checkCashierSession()) {
+    if (!requiredRoles || requiredRoles.includes('cashier' as UserRole)) {
+      return { authorized: true, redirect: null };
+    }
+    return { authorized: false, redirect: '/no-permission' };
+  }
+
   if (!isSupabaseConfigured()) {
     return { authorized: false, redirect: '/login' };
   }
@@ -58,6 +72,12 @@ export function useRedirectByRole() {
 
   useEffect(() => {
     const doRedirect = async () => {
+      // Check cashier session
+      if (checkCashierSession()) {
+        router.replace('/pos');
+        return;
+      }
+
       if (!isSupabaseConfigured()) {
         router.replace('/login');
         return;

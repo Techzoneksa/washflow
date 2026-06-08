@@ -42,3 +42,6 @@ next-env.d.ts
 
 # screenshots & test scripts
 screenshots/
+
+# local tooling
+.opencode/

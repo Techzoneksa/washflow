@@ -1,10 +1,10 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
 import BottomSheet from '@/components/ui/BottomSheet';
 import Button from '@/components/ui/Button';
-import { getSuppliers } from '@/lib/mock-suppliers';
+import { getSuppliers } from '@/lib/data/suppliers';
 import { Search, SlidersHorizontal, X } from 'lucide-react';
 
 interface PurchasesFiltersProps {
@@ -44,7 +44,11 @@ const dateOptions = [
 
 export default function PurchasesFilters(props: PurchasesFiltersProps) {
   const [sheetOpen, setSheetOpen] = useState(false);
-  const suppliers = getSuppliers();
+  const [suppliers, setSuppliers] = useState<{ id: string; name: string }[]>([]);
+
+  useEffect(() => {
+    getSuppliers().then((list) => setSuppliers(list));
+  }, []);
 
   const supplierOptions = [
     { label: 'الكل', value: 'all' },

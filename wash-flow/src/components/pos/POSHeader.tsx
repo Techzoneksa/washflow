@@ -1,9 +1,10 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { signOutUser } from '@/lib/supabase/auth';
-import { getCurrentProfile } from '@/lib/supabase/auth';
+import { signOutUser, getCurrentProfile } from '@/lib/supabase/auth';
 import { getCompanySettings, FALLBACK_COMPANY_NAME } from '@/lib/data/company-settings';
+import { getStoredCashierSession, clearCashierSession } from '@/lib/data/cashier-session';
+import { isSupabaseConfigured, getSupabase } from '@/lib/supabase/client';
 import { LogOut, Sun, Moon, XCircle, Bell } from 'lucide-react';
 import Modal from '@/components/ui/Modal';
 import Button from '@/components/ui/Button';
@@ -15,16 +16,20 @@ export default function POSHeader() {
   const [dark, setDark] = useState(false);
   const [showCloseDrawer, setShowCloseDrawer] = useState(false);
   const [companyName, setCompanyName] = useState('');
-  const [userName, setUserName] = useState('مستخدم');
+
+  const cashierSession = typeof window !== 'undefined' ? getStoredCashierSession() : null;
+  const [userName, setUserName] = useState(cashierSession?.cashierName || 'مستخدم');
 
   useEffect(() => {
     getCompanySettings().then((settings) => {
       setCompanyName(settings?.companyNameAr || FALLBACK_COMPANY_NAME);
     });
-    getCurrentProfile().then((profile) => {
-      if (profile) setUserName(profile.fullName);
-    });
-  }, []);
+    if (!cashierSession) {
+      getCurrentProfile().then((profile) => {
+        if (profile) setUserName(profile.fullName);
+      });
+    }
+  }, [cashierSession]);
 
   useEffect(() => {
     const update = () => {
@@ -38,8 +43,21 @@ export default function POSHeader() {
   }, []);
 
   const handleLogout = async () => {
-    await signOutUser();
-    router.push('/login');
+    if (cashierSession) {
+      try {
+        const client = getSupabase();
+        if (client && isSupabaseConfigured()) {
+          await client.rpc('revoke_cashier_session', { p_token: cashierSession.token });
+        }
+      } catch {
+        // Ignore errors on revoke
+      }
+      clearCashierSession();
+      router.push('/pos');
+    } else {
+      await signOutUser();
+      router.push('/login');
+    }
   };
 
   const handleCloseDrawer = () => {

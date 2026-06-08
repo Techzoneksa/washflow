@@ -17,12 +17,12 @@ function checkCashierSession(): boolean {
 }
 
 async function checkAuth(requiredRoles?: UserRole[]): Promise<{ authorized: boolean; redirect: string | null }> {
-  // Check cashier session first (for POS access)
+  // Cashier session exists but trying to access admin page → redirect to /pos
   if (checkCashierSession()) {
     if (!requiredRoles || requiredRoles.includes('cashier' as UserRole)) {
       return { authorized: true, redirect: null };
     }
-    return { authorized: false, redirect: '/no-permission' };
+    return { authorized: false, redirect: '/pos' };
   }
 
   if (!isSupabaseConfigured()) {
@@ -72,7 +72,7 @@ export function useRedirectByRole() {
 
   useEffect(() => {
     const doRedirect = async () => {
-      // Check cashier session
+      // Check cashier session first
       if (checkCashierSession()) {
         router.replace('/pos');
         return;

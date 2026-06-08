@@ -1,6 +1,6 @@
 'use client';
-import { useState, useMemo, useCallback } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import PageHeader from '@/components/layout/PageHeader';
 import Button from '@/components/ui/Button';
 import EmptyState from '@/components/ui/EmptyState';
@@ -9,22 +9,20 @@ import PurchasesSummaryCards from './PurchasesSummaryCards';
 import PurchasesFilters from './PurchasesFilters';
 import PurchasesTable from './PurchasesTable';
 import PurchaseDetailsDrawer from './PurchaseDetailsDrawer';
-import PurchaseFormDrawer from './PurchaseFormDrawer';
 import RecordPaymentModal from './RecordPaymentModal';
-import { getPurchases, addPurchase, updatePurchase, getPurchaseById } from '@/lib/mock-purchases';
-import { getSupplierById, updateSupplier } from '@/lib/mock-suppliers';
+import { getPurchases, updatePurchase } from '@/lib/data/purchases';
 import type { PurchaseInvoice } from '@/types/purchases';
-import type { PurchaseFormData } from './PurchaseFormDrawer';
 import { Plus, Package } from 'lucide-react';
 
 const PAGE_SIZE = 10;
 
 export default function PurchasesPageShell() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const preselectedSupplierId = searchParams.get('supplierId') || undefined;
 
-  const { toast } = useToast();
-  const [purchases, setPurchases] = useState<PurchaseInvoice[]>(getPurchases);
+  const [purchases, setPurchases] = useState<PurchaseInvoice[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [paymentStatus, setPaymentStatus] = useState('all');
   const [paymentMethod, setPaymentMethod] = useState('all');
@@ -32,13 +30,21 @@ export default function PurchasesPageShell() {
   const [dateRange, setDateRange] = useState('all');
   const [page, setPage] = useState(1);
 
+  const { toast } = useToast();
+
   const [selectedPurchase, setSelectedPurchase] = useState<PurchaseInvoice | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
-  const [formOpen, setFormOpen] = useState(false);
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
 
-  const refreshPurchases = useCallback(() => {
-    setPurchases([...getPurchases()]);
+  const refreshPurchases = useCallback(async () => {
+    setLoading(true);
+    const data = await getPurchases();
+    setPurchases(data);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    getPurchases().then((data) => { setPurchases(data); setLoading(false); });
   }, []);
 
   const filtered = useMemo(() => {
@@ -102,69 +108,35 @@ export default function PurchasesPageShell() {
     setDetailsOpen(true);
   }, []);
 
+  const handleEdit = useCallback((p: PurchaseInvoice) => {
+    router.push(`/purchases/${p.id}/edit`);
+  }, [router]);
+
   const handleAdd = useCallback(() => {
-    setFormOpen(true);
-  }, []);
+    router.push('/purchases/new');
+  }, [router]);
 
   const handleRecordPayment = useCallback((p: PurchaseInvoice) => {
     setSelectedPurchase(p);
     setPaymentModalOpen(true);
   }, []);
 
-  const handleSavePurchase = useCallback((data: PurchaseFormData) => {
-    const created = addPurchase({
-      supplierId: data.supplierId,
-      supplierName: data.supplierName,
-      supplierInvoiceNumber: data.supplierInvoiceNumber,
-      date: data.date,
-      items: data.items,
-      subtotal: data.subtotal,
-      vatAmount: 0,
-      total: data.total,
-      paymentStatus: data.paymentStatus,
-      paymentMethod: data.paymentMethod,
-      paidAmount: data.paidAmount,
-      remainingAmount: data.remainingAmount,
-      notes: data.notes,
-      createdBy: 'مالك النظام',
-    });
-    if (created) {
-      refreshPurchases();
-      setFormOpen(false);
-      toast('success', 'تم إضافة فاتورة المشتريات بنجاح');
-    }
-  }, [refreshPurchases, toast]);
-
-  const handleConfirmPayment = useCallback((id: string, amount: number, method: string, date: string, notes: string) => {
-    const purchase = getPurchaseById(id);
-    if (!purchase) return;
-
-    const newPaidAmount = purchase.paidAmount + amount;
-    const newRemainingAmount = purchase.total - newPaidAmount;
-    const newStatus = newRemainingAmount <= 0 ? 'paid' : 'partial';
-
-    const updated = updatePurchase(id, {
-      paidAmount: newPaidAmount,
-      remainingAmount: Math.max(0, newRemainingAmount),
-      paymentStatus: newStatus,
+  const handleConfirmPayment = useCallback(async (id: string, amount: number, method: string, date: string, notes: string) => {
+    const result = await updatePurchase(id, {
+      paidAmount: amount,
+      remainingAmount: 0,
+      paymentStatus: 'paid',
       paymentMethod: method as 'cash' | 'bank' | 'transfer' | 'credit',
-      notes: notes || purchase.notes,
+      notes: notes || undefined,
     });
 
-    if (updated) {
-      refreshPurchases();
+    if (result.purchase) {
+      await refreshPurchases();
       setPaymentModalOpen(false);
       setSelectedPurchase(null);
       toast('success', 'تم تسجيل السداد بنجاح');
-
-      // Update supplier balance
-      const supplier = getSupplierById(purchase.supplierId);
-      if (supplier) {
-        updateSupplier(supplier.id, {
-          balance: Math.max(0, supplier.balance - amount),
-          totalPaid: supplier.totalPaid + amount,
-        });
-      }
+    } else {
+      toast('error', result.error || 'فشل تسجيل السداد');
     }
   }, [refreshPurchases, toast]);
 
@@ -173,14 +145,29 @@ export default function PurchasesPageShell() {
     setSelectedPurchase(null);
   }, []);
 
-  const handleCloseForm = useCallback(() => {
-    setFormOpen(false);
-  }, []);
-
   const handleCloseDetails = useCallback(() => {
     setDetailsOpen(false);
     setSelectedPurchase(null);
   }, []);
+
+  if (loading && purchases.length === 0) {
+    return (
+      <>
+        <PageHeader
+          title="المشتريات"
+          description="تسجيل ومتابعة فواتير مشتريات الموردين"
+          actions={
+            <Button icon={<Plus className="h-4 w-4" />} onClick={handleAdd}>
+              إضافة فاتورة شراء
+            </Button>
+          }
+        />
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin h-8 w-8 border-2 border-primary-600 border-t-transparent rounded-full" />
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
@@ -225,6 +212,7 @@ export default function PurchasesPageShell() {
             totalPages={paginated.totalPages}
             onPageChange={setPage}
             onView={handleView}
+            onEdit={handleEdit}
           />
         )}
       </div>
@@ -234,13 +222,6 @@ export default function PurchasesPageShell() {
         onClose={handleCloseDetails}
         purchase={selectedPurchase}
         onRecordPayment={handleRecordPayment}
-      />
-
-      <PurchaseFormDrawer
-        open={formOpen}
-        onClose={handleCloseForm}
-        onSave={handleSavePurchase}
-        preselectedSupplierId={preselectedSupplierId}
       />
 
       <RecordPaymentModal

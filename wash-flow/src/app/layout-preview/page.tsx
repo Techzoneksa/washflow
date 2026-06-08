@@ -142,7 +142,7 @@ export default function LayoutPreviewPage() {
                       { label: 'مبيعات اليوم', value: '1,250 SAR', trend: '+12%' },
                       { label: 'الطلبات', value: '38', trend: '+5' },
                       { label: 'المصاريف', value: '320 SAR', trend: '-2%' },
-                      { label: 'صافي الربح', value: '930 SAR', trend: '+15%' },
+                      { label: 'الهامش', value: '930 SAR', trend: '+15%' },
                     ].map((stat) => (
                       <div key={stat.label} className="bg-bg-surface border border-border-default rounded-card p-4">
                         <p className="text-xs text-text-secondary">{stat.label}</p>

@@ -1,12 +1,13 @@
 'use client';
-import { useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import Drawer from '@/components/ui/Drawer';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import { formatDate } from '@/lib/utils';
 import { Money } from '@/lib/format';
-import { getPurchasesBySupplier } from '@/lib/mock-purchases';
+import { getPurchasesBySupplier } from '@/lib/data/purchases';
 import type { Supplier } from '@/types/suppliers';
+import type { PurchaseInvoice } from '@/types/purchases';
 import { Phone, User, FileDigit, Building2, Mail, MapPin, ShoppingCart, Banknote, FileText, CalendarDays, History, Pencil, Plus } from 'lucide-react';
 
 interface SupplierDetailsDrawerProps {
@@ -18,10 +19,13 @@ interface SupplierDetailsDrawerProps {
 }
 
 export default function SupplierDetailsDrawer({ open, onClose, supplier, onEdit, onAddPurchase }: SupplierDetailsDrawerProps) {
-  const supplierPurchases = useMemo(
-    () => supplier ? getPurchasesBySupplier(supplier.id).slice(0, 5) : [],
-    [supplier]
-  );
+  const [purchases, setPurchases] = useState<PurchaseInvoice[]>([]);
+
+  useEffect(() => {
+    if (supplier && open) {
+      getPurchasesBySupplier(supplier.id).then((list) => setPurchases(list.slice(0, 5)));
+    }
+  }, [supplier, open]);
 
   if (!supplier) return null;
 
@@ -125,11 +129,11 @@ export default function SupplierDetailsDrawer({ open, onClose, supplier, onEdit,
           </div>
         </div>
 
-        {supplierPurchases.length > 0 && (
+        {purchases.length > 0 && (
           <div>
             <h4 className="text-sm font-semibold text-text-primary mb-2">آخر المشتريات</h4>
             <div className="space-y-2">
-              {supplierPurchases.map((p) => (
+              {purchases.map((p) => (
                 <div key={p.id} className="flex items-center justify-between bg-neutral-50 rounded-lg p-2.5 text-sm">
                   <div>
                     <p className="font-semibold tabular-nums">{p.purchaseNumber}</p>

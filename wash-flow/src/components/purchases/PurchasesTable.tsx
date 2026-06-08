@@ -6,7 +6,7 @@ import { Money } from '@/lib/format';
 import { formatDate } from '@/lib/utils';
 import type { PurchaseInvoice } from '@/types/purchases';
 import type { Column } from '@/components/ui/Table';
-import { Eye } from 'lucide-react';
+import { Eye, Edit3 } from 'lucide-react';
 
 interface PurchasesTableProps {
   purchases: PurchaseInvoice[];
@@ -14,6 +14,7 @@ interface PurchasesTableProps {
   totalPages: number;
   onPageChange: (p: number) => void;
   onView: (p: PurchaseInvoice) => void;
+  onEdit?: (p: PurchaseInvoice) => void;
 }
 
 function getPaymentBadge(status: string) {
@@ -31,7 +32,7 @@ function getPaymentMethodLabel(method?: string) {
   return method ? (labels[method] || method) : '—';
 }
 
-export default function PurchasesTable({ purchases, page, totalPages, onPageChange, onView }: PurchasesTableProps) {
+export default function PurchasesTable({ purchases, page, totalPages, onPageChange, onView, onEdit }: PurchasesTableProps) {
   const columns: Column<PurchaseInvoice>[] = [
     {
       key: 'purchaseNumber',
@@ -96,6 +97,11 @@ export default function PurchasesTable({ purchases, page, totalPages, onPageChan
           <button onClick={() => onView(p)} className="p-1.5 rounded-md hover:bg-bg-hover text-text-secondary hover:text-primary-600 transition-colors" title="عرض">
             <Eye className="h-4 w-4" />
           </button>
+          {onEdit && (
+            <button onClick={() => onEdit(p)} className="p-1.5 rounded-md hover:bg-bg-hover text-text-secondary hover:text-primary-600 transition-colors" title="تعديل">
+              <Edit3 className="h-4 w-4" />
+            </button>
+          )}
         </div>
       ),
     },

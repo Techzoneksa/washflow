@@ -175,6 +175,8 @@ BEGIN
   RETURN jsonb_build_object(
     'success', true,
     'token', v_session.token,
+    'cashier_account_id', v_cashier.id,
+    'pos_device_id', v_device.id,
     'cashier_name', v_session.cashier_name,
     'pos_code', v_session.pos_code,
     'expires_at', v_session.expires_at

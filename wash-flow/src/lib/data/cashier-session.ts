@@ -18,20 +18,20 @@ export async function authenticateCashier(
     p_pin: pin,
   });
 
-  if (error) {
-    return { success: false, error: error.message };
+  if (error || !data) {
+    return { success: false, error: 'اسم المستخدم أو PIN غير صحيح' };
   }
 
   const result = data as Record<string, unknown>;
 
   if (!result.success) {
-    return { success: false, error: result.error as string };
+    return { success: false, error: 'اسم المستخدم أو PIN غير صحيح' };
   }
 
   const session: CashierSession = {
-    sessionId: '',
-    cashierAccountId: '',
-    posDeviceId: '',
+    sessionId: result.token as string,
+    cashierAccountId: result.cashier_account_id as string,
+    posDeviceId: result.pos_device_id as string,
     cashierName: result.cashier_name as string,
     posCode: result.pos_code as string,
     expiresAt: result.expires_at as string,
@@ -41,10 +41,12 @@ export async function authenticateCashier(
     sessionStorage.setItem(
       SESSION_KEY,
       JSON.stringify({
-        token: result.token as string,
-        cashierName: result.cashier_name as string,
-        posCode: result.pos_code as string,
-        expiresAt: result.expires_at as string,
+        token: session.sessionId,
+        cashierAccountId: session.cashierAccountId,
+        posDeviceId: session.posDeviceId,
+        cashierName: session.cashierName,
+        posCode: session.posCode,
+        expiresAt: session.expiresAt,
       })
     );
   }
@@ -52,7 +54,7 @@ export async function authenticateCashier(
   return { success: true, session };
 }
 
-export function getStoredCashierSession(): { token: string; cashierName: string; posCode: string; expiresAt: string } | null {
+export function getStoredCashierSession(): { token: string; cashierAccountId: string; posDeviceId: string; cashierName: string; posCode: string; expiresAt: string } | null {
   if (typeof window === 'undefined') return null;
   const raw = sessionStorage.getItem(SESSION_KEY);
   if (!raw) return null;

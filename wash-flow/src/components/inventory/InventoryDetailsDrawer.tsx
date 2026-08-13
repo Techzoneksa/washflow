@@ -1,12 +1,13 @@
 'use client';
+import { useState, useEffect } from 'react';
 import Drawer from '@/components/ui/Drawer';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import Card from '@/components/ui/Card';
 import { Money } from '@/lib/format';
-import type { InventoryItem } from '@/types/inventory';
+import type { InventoryItem, StockMovement } from '@/types/inventory';
 import { INVENTORY_CATEGORY_LABELS, INVENTORY_UNIT_LABELS, STOCK_MOVEMENT_TYPE_LABELS } from '@/types/inventory';
-import { getStockMovementsByItemId } from '@/lib/mock-inventory';
+import { getStockMovementsByItemId } from '@/lib/data/inventory';
 import { Pencil, ArrowDownCircle, Trash2, Scale, History } from 'lucide-react';
 
 interface InventoryDetailsDrawerProps {
@@ -28,11 +29,21 @@ export default function InventoryDetailsDrawer({
   onWaste,
   onAdjust,
 }: InventoryDetailsDrawerProps) {
+  const [movements, setMovements] = useState<StockMovement[]>([]);
+
+  useEffect(() => {
+    if (item) {
+      getStockMovementsByItemId(item.id).then(data => setMovements(data.slice(0, 10)));
+    } else {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setMovements([]);
+    }
+  }, [item]);
+
   if (!item) return null;
 
   const isLow = item.currentQuantity > 0 && item.currentQuantity <= item.minimumQuantity;
   const isOut = item.currentQuantity === 0;
-  const movements = getStockMovementsByItemId(item.id).slice(0, 10);
 
   return (
     <Drawer open={open} onClose={onClose} title="تفاصيل المادة">

@@ -1,19 +1,43 @@
 'use client';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import AppShell from '@/components/layout/AppShell';
 import PageHeader from '@/components/layout/PageHeader';
 import Card from '@/components/ui/Card';
 import Input from '@/components/ui/Input';
 import EmptyState from '@/components/ui/EmptyState';
+import LoadingState from '@/components/ui/LoadingState';
+import Button from '@/components/ui/Button';
+import { InlineAlert } from '@/components/ui/Toast';
 import { useAuthGuard } from '@/lib/route-guards';
-import { getWasteEntries } from '@/lib/mock-inventory';
-import { Trash2, Search } from 'lucide-react';
+import { getWasteEntries } from '@/lib/data/inventory';
+import type { WasteEntry } from '@/types/inventory';
+import { Trash2, Search, RefreshCw } from 'lucide-react';
 
 export default function WastePage() {
   const { authorized, checking } = useAuthGuard(['owner', 'manager', 'accountant']);
   const [search, setSearch] = useState('');
+  const [entries, setEntries] = useState<WasteEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
-  const entries = useMemo(() => getWasteEntries(), []);
+  const refresh = useCallback(async () => {
+    setLoading(true);
+    setFetchError(null);
+    try {
+      const data = await getWasteEntries();
+      setEntries(data);
+    } catch (err) {
+      setFetchError(err instanceof Error ? err.message : 'حدث خطأ في تحميل سجلات الهدر');
+      setEntries([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    refresh();
+  }, [refresh]);
 
   const filtered = useMemo(() => {
     return entries.filter(e => {
@@ -41,7 +65,16 @@ export default function WastePage() {
           </div>
         </div>
 
-        {filtered.length === 0 ? (
+        {loading ? (
+          <LoadingState message="جاري تحميل سجلات الهدر..." />
+        ) : fetchError ? (
+          <div className="p-4">
+            <InlineAlert type="error" title="فشل تحميل السجلات" description={fetchError} />
+            <div className="flex justify-center mt-4">
+              <Button variant="outline" icon={<RefreshCw className="h-4 w-4" />} onClick={refresh}>إعادة المحاولة</Button>
+            </div>
+          </div>
+        ) : filtered.length === 0 ? (
           <EmptyState icon={<Trash2 className="h-16 w-16" />} title="لا توجد سجلات" description="لا توجد سجلات هدر" />
         ) : (
           <div className="overflow-x-auto">

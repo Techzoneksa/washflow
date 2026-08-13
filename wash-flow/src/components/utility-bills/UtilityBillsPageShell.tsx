@@ -1,31 +1,34 @@
 'use client';
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import PageHeader from '@/components/layout/PageHeader';
 import Button from '@/components/ui/Button';
 import EmptyState from '@/components/ui/EmptyState';
-import { useToast } from '@/components/ui/Toast';
+import LoadingState from '@/components/ui/LoadingState';
+import { useToast, InlineAlert } from '@/components/ui/Toast';
 import UtilityBillsSummaryCards from './UtilityBillsSummaryCards';
 import UtilityBillsFilters from './UtilityBillsFilters';
 import UtilityBillsTable from './UtilityBillsTable';
 import UtilityBillDetailsDrawer from './UtilityBillDetailsDrawer';
 import UtilityBillFormDrawer from './UtilityBillFormDrawer';
 import RecordUtilityPaymentModal from './RecordUtilityPaymentModal';
-import { getUtilityBills, addUtilityBill, updateUtilityBill } from '@/lib/mock-utility-bills';
+import { getUtilityBills, addUtilityBill, updateUtilityBill } from '@/lib/data/utility-bills';
 import type { UtilityBill } from '@/types/utility-bills';
 import type { UtilityBillFormData } from './UtilityBillFormDrawer';
-import { Plus, FileText } from 'lucide-react';
+import { Plus, FileText, RefreshCw } from 'lucide-react';
 
 const PAGE_SIZE = 10;
 
 export default function UtilityBillsPageShell() {
   const { toast } = useToast();
-  const [bills, setBills] = useState<UtilityBill[]>(getUtilityBills);
+  const [bills, setBills] = useState<UtilityBill[]>([]);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
   const [dueDateRange, setDueDateRange] = useState('all');
   const [page, setPage] = useState(1);
 
+  const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const [selectedBill, setSelectedBill] = useState<UtilityBill | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [formOpen, setFormOpen] = useState(false);
@@ -33,9 +36,24 @@ export default function UtilityBillsPageShell() {
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
   const [paymentBill, setPaymentBill] = useState<UtilityBill | null>(null);
 
-  const refreshBills = useCallback(() => {
-    setBills([...getUtilityBills()]);
+  const refreshBills = useCallback(async () => {
+    setLoading(true);
+    setFetchError(null);
+    try {
+      const data = await getUtilityBills();
+      setBills(data);
+    } catch (err) {
+      setFetchError(err instanceof Error ? err.message : 'حدث خطأ في تحميل الفواتير');
+      setBills([]);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    refreshBills();
+  }, [refreshBills]);
 
   const filtered = useMemo(() => {
     return bills.filter((b) => {
@@ -124,27 +142,27 @@ export default function UtilityBillsPageShell() {
     setPaymentModalOpen(true);
   }, []);
 
-  const handleSavePayment = useCallback((id: string, method: string, date: string, notes: string) => {
-    const updated = updateUtilityBill(id, {
+  const handleSavePayment = useCallback(async (id: string, method: string, date: string, notes: string) => {
+    const updated = await updateUtilityBill(id, {
       status: 'paid',
       paymentMethod: method as 'cash' | 'bank' | 'transfer' | 'card',
       paidAt: date,
       notes: notes || undefined,
     });
     if (updated) {
-      refreshBills();
+      await refreshBills();
       setPaymentModalOpen(false);
       setPaymentBill(null);
       toast('success', 'تم تسجيل السداد بنجاح');
     }
   }, [refreshBills, toast]);
 
-  const handleSave = useCallback((data: UtilityBillFormData) => {
+  const handleSave = useCallback(async (data: UtilityBillFormData) => {
     const isOverdue = data.status === 'unpaid' && new Date(data.dueDate) < new Date() && data.dueDate < new Date().toISOString().split('T')[0];
     const finalStatus = isOverdue ? 'overdue' : data.status;
 
     if (editBill) {
-      const updated = updateUtilityBill(editBill.id, {
+      const updated = await updateUtilityBill(editBill.id, {
         type: data.type,
         provider: data.provider,
         providerAccountNumber: data.providerAccountNumber || undefined,
@@ -159,13 +177,13 @@ export default function UtilityBillsPageShell() {
         notes: data.notes || undefined,
       });
       if (updated) {
-        refreshBills();
+        await refreshBills();
         setFormOpen(false);
         setEditBill(null);
         toast('success', 'تم تحديث الفاتورة بنجاح');
       }
     } else {
-      const created = addUtilityBill({
+      const created = await addUtilityBill({
         type: data.type,
         provider: data.provider,
         providerAccountNumber: data.providerAccountNumber || undefined,
@@ -182,7 +200,7 @@ export default function UtilityBillsPageShell() {
         createdBy: 'مالك النظام',
       });
       if (created) {
-        refreshBills();
+        await refreshBills();
         setFormOpen(false);
         toast('success', 'تم إضافة الفاتورة بنجاح');
       }
@@ -222,7 +240,16 @@ export default function UtilityBillsPageShell() {
           />
         </div>
 
-        {filtered.length === 0 ? (
+        {loading ? (
+          <LoadingState message="جاري تحميل الفواتير..." />
+        ) : fetchError ? (
+          <div className="p-4">
+            <InlineAlert type="error" title="فشل تحميل الفواتير" description={fetchError} />
+            <div className="flex justify-center mt-4">
+              <Button variant="outline" icon={<RefreshCw className="h-4 w-4" />} onClick={refreshBills}>إعادة المحاولة</Button>
+            </div>
+          </div>
+        ) : filtered.length === 0 ? (
           <EmptyState
             icon={<FileText className="h-16 w-16" />}
             title="لا توجد فواتير خدمات"

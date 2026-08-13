@@ -1,18 +1,19 @@
 'use client';
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import PageHeader from '@/components/layout/PageHeader';
 import Button from '@/components/ui/Button';
 import EmptyState from '@/components/ui/EmptyState';
-import { useToast } from '@/components/ui/Toast';
+import LoadingState from '@/components/ui/LoadingState';
+import { useToast, InlineAlert } from '@/components/ui/Toast';
 import ExpensesSummaryCards from './ExpensesSummaryCards';
 import ExpensesFilters from './ExpensesFilters';
 import ExpensesTable from './ExpensesTable';
 import ExpenseDetailsDrawer from './ExpenseDetailsDrawer';
 import ExpenseFormDrawer from './ExpenseFormDrawer';
-import { getExpenses, addExpense, updateExpense } from '@/lib/mock-expenses';
+import { getExpenses, addExpense, updateExpense } from '@/lib/data/expenses';
 import type { Expense, ExpenseType } from '@/types/expenses';
 import type { ExpenseFormData } from './ExpenseFormDrawer';
-import { Plus, Wallet } from 'lucide-react';
+import { Plus, Wallet, RefreshCw } from 'lucide-react';
 
 const PAGE_SIZE = 10;
 
@@ -33,21 +34,38 @@ const expenseTypeLabels: Record<ExpenseType, string> = {
 
 export default function ExpensesPageShell() {
   const { toast } = useToast();
-  const [expenses, setExpenses] = useState<Expense[]>(getExpenses);
+  const [expenses, setExpenses] = useState<Expense[]>([]);
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
   const [paymentMethod, setPaymentMethod] = useState('all');
   const [dateRange, setDateRange] = useState('all');
   const [page, setPage] = useState(1);
 
+  const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [formOpen, setFormOpen] = useState(false);
   const [editExpense, setEditExpense] = useState<Expense | null>(null);
 
-  const refreshExpenses = useCallback(() => {
-    setExpenses([...getExpenses()]);
+  const refreshExpenses = useCallback(async () => {
+    setLoading(true);
+    setFetchError(null);
+    try {
+      const data = await getExpenses();
+      setExpenses(data);
+    } catch (err) {
+      setFetchError(err instanceof Error ? err.message : 'حدث خطأ في تحميل المصاريف');
+      setExpenses([]);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    refreshExpenses();
+  }, [refreshExpenses]);
 
   const filtered = useMemo(() => {
     return expenses.filter((e) => {
@@ -133,9 +151,9 @@ export default function ExpensesPageShell() {
     setFormOpen(true);
   }, []);
 
-  const handleSave = useCallback((data: ExpenseFormData) => {
+  const handleSave = useCallback(async (data: ExpenseFormData) => {
     if (editExpense) {
-      const updated = updateExpense(editExpense.id, {
+      const updated = await updateExpense(editExpense.id, {
         type: data.type,
         title: data.title,
         description: data.description || undefined,
@@ -148,13 +166,13 @@ export default function ExpensesPageShell() {
         notes: data.notes || undefined,
       });
       if (updated) {
-        refreshExpenses();
+        await refreshExpenses();
         setFormOpen(false);
         setEditExpense(null);
         toast('success', 'تم تحديث المصروف بنجاح');
       }
     } else {
-      const created = addExpense({
+      const created = await addExpense({
         type: data.type,
         title: data.title,
         description: data.description || undefined,
@@ -169,7 +187,7 @@ export default function ExpensesPageShell() {
         createdBy: 'مالك النظام',
       });
       if (created) {
-        refreshExpenses();
+        await refreshExpenses();
         setFormOpen(false);
         toast('success', 'تم إضافة المصروف بنجاح');
       }
@@ -209,7 +227,16 @@ export default function ExpensesPageShell() {
           />
         </div>
 
-        {filtered.length === 0 ? (
+        {loading ? (
+          <LoadingState message="جاري تحميل المصاريف..." />
+        ) : fetchError ? (
+          <div className="p-4">
+            <InlineAlert type="error" title="فشل تحميل المصاريف" description={fetchError} />
+            <div className="flex justify-center mt-4">
+              <Button variant="outline" icon={<RefreshCw className="h-4 w-4" />} onClick={refreshExpenses}>إعادة المحاولة</Button>
+            </div>
+          </div>
+        ) : filtered.length === 0 ? (
           <EmptyState
             icon={<Wallet className="h-16 w-16" />}
             title="لا توجد مصاريف"

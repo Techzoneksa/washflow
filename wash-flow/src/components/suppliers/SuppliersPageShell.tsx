@@ -1,39 +1,57 @@
 'use client';
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import PageHeader from '@/components/layout/PageHeader';
 import Button from '@/components/ui/Button';
 import EmptyState from '@/components/ui/EmptyState';
-import { useToast } from '@/components/ui/Toast';
+import LoadingState from '@/components/ui/LoadingState';
+import { useToast, InlineAlert } from '@/components/ui/Toast';
 import SuppliersSummaryCards from './SuppliersSummaryCards';
 import SuppliersFilters from './SuppliersFilters';
 import SuppliersTable from './SuppliersTable';
 import SupplierDetailsDrawer from './SupplierDetailsDrawer';
 import SupplierFormDrawer from './SupplierFormDrawer';
-import { getSuppliers, addSupplier, updateSupplier, isDuplicateSupplierName } from '@/lib/mock-suppliers';
+import { getSuppliers, addSupplier, updateSupplier, isDuplicateSupplierName } from '@/lib/data/suppliers';
 import type { Supplier } from '@/types/suppliers';
 import type { SupplierFormData } from './SupplierFormDrawer';
-import { Plus, Truck } from 'lucide-react';
+import { Plus, Truck, RefreshCw } from 'lucide-react';
 
 const PAGE_SIZE = 10;
 
 export default function SuppliersPageShell() {
   const router = useRouter();
   const { toast } = useToast();
-  const [suppliers, setSuppliers] = useState<Supplier[]>(getSuppliers);
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('all');
   const [balance, setBalance] = useState('all');
   const [page, setPage] = useState(1);
 
+  const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [formOpen, setFormOpen] = useState(false);
   const [editSupplier, setEditSupplier] = useState<Supplier | null>(null);
 
-  const refreshSuppliers = useCallback(() => {
-    setSuppliers([...getSuppliers()]);
+  const refreshSuppliers = useCallback(async () => {
+    setLoading(true);
+    setFetchError(null);
+    try {
+      const data = await getSuppliers();
+      setSuppliers(data);
+    } catch (err) {
+      setFetchError(err instanceof Error ? err.message : 'حدث خطأ في تحميل الموردين');
+      setSuppliers([]);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    refreshSuppliers();
+  }, [refreshSuppliers]);
 
   const filtered = useMemo(() => {
     return suppliers.filter((s) => {
@@ -97,13 +115,13 @@ export default function SuppliersPageShell() {
     router.push(`/purchases?supplierId=${s.id}`);
   }, [router]);
 
-  const handleSaveSupplier = useCallback((data: SupplierFormData) => {
+  const handleSaveSupplier = useCallback(async (data: SupplierFormData) => {
     if (editSupplier) {
-      if (isDuplicateSupplierName(data.name, editSupplier.id)) {
+      if (await isDuplicateSupplierName(data.name, editSupplier.id)) {
         toast('error', 'اسم المورد موجود مسبقًا');
         return;
       }
-      const updated = updateSupplier(editSupplier.id, {
+      const updated = await updateSupplier(editSupplier.id, {
         ...data,
         balance: editSupplier.balance,
         totalPurchases: editSupplier.totalPurchases,
@@ -111,17 +129,17 @@ export default function SuppliersPageShell() {
         invoicesCount: editSupplier.invoicesCount,
       });
       if (updated) {
-        refreshSuppliers();
+        await refreshSuppliers();
         setFormOpen(false);
         setEditSupplier(null);
         toast('success', 'تم تحديث المورد بنجاح');
       }
     } else {
-      if (isDuplicateSupplierName(data.name)) {
+      if (await isDuplicateSupplierName(data.name)) {
         toast('error', 'اسم المورد موجود مسبقًا');
         return;
       }
-      const created = addSupplier({
+      const created = await addSupplier({
         ...data,
         balance: 0,
         totalPurchases: 0,
@@ -129,7 +147,7 @@ export default function SuppliersPageShell() {
         invoicesCount: 0,
       });
       if (created) {
-        refreshSuppliers();
+        await refreshSuppliers();
         setFormOpen(false);
         toast('success', 'تم إضافة المورد بنجاح');
       }
@@ -167,7 +185,16 @@ export default function SuppliersPageShell() {
           />
         </div>
 
-        {filtered.length === 0 ? (
+        {loading ? (
+          <LoadingState message="جاري تحميل الموردين..." />
+        ) : fetchError ? (
+          <div className="p-4">
+            <InlineAlert type="error" title="فشل تحميل الموردين" description={fetchError} />
+            <div className="flex justify-center mt-4">
+              <Button variant="outline" icon={<RefreshCw className="h-4 w-4" />} onClick={refreshSuppliers}>إعادة المحاولة</Button>
+            </div>
+          </div>
+        ) : filtered.length === 0 ? (
           <EmptyState
             icon={<Truck className="h-16 w-16" />}
             title="لا توجد موردين"

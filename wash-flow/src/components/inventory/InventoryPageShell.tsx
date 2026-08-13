@@ -1,9 +1,10 @@
 'use client';
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import PageHeader from '@/components/layout/PageHeader';
 import Button from '@/components/ui/Button';
 import EmptyState from '@/components/ui/EmptyState';
-import { useToast } from '@/components/ui/Toast';
+import LoadingState from '@/components/ui/LoadingState';
+import { useToast, InlineAlert } from '@/components/ui/Toast';
 import InventorySummaryCards from './InventorySummaryCards';
 import InventoryFilters from './InventoryFilters';
 import InventoryTable from './InventoryTable';
@@ -15,26 +16,44 @@ import WasteFormModal from './WasteFormModal';
 import StockAdjustmentModal from './StockAdjustmentModal';
 import {
   getInventoryItems,
-  getInventorySummary,
-  filterInventoryItems,
   addInventoryItem,
   updateInventoryItem,
   addStockMovement,
   addWasteEntry,
   addStockAdjustment,
-} from '@/lib/mock-inventory';
+} from '@/lib/data/inventory';
 import type { InventoryItem, InventoryFilter } from '@/types/inventory';
 import type { InventoryItemFormData } from './InventoryItemFormDrawer';
 import type { StockMovementFormData } from './StockMovementFormModal';
 import type { WasteFormData } from './WasteFormModal';
 import type { StockAdjustmentFormData } from './StockAdjustmentModal';
-import { Plus, Package } from 'lucide-react';
+import { Plus, Package, RefreshCw } from 'lucide-react';
 
 const PAGE_SIZE = 10;
 
+function filterInventoryItems(items: InventoryItem[], filters: InventoryFilter): InventoryItem[] {
+  return items.filter(item => {
+    if (filters.search && !item.name.toLowerCase().includes(filters.search.toLowerCase())) return false;
+    if (filters.category !== 'all' && item.category !== filters.category) return false;
+    if (filters.status !== 'all' && item.status !== filters.status) return false;
+    if (filters.supplierId && item.supplierId !== filters.supplierId) return false;
+    if (filters.stockStatus === 'low' && !(item.currentQuantity > 0 && item.currentQuantity <= item.minimumQuantity)) return false;
+    if (filters.stockStatus === 'out' && item.currentQuantity !== 0) return false;
+    return true;
+  });
+}
+
+function getInventorySummary(items: InventoryItem[]) {
+  const total = items.length;
+  const lowStock = items.filter(i => i.currentQuantity > 0 && i.currentQuantity <= i.minimumQuantity).length;
+  const outOfStock = items.filter(i => i.currentQuantity === 0).length;
+  const totalValue = items.reduce((sum, i) => sum + i.currentQuantity * i.averageCost, 0);
+  return { total, lowStock, outOfStock, totalValue, lastMovement: null };
+}
+
 export default function InventoryPageShell() {
   const { toast } = useToast();
-  const [items, setItems] = useState<InventoryItem[]>(getInventoryItems());
+  const [items, setItems] = useState<InventoryItem[]>([]);
   const [filters, setFilters] = useState<InventoryFilter>({
     search: '',
     category: 'all',
@@ -44,6 +63,8 @@ export default function InventoryPageShell() {
   });
   const [page, setPage] = useState(1);
 
+  const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [formOpen, setFormOpen] = useState(false);
@@ -52,11 +73,26 @@ export default function InventoryPageShell() {
   const [wasteModalOpen, setWasteModalOpen] = useState(false);
   const [adjustmentModalOpen, setAdjustmentModalOpen] = useState(false);
 
-  const refreshItems = useCallback(() => {
-    setItems([...getInventoryItems()]);
+  const refreshItems = useCallback(async () => {
+    setLoading(true);
+    setFetchError(null);
+    try {
+      const data = await getInventoryItems();
+      setItems(data);
+    } catch (err) {
+      setFetchError(err instanceof Error ? err.message : 'حدث خطأ في تحميل المواد');
+      setItems([]);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  const summary = useMemo(() => getInventorySummary(), [items]);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    refreshItems();
+  }, [refreshItems]);
+
+  const summary = useMemo(() => getInventorySummary(items), [items]);
 
   const filtered = useMemo(() => {
     return filterInventoryItems(items, filters);
@@ -85,46 +121,39 @@ export default function InventoryPageShell() {
     setFormOpen(true);
   }, []);
 
-  const handleSave = useCallback((data: InventoryItemFormData) => {
+  const handleSave = useCallback(async (data: InventoryItemFormData) => {
     if (editItem) {
-      const updated = updateInventoryItem(editItem.id, {
+      const updated = await updateInventoryItem(editItem.id, {
         name: data.name,
         category: data.category,
         unit: data.unit,
-        baseUnit: data.unit,
-        conversionFactor: 1,
         currentQuantity: data.currentQuantity,
         minimumQuantity: data.minimumQuantity,
         averageCost: data.averageCost,
         supplierId: data.supplierId,
-        supplierName: data.supplierName,
         status: data.status,
         notes: data.notes || '',
       });
       if (updated) {
-        refreshItems();
+        await refreshItems();
         setFormOpen(false);
         setEditItem(null);
         toast('success', 'تم تحديث المادة بنجاح');
       }
     } else {
-      const created = addInventoryItem({
+      const created = await addInventoryItem({
         name: data.name,
         category: data.category,
         unit: data.unit,
-        baseUnit: data.unit,
-        purchaseUnit: undefined,
-        conversionFactor: 1,
         currentQuantity: data.currentQuantity,
         minimumQuantity: data.minimumQuantity,
         averageCost: data.averageCost,
         supplierId: data.supplierId,
-        supplierName: data.supplierName,
         status: data.status,
         notes: data.notes || '',
       });
       if (created) {
-        refreshItems();
+        await refreshItems();
         setFormOpen(false);
         toast('success', 'تم إضافة المادة بنجاح');
       }
@@ -141,9 +170,9 @@ export default function InventoryPageShell() {
     setMovementModalOpen(true);
   }, []);
 
-  const handleSaveMovement = useCallback((data: StockMovementFormData) => {
+  const handleSaveMovement = useCallback(async (data: StockMovementFormData) => {
     if (!selectedItem) return;
-    addStockMovement({
+    await addStockMovement({
       itemId: selectedItem.id,
       itemName: selectedItem.name,
       type: data.type,
@@ -154,7 +183,7 @@ export default function InventoryPageShell() {
       referenceId: '',
       createdBy: 'مالك النظام',
     });
-    refreshItems();
+    await refreshItems();
     setMovementModalOpen(false);
     toast('success', 'تم تسجيل الحركة بنجاح');
   }, [selectedItem, refreshItems, toast]);
@@ -164,9 +193,9 @@ export default function InventoryPageShell() {
     setWasteModalOpen(true);
   }, []);
 
-  const handleSaveWaste = useCallback((data: WasteFormData) => {
+  const handleSaveWaste = useCallback(async (data: WasteFormData) => {
     if (!selectedItem) return;
-    addWasteEntry({
+    await addWasteEntry({
       itemId: selectedItem.id,
       itemName: selectedItem.name,
       quantity: data.quantity,
@@ -176,7 +205,7 @@ export default function InventoryPageShell() {
       notes: data.notes || '',
       createdBy: 'مالك النظام',
     });
-    refreshItems();
+    await refreshItems();
     setWasteModalOpen(false);
     toast('success', 'تم تسجيل الهدر بنجاح');
   }, [selectedItem, refreshItems, toast]);
@@ -186,9 +215,9 @@ export default function InventoryPageShell() {
     setAdjustmentModalOpen(true);
   }, []);
 
-  const handleSaveAdjustment = useCallback((data: StockAdjustmentFormData) => {
+  const handleSaveAdjustment = useCallback(async (data: StockAdjustmentFormData) => {
     if (!selectedItem) return;
-    addStockAdjustment({
+    await addStockAdjustment({
       itemId: selectedItem.id,
       itemName: selectedItem.name,
       systemQuantity: selectedItem.currentQuantity,
@@ -199,7 +228,7 @@ export default function InventoryPageShell() {
       notes: data.notes || '',
       createdBy: 'مالك النظام',
     });
-    refreshItems();
+    await refreshItems();
     setAdjustmentModalOpen(false);
     toast('success', 'تم تسجيل التسوية بنجاح');
   }, [selectedItem, refreshItems, toast]);
@@ -226,7 +255,16 @@ export default function InventoryPageShell() {
           />
         </div>
 
-        {filtered.length === 0 ? (
+        {loading ? (
+          <LoadingState message="جاري تحميل المواد..." />
+        ) : fetchError ? (
+          <div className="p-4">
+            <InlineAlert type="error" title="فشل تحميل المواد" description={fetchError} />
+            <div className="flex justify-center mt-4">
+              <Button variant="outline" icon={<RefreshCw className="h-4 w-4" />} onClick={refreshItems}>إعادة المحاولة</Button>
+            </div>
+          </div>
+        ) : filtered.length === 0 ? (
           <EmptyState
             icon={<Package className="h-16 w-16" />}
             title="لا توجد مواد"

@@ -6,7 +6,7 @@ import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
 import Textarea from '@/components/ui/Textarea';
 import type { InventoryItem, InventoryCategory, InventoryUnit } from '@/types/inventory';
-import { INVENTORY_CATEGORY_OPTIONS, INVENTORY_UNIT_OPTIONS } from '@/lib/mock-inventory';
+import { INVENTORY_CATEGORY_OPTIONS, INVENTORY_UNIT_OPTIONS } from '@/lib/data/inventory';
 
 export interface InventoryItemFormData {
   name: string;
